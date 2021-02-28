@@ -1,0 +1,29 @@
+{
+  "name": "tech-radar-prototype2",
+  "version": "1.0.0",
+  "description": "Prototype for Technology Radar",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lucasjellema/tech-radar-prototype2.git"
+  },
+  "author": "Lucas Jellema",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lucasjellema/tech-radar-prototype2/issues"
+  },
+  "homepage": "https://github.com/lucasjellema/tech-radar-prototype2#readme",
+  "directories": {
+    "doc": "app"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.26.14",
+    "eslint": "^7.21.0",
+    "htmllint": "^0.8.0"
+  },"scripts": {
+    "start": "browser-sync app -w",
+    "lint": "npm run lint:js && npm run lint:html",
+    "lint:js": "eslint app/*.js",
+    "lint:html": "htmllint app/*.html"
+  }
+}

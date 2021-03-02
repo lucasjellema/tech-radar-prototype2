@@ -1,5 +1,26 @@
 # Logbook of explorations in this prototype
 
+## March 1st
+
+Ring and Sector can both have a background; sector is laid on top of ring - with a degree of transparancy
+Show sector label curved around the outer ring
+When dragging sector knobs - derive polar phi angle from polar coordinates of mouse position
+
+implemented:
+- rings - variable number, labels and colors dynamically assigned
+- sectors - variable number, labels and colors dynamically assigned
+- sector labels printed alongside the outer ring's rim - flipping for top half for better readability
+- rotation of full radar TODO: undo rotation for RING labels
+
+### Resources:
+SVG: Convert circle to path  - http://complexdan.com/svg-circleellipse-to-path-converter/
+SVG Place text along path - https://oreillymedia.github.io/Using_SVG/extras/ch07-textpaths.html
+Curved Text Along a Path - https://css-tricks.com/snippets/svg/curved-text-along-path/
+Mozilla Developer - introduction to SVG Path - https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths 
+D3.js arc generator - https://www.d3indepth.com/shapes/#arc-generator 
+D3 Arc Generator for Pie and Donut Chart - https://edupala.com/d3-arc-generator-for-pie-and-donut-chart/
+SVG Circle Segments - https://observablehq.com/@haakenlid/svg-circle 
+
 ## Objective One - 28th February
 
 The Viewpoint Editor

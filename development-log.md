@@ -1,5 +1,25 @@
 # Logbook of explorations in this prototype
 
+## March 2nd
+
+- slider for setting rotation
+- sector-label and ring-label styling? (font, size, fill)
+- smarter radar refresh (only update rotation for example when rotation slider is updated)
+- assign background color to sectors & rings and area outside radar
+- edit labels 
+- TODO: print ring labels in top layer AND make ring labels not rotate with radar
+- TODO: determine/switch whether rings or sectors are top layer (top layer)
+ 
+implemented:
+- slider to rotate the radar
+- sector labels are clickable; a popup field editor appears - and disappears; TODO: process new value
+
+
+### Resources
+Sliders - https://bl.ocks.org/johnwalley/e1d256b81e51da68f7feb632a53c3518
+D3 sliders - https://github.com/johnwalley/d3-simple-slider
+Field Editor - http://bl.ocks.org/GerHobbelt/2653660  SVG Foreign Object
+
 ## March 1st
 
 Ring and Sector can both have a background; sector is laid on top of ring - with a degree of transparancy

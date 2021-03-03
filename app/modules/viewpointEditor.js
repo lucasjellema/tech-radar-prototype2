@@ -17,38 +17,59 @@ let config = {
     ringConfiguration: {
         outsideRingsAllowed: true
         , rings: [ // rings are defined from outside going in; the first one is the widest
-            { label: "Status A", backgroundColor: "gray", width: 0.2 },
-            { label: "Status X", backgroundColor: "gold", width: 0.25 },
-            { label: "Status Y", backgroundColor: "silver", width: 0.28 },
-            { label: "Status Z", backgroundColor: "gray", width: 0.2 },
+            { label: "Spotted", backgroundColor: "#FFF", width: 0.15 },
+            { label: "Hold", backgroundColor: "gray", width: 0.2 },
+            { label: "Assess", backgroundColor: "gold", width: 0.25 },
+            { label: "Trial", backgroundColor: "silver", width: 0.18 },
+            { label: "Adopt", backgroundColor: "gray", width: 0.2 },
 
         ]
     },
     sectorConfiguration: {
         outsideSectorsAllowed: true, sectors: [
-            { label: "Group I", backgroundColor: "#blue", angle: 0.1 },
-            { label: "Group II", backgroundColor: "green", angle: 0.4 },
-            { label: "Group III", backgroundColor: "cyan", angle: 0.25 },
-            { label: "Group IV", backgroundColor: "orange", angle: 0.1 },
-            { label: "Group V", backgroundColor: "red", angle: 0.15 },
+            { label: "Data Management", backgroundColor: "#blue", angle: 0.1 },
+            { label: "Libraries & Frameworks", backgroundColor: "green", angle: 0.2 },
+            { label: "Infrastructure", backgroundColor: "cyan", angle: 0.25 },
+            { label: "Languages", backgroundColor: "orange", angle: 0.1 },
+            { label: "Concepts & Methodology", backgroundColor: "red", angle: 0.15 },
         ]
     },
 }
 
 const viewpointEditor = function () {
-    const radar = initializeRadar()
-    const radarCanvas = radar.append("g");
-    radarCanvas.attr("transform", `rotate(${- 360 * config.rotation})`); // clockwise rotation
-
-    drawRings(radarCanvas)
-    drawSectors(radarCanvas)
-
+    drawRadar()
     const colorPicker = new iro.ColorPicker('#picker');
     colorPicker.on('color:change', function (color) {
         console.log(color.hexString);
     });
+    rotationSlider()
 }
 
+const handleRotationSlider = function (value) {
+    config.rotation = value
+    drawRadar()
+}
+
+const rotationSlider = () => {
+    var slider = d3
+        .sliderHorizontal()
+        .min(0)
+        .max(1)
+        .step(0.05)
+        .width(300)
+        .displayValue(false)
+        .on('onchange', (sliderValue) => {
+            handleRotationSlider(sliderValue)
+        });
+
+    d3.select('#rotationSlider')
+        .append('svg')
+        .attr('width', 500)
+        .attr('height', 100)
+        .append('g')
+        .attr('transform', 'translate(30,30)')
+        .call(slider);
+}
 const drawSectors = function (radar) {
     let currentAnglePercentage = 0
     radar.append("line") //horizontal sector boundary
@@ -62,7 +83,6 @@ const drawSectors = function (radar) {
         currentAnglePercentage = currentAnglePercentage + sector.angle
         let currentAngle = 2 * Math.PI * currentAnglePercentage
         const sectorEndpoint = cartesianFromPolar({ r: config.maxRingRadius, phi: currentAngle })
-        console.log(`current angle % ${currentAnglePercentage}, sector angle ${sector.angle} currentAngle = ${currentAngle} ${JSON.stringify(sectorEndpoint)}`)
         // using angle and maxring radius, determine x and y for endpoint of line, then draw line
         radar.append("line")
             .attr("x1", 0).attr("y1", 0)
@@ -92,13 +112,13 @@ const drawSectors = function (radar) {
 
 
         // print sector label along the edge of the arc
-               let textArc = d3.arc()
+        let textArc = d3.arc()
             .outerRadius(config.maxRingRadius + 30)
             .innerRadius(150)
             // startAngle and endAngle are measured clockwise from the 12 o’clock in radians; the minus takes care of anti-clockwise and the +0.5 is for starting at the horizontal axis pointing east
             // for angle + rotation percentages up to 70%, we flip the text - by sweeping from end to begin
-            .endAngle((currentAnglePercentage + config.rotation) % 1 < 0.7 ? startAngle : endAngle)
-            .startAngle((currentAnglePercentage + config.rotation)%1 < 0.7 ? endAngle : startAngle)
+            .endAngle((currentAnglePercentage + config.rotation) % 1 < 0.6 ? startAngle : endAngle)
+            .startAngle((currentAnglePercentage + config.rotation) % 1 < 0.6 ? endAngle : startAngle)
         textArc = textArc().substring(0, textArc().indexOf("L"))
         // create the path following the circle along which the text is printed
         radar.append("path")
@@ -108,16 +128,22 @@ const drawSectors = function (radar) {
 
         const textPaths = radar.append("g").attr('class', 'textPaths');
         textPaths.append("text")
+            .attr("id", `sectorLabel${i}`)
             .attr("dy", 10)
             .attr("dx", 45)
+            .style("font-family", "sans-serif")
+            .style("font-size", "30px")
+            .style("fill", "#fff")
+
             .append("textPath")
             // .attr("class", "textpath tp_avg")
             .attr('fill', '#000')
             .attr("startOffset", "40%")
             .style("text-anchor", "middle")
             .attr("xlink:href", `#pieText${i}`)
-            .text(`${sector.label} ${currentAnglePercentage}  ${config.rotation}`)
-            ;
+            .text(`${sector.label}`)
+            .call(make_editable, ["sectorLabel", sector.label, `sectorLabel${i}`]);
+        ;
 
 
 
@@ -140,6 +166,7 @@ const drawRings = function (radar) {
             .style("stroke-width", 3);
 
         radar.append("text")
+            .attr("id", `ringLabel${i}`)
             .text(ring.label)
             .attr("y", -currentRadius + 62)
             .attr("text-anchor", "middle")
@@ -148,19 +175,111 @@ const drawRings = function (radar) {
             .style("font-size", "32px")
             .style("font-weight", "bold")
             .style("pointer-events", "none")
-            .style("user-select", "none");
+            .style("user-select", "none")
+            .call(make_editable, ["ringLabel", ring.label, `ringLabel${i}`]);
 
         currentRadiusPercentage = currentRadiusPercentage - ring.width
     }
+}
+
+function drawRadar() {
+    const radar = initializeRadar()
+    const radarCanvas = radar.append("g")
+    radarCanvas.attr("transform", `rotate(${-360 * config.rotation})`) // clockwise rotation
+    drawRings(radarCanvas)
+    drawSectors(radarCanvas)
 }
 
 function initializeRadar() {
     const svg = d3.select(`svg#${config.svg_id}`)
         .style("background-color", config.colors.background)
         .attr("width", config.width)
-        .attr("height", config.height);
+        .attr("height", config.height)
 
+
+    if (svg.node().firstChild) {
+        svg.node().removeChild(svg.node().firstChild)
+    }
     const radar = svg.append("g");
     radar.attr("transform", `translate(${config.width / 2},${config.height / 2}) `);
     return radar;
+}
+
+
+const handleInputChange = function (fieldIdentifier, newValue) {
+    const sectorLabelStringLength = 11
+    console.log(`update field ${fieldIdentifier} to value ${newValue}`)
+    if (fieldIdentifier.startsWith("sectorLabel")) {
+        const sectorIndex = fieldIdentifier.substring(sectorLabelStringLength)
+        config.sectorConfiguration.sectors[sectorIndex].label=newValue
+        drawRadar()
+        console.log(`sector ${sectorIndex}`)
+    }
+}
+
+// copied from http://bl.ocks.org/GerHobbelt/2653660
+function make_editable(d, field) {
+    //console.log("make_editable", arguments);
+    const valueToEdit = arguments[1][1]
+    const fieldIdentifier = arguments[1][2]
+    d
+        .on("mouseover", function () {
+            d3.select(this).style("fill", "red");
+        })
+        .on("mouseout", function () {
+            d3.select(this).style("fill", null);
+        })
+        .on("click", function (d) {
+            var p = this.parentNode;
+        
+            // inject a HTML form to edit the content here...
+
+            const svg = d3.select(`svg#${config.svg_id}`)
+            var frm = svg.append("foreignObject");
+
+            var inp = frm
+                .attr("x", d.pageX) // use x and y coordinates from mouse event
+                .attr("y", d.pageY)
+                .attr("width", 300)
+                .attr("height", 25)
+                .append("xhtml:form")
+                .append("input")
+                .attr("title", "Edit value, then press tab or click outside of field")
+                .attr("value", function () {
+                    // nasty spot to place this call, but here we are sure that the <input> tag is available
+                    // and is handily pointed at by 'this':
+                    this.focus();
+
+                    return valueToEdit;
+                })
+                .attr("style", "width: 294px;")
+                // make the form go away when you jump out (form looses focus) or hit ENTER:
+                .on("blur", function () {
+                    const txt = inp.node().value;
+                    handleInputChange(fieldIdentifier, txt)
+                    // Note to self: frm.remove() will remove the entire <g> group! Remember the D3 selection logic!
+                    svg.select("foreignObject").remove();
+                })
+                .on("keypress", function () {
+                    // IE fix
+                    if (!d3.event)
+                        d3.event = window.event;
+
+                    const e = d3.event;
+                    if (e.keyCode == 13) {
+                        if (typeof (e.cancelBubble) !== 'undefined') // IE
+                            e.cancelBubble = true;
+                        if (e.stopPropagation)
+                            e.stopPropagation();
+                        e.preventDefault();
+
+                        const txt = inp.node().value;
+                        handleInputChange(fieldIdentifier, txt)
+
+                        // odd. Should work in Safari, but the debugger crashes on this instead.
+                        // Anyway, it SHOULD be here and it doesn't hurt otherwise.
+                        svg.select("foreignObject").remove();
+                    }
+                });
+        });
 }

@@ -1,14 +1,27 @@
 # Logbook of explorations in this prototype
 
+## March 8th
+- sector-label and ring-label styling? (font, size, fill)
+- assign background color to area outside radar (ring == -1? , per sector or in general?)
+- TODO: print ring labels in top layer AND make ring labels not rotate with radar
+
+
+- allow setting background color for selected ring or sector
+- allow (visual) selection of ring or sector
+- determine/switch whether rings or sectors are top layer (top layer)  use order of rendering (no layers available) in SVG to determine whether sectors or rings are on top
+
+## March 7th
+
+- use arcs for rings instead of full circles
+
+
+### Resources
+3 column layout with CSS https://www.w3schools.com/howto/howto_css_three_columns.asp
+
+
 ## March 2nd
 
-- slider for setting rotation
-- sector-label and ring-label styling? (font, size, fill)
-- smarter radar refresh (only update rotation for example when rotation slider is updated)
-- assign background color to sectors & rings and area outside radar
-- edit labels 
-- TODO: print ring labels in top layer AND make ring labels not rotate with radar
-- TODO: determine/switch whether rings or sectors are top layer (top layer)
+- edit sector labels (and if rings are on top, also edit ring titles)
  
 implemented:
 - slider to rotate the radar
@@ -16,7 +29,7 @@ implemented:
 
 
 ### Resources
-Sliders - https://bl.ocks.org/johnwalley/e1d256b81e51da68f7feb632a53c3518
+Sliders - https://bl.ocks.org/johnw alley/e1d256b81e51da68f7feb632a53c3518
 D3 sliders - https://github.com/johnwalley/d3-simple-slider
 Field Editor - http://bl.ocks.org/GerHobbelt/2653660  SVG Foreign Object
 

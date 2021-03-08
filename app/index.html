@@ -8,19 +8,61 @@
     <script src="https://d3js.org/d3.v6.min.js"></script>
     <script src="https://unpkg.com/d3-simple-slider"></script>
     <script src="https://cdn.jsdelivr.net/npm/@jaames/iro@5"></script>
+    <style>
+        .column {
+            float: left;
+            width: 70%;
+        }
+
+        .column2 {
+            float: left;
+            width: 30%;
+        }
+
+        /* Clear floats after the columns */
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        .selected { stroke: red; stroke-width: 5;}
+    </style>
 </head>
 
 <body>
-    
-    <svg id="radar">
-    </svg>
-    <p id="value"></p>
-    <div id="rotationSlider">
-        <p>Rotation</p>
+    <div class="row">
+        <div class="column"> <svg id="radar">
+            </svg>
+        </div>
+
+        <div class="column2">
+            <p id="value"></p>
+            <div id="rotationSlider">
+                <p>Rotation</p>
+            </div>
+            <div id="layering">
+                <p>Select top layer</p>
+                <div>
+                    <input type="radio" id="sectors" name="layering" value="sectors" "
+                           checked>
+                    <label for=" sectors">Sectors</label>
+                </div>
+
+                <div>
+                    <input type="radio" id="rings" name="layering" value="rings">
+                    <label for="rings">Rings</label>
+                </div>
+            </div>
+            <div id="picker"></div>
+        </div>
     </div>
-    <div id="picker"></div>
+
     <script type="module">
-        import { viewpointEditor } from './modules/viewpointEditor.js';
+        import { viewpointEditor, switchboard } from './modules/viewpointEditor.js';
         viewpointEditor()
+        document.getElementById('sectors').addEventListener("change", switchboard.handleLayersChange);
+        document.getElementById('rings').addEventListener("change", switchboard.handleLayersChange);
     </script>
+
 </body>

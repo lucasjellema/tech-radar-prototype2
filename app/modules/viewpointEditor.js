@@ -1,11 +1,15 @@
 import { cartesianFromPolar, polarFromCartesion } from './drawingUtilities.js'
 
-export { viewpointEditor }
+export { viewpointEditor, switchboard }
 
 let config = {
     svg_id: "radar",
     width: 1450,
     height: 1000,
+    topLayer: "sectors", // rings or sectors
+    selectedRing: 1,
+    selectedSector: 2,
+
 
     colors: {
         background: "#fef",
@@ -36,14 +40,52 @@ let config = {
     },
 }
 
+const switchboard = {
+    handleLayersChange: (e) => {
+        config.topLayer = e.currentTarget.id
+        drawRadar();
+    },
+    handleSectorSelection: (sector) => {
+        config.selectedSector = sector
+        drawRadar();
+    },
+    handleRingSelection: (ring) => {
+        config.selectedRing = ring
+        drawRadar();
+    },
+    handleColorSelection: (color) => {
+        if ("sectors" == config.topLayer)
+            config.sectorConfiguration.sectors[config.selectedSector].backgroundColor = color.hexString
+        if ("rings" == config.topLayer)
+            config.ringConfiguration.rings[config.selectedRing].backgroundColor = color.hexString
+        console.log(color.hexString);
+        drawRadar()
+    }
+}
+
 const viewpointEditor = function () {
     drawRadar()
     const colorPicker = new iro.ColorPicker('#picker');
-    colorPicker.on('color:change', function (color) {
-        console.log(color.hexString);
-    });
+    colorPicker.on('color:change', switchboard.handleColorSelection);
     rotationSlider()
 }
+
+
+function drawRadar() {
+    const radar = initializeRadar()
+    const radarCanvas = radar.append("g")
+    radarCanvas.attr("transform", `rotate(${-360 * config.rotation})`) // clockwise rotation
+
+    if ("sectors" == config.topLayer) { // draw top layer last 
+        drawRings(radarCanvas)
+        drawSectors(radarCanvas)
+    }
+    else {
+        drawSectors(radarCanvas)
+        drawRings(radarCanvas)
+    }
+}
+
 
 const handleRotationSlider = function (value) {
     config.rotation = value
@@ -102,12 +144,12 @@ const drawSectors = function (radar) {
             .attr("id", `piePiece${i}`)
             .attr("d", sectorArc)
             .style("fill", sector.backgroundColor)
-            .attr("opacity", 0.2)
+            .attr("opacity", 0.6)
             // define borders of sectors
-            .style("stroke", "#000")
-            .style("stroke-width", 2)
-            .style("stroke-dasharray", "5 1")
-
+            .style("stroke", ("sectors" == config.topLayer && config.selectedSector == i) ? "red" : "#000")
+            .style("stroke-width", ("sectors" == config.topLayer && config.selectedSector == i) ? 6 : 2)
+            .style("stroke-dasharray", ("sectors" == config.topLayer && config.selectedSector == i) ? "" : "5 1")
+            .on('click', () => { const sector = i; switchboard.handleSectorSelection(sector) })
 
 
 
@@ -157,13 +199,24 @@ const drawRings = function (radar) {
     for (let i = 0; i < config.ringConfiguration.rings.length; i++) {
         let ring = config.ringConfiguration.rings[i]
         let currentRadius = currentRadiusPercentage * config.maxRingRadius
-        radar.append("circle")
-            .attr("cx", 0)
-            .attr("cy", 0)
-            .attr("r", currentRadius)
+
+        const ringArc = d3.arc()
+            .outerRadius(config.maxRingRadius * currentRadiusPercentage)
+            .innerRadius(config.maxRingRadius * (currentRadiusPercentage - ring.width))
+            .startAngle(0)
+            .endAngle(359)
+        radar.append("path")
+            .attr("id", `ring${i}`)
+            .attr("d", ringArc)
             .style("fill", ring.backgroundColor)
-            .style("stroke", "#003")
-            .style("stroke-width", 3);
+            .attr("opacity", 0.6)
+            // define borders of rings
+            .style("stroke", ("rings" == config.topLayer && config.selectedRing == i) ? "red" : "#000")
+            .style("stroke-width", ("rings" == config.topLayer && config.selectedRing == i) ? 6 : 2)
+            .style("stroke-dasharray", ("rings" == config.topLayer && config.selectedRing == i) ? "" : "5 1")
+            .on('click', () => { const ring = i; switchboard.handleRingSelection(ring) })
+
+
 
         radar.append("text")
             .attr("id", `ringLabel${i}`)
@@ -174,20 +227,12 @@ const drawRings = function (radar) {
             .style("font-family", "Arial, Helvetica")
             .style("font-size", "32px")
             .style("font-weight", "bold")
-            .style("pointer-events", "none")
+            //            .style("pointer-events", "none")
             .style("user-select", "none")
             .call(make_editable, ["ringLabel", ring.label, `ringLabel${i}`]);
 
         currentRadiusPercentage = currentRadiusPercentage - ring.width
     }
-}
-
-function drawRadar() {
-    const radar = initializeRadar()
-    const radarCanvas = radar.append("g")
-    radarCanvas.attr("transform", `rotate(${-360 * config.rotation})`) // clockwise rotation
-    drawRings(radarCanvas)
-    drawSectors(radarCanvas)
 }
 
 function initializeRadar() {
@@ -208,12 +253,16 @@ function initializeRadar() {
 
 const handleInputChange = function (fieldIdentifier, newValue) {
     const sectorLabelStringLength = 11
-    console.log(`update field ${fieldIdentifier} to value ${newValue}`)
+    const ringLabelStringLength = 9
     if (fieldIdentifier.startsWith("sectorLabel")) {
         const sectorIndex = fieldIdentifier.substring(sectorLabelStringLength)
-        config.sectorConfiguration.sectors[sectorIndex].label=newValue
+        config.sectorConfiguration.sectors[sectorIndex].label = newValue
         drawRadar()
-        console.log(`sector ${sectorIndex}`)
+    }
+    if (fieldIdentifier.startsWith("ringLabel")) {
+        const ringIndex = fieldIdentifier.substring(ringLabelStringLength)
+        config.ringConfiguration.rings[ringIndex].label = newValue
+        drawRadar()
     }
 }
 
@@ -231,7 +280,7 @@ function make_editable(d, field) {
         })
         .on("click", function (d) {
             var p = this.parentNode;
-        
+
             // inject a HTML form to edit the content here...
 
             const svg = d3.select(`svg#${config.svg_id}`)

@@ -3,12 +3,15 @@
 ## TODOs
 - sector-label and ring-label styling? (font, size, fill)
 - assign background color to area outside radar (ring == -1? , per sector or in general?)
-- TODO: print ring labels in top layer AND make ring labels not rotate with radar
 
 ## March 9th
 
 - extended (or not extended) sector boundaries
 - ring knobs - for changing ring width
+- sector knobs - for changing sector angle
+- opacity slider - for changing ring and sector opacity
+- apply rotation only to sectors (not rings)
+- print ring labels separately and lastly (on top)
   
 
 ### Resources

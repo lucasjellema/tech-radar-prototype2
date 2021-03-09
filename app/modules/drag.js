@@ -57,8 +57,6 @@ function makeDraggable(svg, handleDragEvent, throttleDelay=150) {
     function startDrag(evt) {
         if (evt.target.classList.contains('draggable')) {
             selectedElement = evt.target;
-            console.log(`selected element id ${selectedElement.id}`) // for example ringKnob#
-            isRingDrag = (selectedElement.id != null && selectedElement.id.startsWith("ringKnob"))
             initialiseDragging(evt);
         } else if (evt.target.parentNode.classList.contains('draggable-group')) {
             selectedElement = evt.target.parentNode;
@@ -75,7 +73,6 @@ function makeDraggable(svg, handleDragEvent, throttleDelay=150) {
                 () => {
                     const newCoord = handleDragEvent("drag", selectedElement, { deltaX: coord.x - offset.x, deltaY: coord.y - offset.y, x: coord.x, y: coord.y, offset: offset })
                     transform.setTranslate(newCoord.deltaX, newCoord.deltaY);
-                    //            transform.setTranslate(coord.x - offset.x, isRingDrag ? 0: coord.y - offset.y);
                 }, throttleDelay)             // Do not execute this function more ofthen than one per this number of miliseconds 
 
         }

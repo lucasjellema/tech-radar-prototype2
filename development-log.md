@@ -1,14 +1,31 @@
 # Logbook of explorations in this prototype
 
-## March 8th
+## TODOs
 - sector-label and ring-label styling? (font, size, fill)
 - assign background color to area outside radar (ring == -1? , per sector or in general?)
 - TODO: print ring labels in top layer AND make ring labels not rotate with radar
 
+## March 9th
+
+- extended (or not extended) sector boundaries
+- ring knobs - for changing ring width
+  
+
+### Resources
+Drag & Drop in SVG - https://www.petercollingridge.co.uk/tutorials/svg/interactive/dragging/
+Debouncing & Throttling  https://www.telerik.com/blogs/debouncing-and-throttling-in-javascript
+
+
+## March 8th
 
 - allow setting background color for selected ring or sector
 - allow (visual) selection of ring or sector
 - determine/switch whether rings or sectors are top layer (top layer)  use order of rendering (no layers available) in SVG to determine whether sectors or rings are on top
+
+Challenges 
+- dynamically add event handler to DOM element
+- show SVG element in right 'layering' (simply draw top element last; no z-dimension or layers in SVG)
+- divide page in two panels (wide column for radar and narrow column for controls)
 
 ## March 7th
 

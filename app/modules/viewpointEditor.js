@@ -1,4 +1,5 @@
 import { cartesianFromPolar, polarFromCartesion } from './drawingUtilities.js'
+import { makeDraggable } from './drag.js'
 
 export { viewpointEditor, switchboard }
 
@@ -9,6 +10,9 @@ let config = {
     topLayer: "sectors", // rings or sectors
     selectedRing: 1,
     selectedSector: 2,
+    rotation: 0,
+    maxRingRadius: 450,
+    sectorBoundariesExtended: true,
 
 
     colors: {
@@ -16,8 +20,6 @@ let config = {
         grid: "#bbb",
         inactive: "#ddd"
     },
-    rotation: 0.20,
-    maxRingRadius: 450,
     ringConfiguration: {
         outsideRingsAllowed: true
         , rings: [ // rings are defined from outside going in; the first one is the widest
@@ -40,6 +42,7 @@ let config = {
     },
 }
 
+
 const switchboard = {
     handleLayersChange: (e) => {
         config.topLayer = e.currentTarget.id
@@ -53,13 +56,63 @@ const switchboard = {
         config.selectedRing = ring
         drawRadar();
     },
+    handleSectorBoundariesChange: (e) => {
+        //console.log(`change from ${e.currentTarget.id}`)
+        config.sectorBoundariesExtended = "extendedSectorBoundaries" == e.currentTarget.id
+        drawRadar();
+    },
     handleColorSelection: (color) => {
         if ("sectors" == config.topLayer)
             config.sectorConfiguration.sectors[config.selectedSector].backgroundColor = color.hexString
         if ("rings" == config.topLayer)
             config.ringConfiguration.rings[config.selectedRing].backgroundColor = color.hexString
-        console.log(color.hexString);
+        //  console.log(color.hexString);
         drawRadar()
+    },
+    handleDragEvent: (eventType, element, dragCoordinates) => {
+        let newCoordinates = dragCoordinates
+
+        //console.log(`eventType ${eventType} id = ${element.id} and drag Coordinates ${JSON.stringify(dragCoordinates)}`)
+        const isRingDrag = (element.id != null && element.id.startsWith("ringKnob"))
+        if (isRingDrag) {
+            //  console.log(`ring id ${ringId}, ${100*deltaWidth}% current width = ${config.ringConfiguration.rings[ringId].width}, new x = ${newCoordinates.deltaX}`)
+
+            newCoordinates.deltaY = 0
+            // derive the new ring width for the current ring
+            const ringId = element.id.substring(8)
+            let deltaWidth = newCoordinates.deltaX / config.maxRingRadius
+            if (ringId > 0) {
+                deltaWidth = Math.min(deltaWidth, config.ringConfiguration.rings[ringId - 1].width - 0.02)
+                if (deltaWidth < 0) {
+                    deltaWidth = Math.max(deltaWidth, -config.ringConfiguration.rings[ringId].width + 0.02)
+                }
+                config.ringConfiguration.rings[ringId - 1].width = config.ringConfiguration.rings[ringId - 1].width - deltaWidth
+            }
+            config.ringConfiguration.rings[ringId].width = config.ringConfiguration.rings[ringId].width + deltaWidth
+
+            drawRadar()
+            //drawRadar()
+
+
+        }
+        const isSectorDrag = (element.id != null && element.id.startsWith("sectorKnob"))
+        if (isSectorDrag) {
+            // new coordinates represent delta from original knob coordinates 
+
+
+            const newPolarCoordinates = polarFromCartesion({ x: newCoordinates.x - config.width / 2, y: newCoordinates.y - config.height / 2 })
+            console.log(`new polar ${JSON.stringify(newPolarCoordinates)}`)
+            // derive new x and y from polar phi and maximumradiun
+            newCoordinates = cartesianFromPolar({ phi: newPolarCoordinates.phi, r: config.maxRingRadius })
+
+            const sectorId = element.id.substring(10)
+            console.log(`new ${JSON.stringify(newCoordinates)} `)
+            console.log(`drag ${JSON.stringify(dragCoordinates)}`)
+
+            return { deltaX: newCoordinates.x + config.width / 2 - dragCoordinates.x, deltaY: newCoordinates.y + config.height / 2 - dragCoordinates.y }
+
+        }
+        return newCoordinates
     }
 }
 
@@ -116,7 +169,8 @@ const drawSectors = function (radar) {
     let currentAnglePercentage = 0
     radar.append("line") //horizontal sector boundary
         .attr("x1", 0).attr("y1", 0)
-        .attr("x2", config.maxRingRadius).attr("y2", 0)
+        .attr("x2", config.sectorBoundariesExtended ? 2000 : config.maxRingRadius)
+        .attr("y2", 0)
         .style("stroke", config.colors.grid)
         .style("stroke-width", 1);
 
@@ -124,16 +178,17 @@ const drawSectors = function (radar) {
         let sector = config.sectorConfiguration.sectors[i]
         currentAnglePercentage = currentAnglePercentage + sector.angle
         let currentAngle = 2 * Math.PI * currentAnglePercentage
-        const sectorEndpoint = cartesianFromPolar({ r: config.maxRingRadius, phi: currentAngle })
+        const sectorEndpoint = cartesianFromPolar({ r: config.sectorBoundariesExtended ? 1 : config.maxRingRadius, phi: currentAngle })
         // using angle and maxring radius, determine x and y for endpoint of line, then draw line
         radar.append("line")
             .attr("x1", 0).attr("y1", 0)
             .attr("x2", sectorEndpoint.x).attr("y2", - sectorEndpoint.y)
             .style("stroke", config.colors.grid)
             .style("stroke-width", 3);
+
+
         let startAngle = (- 2 * (currentAnglePercentage - sector.angle) + 0.5) * Math.PI
         let endAngle = (- 2 * currentAnglePercentage + 0.5) * Math.PI
-
         const sectorArc = d3.arc()
             .outerRadius(config.maxRingRadius)
             .innerRadius(15)
@@ -187,6 +242,20 @@ const drawSectors = function (radar) {
             .call(make_editable, ["sectorLabel", sector.label, `sectorLabel${i}`]);
         ;
 
+        if ("sectors" == config.topLayer) {
+            // draw sector knob at the outer ring edge, on the sector boundaries
+            const sectorKnobPoint = cartesianFromPolar({ r: config.maxRingRadius, phi: currentAngle })
+            radar.append("circle")
+                .attr("id", `sectorKnob${i}`)
+                .attr("cx", sectorKnobPoint.x)
+                .attr("cy", -sectorKnobPoint.y)
+                .attr("r", 15)
+                .style("fill", "red")
+                .attr("opacity", 1)
+                .style("stroke", "#000")
+                .style("stroke-width", 7)
+                .attr("class", "draggable")
+        }
 
 
     }
@@ -216,6 +285,19 @@ const drawRings = function (radar) {
             .style("stroke-dasharray", ("rings" == config.topLayer && config.selectedRing == i) ? "" : "5 1")
             .on('click', () => { const ring = i; switchboard.handleRingSelection(ring) })
 
+        if ("rings" == config.topLayer) {
+            // draw ring knob at the out edge, horizontal axis
+            radar.append("circle")
+                .attr("id", `ringKnob${i}`)
+                .attr("cx", config.maxRingRadius * currentRadiusPercentage)
+                .attr("cy", 0)
+                .attr("r", 15)
+                .style("fill", "red")
+                .attr("opacity", 1)
+                .style("stroke", "#000")
+                .style("stroke-width", 7)
+                .attr("class", "draggable")
+        }
 
 
         radar.append("text")
@@ -241,6 +323,8 @@ function initializeRadar() {
         .attr("width", config.width)
         .attr("height", config.height)
 
+
+    makeDraggable(svg.node(), switchboard.handleDragEvent)
 
     if (svg.node().firstChild) {
         svg.node().removeChild(svg.node().firstChild)

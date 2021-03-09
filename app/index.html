@@ -26,13 +26,33 @@
             clear: both;
         }
 
-        .selected { stroke: red; stroke-width: 5;}
+        .selected {
+            stroke: red;
+            stroke-width: 5;
+        }
+
+        /* used for selecting sectors and rings */
+        .draggable,
+        .draggable-group {
+            /* used for draggable elements such as ring and sector knobs */
+
+            cursor: move;
+        }
     </style>
+    <script>
+        /*********  DRAG AND DROP 
+ * https://www.petercollingridge.co.uk/tutorials/svg/interactive/dragging/
+ * 
+*/
+
+       
+    </script>
 </head>
 
 <body>
     <div class="row">
-        <div class="column"> <svg id="radar">
+        <div class="column">
+             <svg id="radar" ">
             </svg>
         </div>
 
@@ -44,8 +64,7 @@
             <div id="layering">
                 <p>Select top layer</p>
                 <div>
-                    <input type="radio" id="sectors" name="layering" value="sectors" "
-                           checked>
+                    <input type="radio" id="sectors" name="layering" value="sectors" checked>
                     <label for=" sectors">Sectors</label>
                 </div>
 
@@ -55,6 +74,21 @@
                 </div>
             </div>
             <div id="picker"></div>
+            <div id="layering">
+                <hr />
+                <p>Extended Sector Boundaries?</p>
+                <div>
+                    <input type="radio" id="extendedSectorBoundaries" name="sectorBoundaries"
+                        value="extendedSectorBoundaries" checked>
+                    <label for=" sectors">Extended</label>
+                </div>
+
+                <div>
+                    <input type="radio" id="noExtendedSectorBoundaries" name="sectorBoundaries"
+                        value="noExtendedSectorBoundaries">
+                    <label for="rings">Not Extended</label>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -63,6 +97,9 @@
         viewpointEditor()
         document.getElementById('sectors').addEventListener("change", switchboard.handleLayersChange);
         document.getElementById('rings').addEventListener("change", switchboard.handleLayersChange);
+        document.getElementById('extendedSectorBoundaries').addEventListener("change", switchboard.handleSectorBoundariesChange);
+        document.getElementById('noExtendedSectorBoundaries').addEventListener("change", switchboard.handleSectorBoundariesChange);
+
     </script>
 
 </body>

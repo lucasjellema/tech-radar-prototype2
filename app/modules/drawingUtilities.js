@@ -12,7 +12,7 @@ export {cartesianFromPolar , polarFromCartesion}
     const y = cartesian.y;
   
     return {
-      t: Math.atan2(y, x),
-      phi: Math.sqrt(x * x + y * y)
+      phi: Math.atan2(y, x),
+      r: Math.sqrt(x * x + y * y)
     }
   }

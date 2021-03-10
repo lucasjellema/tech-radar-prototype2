@@ -5,7 +5,6 @@ const color_white = "#FFF"
 
 function drawRadar(config) {
     const radar = initializeRadar(config)
-console.log(`translate(${config.title.x}, ${config.title.y})`)
     radar.append("text")
     .attr("transform", `translate(${config.title.x!=null?config.title.x:-500}, ${config.title.y!=null?config.title.y:-400})`)
     .text(config.title.text)
@@ -83,8 +82,8 @@ const drawSectors = function (radar, config) {
             .attr("opacity", sector.opacity!=null? sector.opacity: 0.6)
             // define borders of sectors
             .style("stroke", ("sectors" == config.topLayer && config.selectedSector == i) ? "red" : "#000")
-            .style("stroke-width", ("sectors" == config.topLayer && config.selectedSector == i) ? 6 : 2)
-            .style("stroke-dasharray", ("sectors" == config.topLayer && config.selectedSector == i) ? "" : "5 1")
+            .style("stroke-width", ("sectors" == config.topLayer && config.selectedSector == i) ? 8 : 2)
+            .style("stroke-dasharray", ("sectors" == config.topLayer && config.selectedSector == i) ? "" : "9 1")
             .on('click', () => { const sector = i; config.switchboard.handleSectorSelection(sector) })
             if (sector.backgroundImage && sector.backgroundImage.image) {
             sectorCanvas.append('image')

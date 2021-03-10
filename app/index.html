@@ -28,7 +28,8 @@
 
         .selected {
             stroke: red;
-            stroke-width: 5;
+            stroke-width: 7;
+            stroke-dasharray: 6 2;
         }
 
         /* used for selecting sectors and rings */
@@ -39,14 +40,7 @@
             cursor: move;
         }
     </style>
-    <script>
-        /*********  DRAG AND DROP
- * https://www.petercollingridge.co.uk/tutorials/svg/interactive/dragging/
- *
-*/
 
-
-    </script>
 </head>
 
 <body>
@@ -106,15 +100,8 @@
 
     <script type="module">
         import { viewpointEditor, switchboard } from './modules/viewpointEditor.js';
-        viewpointEditor()
-        document.getElementById('sectors').addEventListener("change", switchboard.handleLayersChange);
-        document.getElementById('rings').addEventListener("change", switchboard.handleLayersChange);
-        document.getElementById('extendedSectorBoundaries').addEventListener("change", switchboard.handleSectorBoundariesChange);
-        document.getElementById('noExtendedSectorBoundaries').addEventListener("change", switchboard.handleSectorBoundariesChange);
-        document.getElementById('increaseRingOrSector').addEventListener("click", switchboard.handleIncreaseRingOrSector);
-        document.getElementById('decreaseRingOrSector').addEventListener("click", switchboard.handleDecreaseRingOrSector);
-        document.getElementById('removeRingOrSector').addEventListener("click", switchboard.handleRemoveRingOrSector);
-        document.getElementById('newRingOrSector').addEventListener("click", switchboard.handleAddRingOrSector);
+        import { getConfiguration } from './modules/data.js';
+        viewpointEditor( getConfiguration())
 
     </script>
 

@@ -4,46 +4,6 @@ import { drawRadar } from './radar.js'
 
 export { viewpointEditor, switchboard }
 
-let config = {
-    svg_id: "radarSVGContainer",
-    width: 1450,
-    height: 1000,
-    topLayer: "sectors", // rings or sectors
-    selectedRing: 1,
-    selectedSector: 2,
-    rotation: 0,
-    maxRingRadius: 450,
-    sectorBoundariesExtended: true,
-    editMode: true,
-    title: { text: "Conclusion Technology Radar 2021.1", x: -700, y: -470, fontSize: "34px", fontFamily: "Arial, Helvetica" },
-
-    colors: {
-        background: "#fef",
-        grid: "#bbb",
-        inactive: "#ddd"
-    },
-    ringConfiguration: {
-        outsideRingsAllowed: true
-        , rings: [ // rings are defined from outside going in; the first one is the widest
-            { label: "Spotted", width: 0.15, opacity: 0.2 },
-            { label: "Hold", width: 0.2 },
-            { label: "Assess", width: 0.25 },
-            { label: "Trial", width: 0.18 },
-            { label: "Adopt", width: 0.2 },
-
-        ]
-    },
-    sectorConfiguration: {
-        outsideSectorsAllowed: true
-        , sectors: [ // starting from positive X-axis, listed anti-clockwise
-            { label: "Data Management", angle: 0.1, backgroundImage: { image: "https://cdn.pixabay.com/photo/2019/07/06/14/02/drawing-4320529_960_720.png" } },
-            { label: "Libraries & Frameworks", angle: 0.2, backgroundImage: { image: "https://dappimg.com/media/image/app/eaa3cb625c164f659ecd6db2aae39e46.png" } },
-            { label: "Infrastructure", angle: 0.25 },
-            { label: "Languages", angle: 0.1 },
-            { label: "Concepts & Methodology", backgroundColor: "red", angle: 0.15 },
-        ]
-    },
-}
 
 const knobBuffer = 0.04
 
@@ -100,7 +60,7 @@ const switchboard = {
             if (ringId > 0) {
                 deltaWidth = Math.min(deltaWidth, config.ringConfiguration.rings[ringId - 1].width - knobBuffer)
                 if (deltaWidth < 0) { // current ring is decreased in width
-                    deltaWidth = Math.max(deltaWidth, -config.ringConfiguration.rings[ringId].width + knobBuffer)
+                    deltaWidth = Math.max(deltaWidth, - config.ringConfiguration.rings[ringId].width + knobBuffer)
                 }
                 config.ringConfiguration.rings[ringId - 1].width = config.ringConfiguration.rings[ringId - 1].width - deltaWidth
             }
@@ -183,13 +143,13 @@ const switchboard = {
     },
     handleAddRingOrSector: (event) => {
         if (config.topLayer == "rings") {
-            const halfWidth = config.ringConfiguration.rings[config.selecteRing].width/2
-            config.ringConfiguration.rings[config.selecteRing].width = halfWidth
+            const halfWidth = config.ringConfiguration.rings[config.selectedRing].width != null?config.ringConfiguration.rings[config.selectedRing].width/2 : 0.1
+            config.ringConfiguration.rings[config.selectedRing].width = halfWidth
             config.ringConfiguration.rings.splice(config.selectedRing, 0, { label: "NEW!!", width: halfWidth })
 
         }
         if (config.topLayer == "sectors") {
-            const halfAngle = config.sectorConfiguration.sectors[config.selectedSector].angle/2
+            const halfAngle = config.sectorConfiguration.sectors[config.selectedSector].angle != null ? config.sectorConfiguration.sectors[config.selectedSector].angle/2 : 0.1
             config.sectorConfiguration.sectors[config.selectedSector].angle= halfAngle 
             config.sectorConfiguration.sectors.splice(config.selectedSector, 0, { label: "NEW!!", angle: halfAngle })
         }
@@ -197,7 +157,12 @@ const switchboard = {
     }
 }
 
-const viewpointEditor = function () {
+
+
+let config
+
+const viewpointEditor = function (configuration) {
+    config = configuration
     config['make_editable'] = make_editable
     config['switchboard'] = switchboard
     const radar = drawRadar(config)
@@ -208,6 +173,19 @@ const viewpointEditor = function () {
     initializeColorPicker()
     initializeRotationSlider()
     initializeOpacitySlider()
+    initializeEditListeners()
+}
+
+const initializeEditListeners = () => {
+    document.getElementById('sectors').addEventListener("change", switchboard.handleLayersChange);
+    document.getElementById('rings').addEventListener("change", switchboard.handleLayersChange);
+    document.getElementById('extendedSectorBoundaries').addEventListener("change", switchboard.handleSectorBoundariesChange);
+    document.getElementById('noExtendedSectorBoundaries').addEventListener("change", switchboard.handleSectorBoundariesChange);
+    document.getElementById('increaseRingOrSector').addEventListener("click", switchboard.handleIncreaseRingOrSector);
+    document.getElementById('decreaseRingOrSector').addEventListener("click", switchboard.handleDecreaseRingOrSector);
+    document.getElementById('removeRingOrSector').addEventListener("click", switchboard.handleRemoveRingOrSector);
+    document.getElementById('newRingOrSector').addEventListener("click", switchboard.handleAddRingOrSector);
+
 }
 
 const synchronizeControlsWithCurrentRingOrSector = () => {

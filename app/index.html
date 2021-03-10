@@ -77,6 +77,15 @@
             <div id="opacitySlider">
                 <p>Opacity</p>
             </div>
+            <div>
+                <a href="#" id="newRingOrSector">New</a>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <a href="#" id="removeRingOrSector">Remove</a>
+                <br />
+                <a href="#" id="decreaseRingOrSector">&lt;</a>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <a href="#" id="increaseRingOrSector">&gt;</a>
+                        </div>
             <div id="layering">
                 <hr />
                 <p>Extended Sector Boundaries?</p>
@@ -102,6 +111,10 @@
         document.getElementById('rings').addEventListener("change", switchboard.handleLayersChange);
         document.getElementById('extendedSectorBoundaries').addEventListener("change", switchboard.handleSectorBoundariesChange);
         document.getElementById('noExtendedSectorBoundaries').addEventListener("change", switchboard.handleSectorBoundariesChange);
+        document.getElementById('increaseRingOrSector').addEventListener("click", switchboard.handleIncreaseRingOrSector);
+        document.getElementById('decreaseRingOrSector').addEventListener("click", switchboard.handleDecreaseRingOrSector);
+        document.getElementById('removeRingOrSector').addEventListener("click", switchboard.handleRemoveRingOrSector);
+        document.getElementById('newRingOrSector').addEventListener("click", switchboard.handleAddRingOrSector);
 
     </script>
 

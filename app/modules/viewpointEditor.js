@@ -1,5 +1,6 @@
 import { cartesianFromPolar, polarFromCartesion } from './drawingUtilities.js'
 import { makeDraggable } from './drag.js'
+import { drawRadar } from './radar.js'
 
 export { viewpointEditor, switchboard }
 
@@ -13,6 +14,8 @@ let config = {
     rotation: 0,
     maxRingRadius: 450,
     sectorBoundariesExtended: true,
+    editMode: true,
+    title: { text: "Conclusion Technology Radar 2021.1", x: -700, y: -470, fontSize: "34px", fontFamily: "Arial, Helvetica" },
 
     colors: {
         background: "#fef",
@@ -22,20 +25,21 @@ let config = {
     ringConfiguration: {
         outsideRingsAllowed: true
         , rings: [ // rings are defined from outside going in; the first one is the widest
-            { label: "Spotted", backgroundColor: "#FFF", width: 0.15, opacity: 0.2 },
-            { label: "Hold", backgroundColor: "gray", width: 0.2 },
-            { label: "Assess", backgroundColor: "gold", width: 0.25 },
-            { label: "Trial", backgroundColor: "silver", width: 0.18 },
-            { label: "Adopt", backgroundColor: "gray", width: 0.2 },
+            { label: "Spotted", width: 0.15, opacity: 0.2 },
+            { label: "Hold", width: 0.2 },
+            { label: "Assess", width: 0.25 },
+            { label: "Trial", width: 0.18 },
+            { label: "Adopt", width: 0.2 },
 
         ]
     },
     sectorConfiguration: {
-        outsideSectorsAllowed: true, sectors: [
-            { label: "Data Management", backgroundColor: "#blue", angle: 0.1 },
-            { label: "Libraries & Frameworks", backgroundColor: "green", angle: 0.2 },
-            { label: "Infrastructure", backgroundColor: "cyan", angle: 0.25 },
-            { label: "Languages", backgroundColor: "orange", angle: 0.1 },
+        outsideSectorsAllowed: true
+        , sectors: [ // starting from positive X-axis, listed anti-clockwise
+            { label: "Data Management", angle: 0.1, backgroundImage: { image: "https://cdn.pixabay.com/photo/2019/07/06/14/02/drawing-4320529_960_720.png" } },
+            { label: "Libraries & Frameworks", angle: 0.2, backgroundImage: { image: "https://dappimg.com/media/image/app/eaa3cb625c164f659ecd6db2aae39e46.png" } },
+            { label: "Infrastructure", angle: 0.25 },
+            { label: "Languages", angle: 0.1 },
             { label: "Concepts & Methodology", backgroundColor: "red", angle: 0.15 },
         ]
     },
@@ -47,40 +51,46 @@ const knobBuffer = 0.04
 const switchboard = {
     handleLayersChange: (e) => {
         config.topLayer = e.currentTarget.id
-        drawRadar();
+        drawRadar(config);
+        synchronizeControlsWithCurrentRingOrSector()
     },
     handleSectorSelection: (sector) => {
         config.selectedSector = sector
-        drawRadar();
+        drawRadar(config);
+        synchronizeControlsWithCurrentRingOrSector()
     },
     handleRingSelection: (ring) => {
         config.selectedRing = ring
-        drawRadar();
+        drawRadar(config);
+        synchronizeControlsWithCurrentRingOrSector()
     },
     handleSectorBoundariesChange: (e) => {
-        //console.log(`change from ${e.currentTarget.id}`)
+
         config.sectorBoundariesExtended = "extendedSectorBoundaries" == e.currentTarget.id
-        drawRadar();
+        drawRadar(config);
     },
     handleColorSelection: (color) => {
         if ("sectors" == config.topLayer)
             config.sectorConfiguration.sectors[config.selectedSector].backgroundColor = color.hexString
         if ("rings" == config.topLayer)
             config.ringConfiguration.rings[config.selectedRing].backgroundColor = color.hexString
-        //  console.log(color.hexString);
-        drawRadar()
+
+        drawRadar(config)
     },
     handleOpacitySlider: (sliderValue) => {
-        console.log(`opacity slider = ${sliderValue}`)
+
         if ("sectors" == config.topLayer)
             config.sectorConfiguration.sectors[config.selectedSector].opacity = sliderValue
         if ("rings" == config.topLayer)
             config.ringConfiguration.rings[config.selectedRing].opacity = sliderValue
-        drawRadar()
+        drawRadar(config)
     },
     handleDragEvent: (eventType, element, dragCoordinates) => {
         let newCoordinates = dragCoordinates
-
+        //console.log(`dragged element: ${element.id}`)
+        if (element.id.startsWith("sectorBackgroundImage")) {
+            handleDragSectorBackgroundImage(element.id.substring(21), newCoordinates)
+        }
         const isRingDrag = (element.id != null && element.id.startsWith("ringKnob"))
         if (isRingDrag) {
             newCoordinates.deltaY = 0
@@ -96,7 +106,7 @@ const switchboard = {
             }
             // TODO make sure that sum of ring width <=1
             config.ringConfiguration.rings[ringId].width = config.ringConfiguration.rings[ringId].width + deltaWidth
-            drawRadar()
+            drawRadar(config)
 
         }
         const isSectorDrag = (element.id != null && element.id.startsWith("sectorKnob"))
@@ -112,7 +122,7 @@ const switchboard = {
             const deltaAngle = dragAnglePercentage - currentAnglePercentage // the change in angle as a result of the drag action
             config.sectorConfiguration.sectors[sectorId].angle = config.sectorConfiguration.sectors[sectorId].angle + deltaAngle;
             // TODO cater for sum of angle percentages > 1 ?  
-            drawRadar()
+            drawRadar(config)
             // derive new x and y from polar phi and maximumradiun
             newCoordinates = cartesianFromPolar({ phi: newPolarCoordinates.phi, r: config.maxRingRadius })
 
@@ -120,42 +130,104 @@ const switchboard = {
 
         }
         return newCoordinates
+    },
+    handleDecreaseRingOrSector: (event) => {
+        if (config.topLayer == "rings" && config.selectedRing < config.ringConfiguration.rings.length - 1) {
+            //swap selectedRing and selectedRing+1 and set selectedRing++; redraw
+            const tmp = config.ringConfiguration.rings[config.selectedRing]
+            config.ringConfiguration.rings[config.selectedRing] = config.ringConfiguration.rings[config.selectedRing + 1]
+            config.ringConfiguration.rings[config.selectedRing + 1] = tmp
+            config.selectedRing++
+            drawRadar(config)
+        }
+
+        if (config.topLayer == "sectors" && config.selectedSector < config.sectorConfiguration.sectors.length - 1) {
+            const tmp = config.sectorConfiguration.sectors[config.selectedSector]
+            config.sectorConfiguration.sectors[config.selectedSector] = config.sectorConfiguration.sectors[config.selectedSector + 1]
+            config.sectorConfiguration.sectors[config.selectedSector + 1] = tmp
+            config.selectedSector++
+            drawRadar(config)
+        }
+
+    },
+    handleIncreaseRingOrSector: (event) => {
+        if (config.topLayer == "rings" && config.selectedRing > 0) {
+            //swap selectedRing and selectedRing-1 and set selectedRing--; redraw
+            const tmp = config.ringConfiguration.rings[config.selectedRing]
+            config.ringConfiguration.rings[config.selectedRing] = config.ringConfiguration.rings[config.selectedRing - 1]
+            config.ringConfiguration.rings[config.selectedRing - 1] = tmp
+            config.selectedRing--
+            drawRadar(config)
+        }
+        if (config.topLayer == "sectors" && config.selectedSector > 0) {
+            const tmp = config.sectorConfiguration.sectors[config.selectedSector]
+            config.sectorConfiguration.sectors[config.selectedSector] = config.sectorConfiguration.sectors[config.selectedSector - 1]
+            config.sectorConfiguration.sectors[config.selectedSector - 1] = tmp
+            config.selectedSector--
+            drawRadar(config)
+        }
+    },
+    handleRemoveRingOrSector: (event) => {
+        if (config.topLayer == "rings") {
+            const freedUpWidth = config.ringConfiguration.rings[config.selectedRing].width
+            config.ringConfiguration.rings.splice(config.selectedRing, 1)
+            config.ringConfiguration.rings[config.selectedRing].width = config.ringConfiguration.rings[config.selectedRing].width + freedUpWidth
+        }
+        if (config.topLayer == "sectors") {
+            const freedUpAngle = config.sectorConfiguration.sectors[config.selectedSector].angle
+            config.sectorConfiguration.sectors.splice(config.selectedSector, 1)
+            config.sectorConfiguration.sectors[config.selectedSector].angle = config.sectorConfiguration.sectors[config.selectedSector].angle + freedUpAngle
+        }
+        drawRadar(config)
+
+    },
+    handleAddRingOrSector: (event) => {
+        if (config.topLayer == "rings") {
+            const halfWidth = config.ringConfiguration.rings[config.selecteRing].width/2
+            config.ringConfiguration.rings[config.selecteRing].width = halfWidth
+            config.ringConfiguration.rings.splice(config.selectedRing, 0, { label: "NEW!!", width: halfWidth })
+
+        }
+        if (config.topLayer == "sectors") {
+            const halfAngle = config.sectorConfiguration.sectors[config.selectedSector].angle/2
+            config.sectorConfiguration.sectors[config.selectedSector].angle= halfAngle 
+            config.sectorConfiguration.sectors.splice(config.selectedSector, 0, { label: "NEW!!", angle: halfAngle })
+        }
+        drawRadar(config)
     }
 }
 
 const viewpointEditor = function () {
-    drawRadar()
-    const colorPicker = new iro.ColorPicker('#picker');
+    config['make_editable'] = make_editable
+    config['switchboard'] = switchboard
+    const radar = drawRadar(config)
+    const svg = d3.select(`svg#${config.svg_id}`)
+
+    makeDraggable(svg.node(), switchboard.handleDragEvent)
+
+    initializeColorPicker()
+    initializeRotationSlider()
+    initializeOpacitySlider()
+}
+
+const synchronizeControlsWithCurrentRingOrSector = () => {
+    const selectedObject = config.topLayer == "rings" ? config.ringConfiguration.rings[config.selectedRing] : config.sectorConfiguration.sectors[config.selectedSector]
+    // throw away and recreate opacity slider
+    initializeOpacitySlider(selectedObject.opacity)
+}
+
+let colorPicker
+const initializeColorPicker = () => {
+    colorPicker = new iro.ColorPicker('#picker');
     colorPicker.on('color:change', switchboard.handleColorSelection);
-    rotationSlider()
-    opacitySlider()
 }
-
-
-function drawRadar() {
-    const radar = initializeRadar()
-    const radarCanvas = radar.append("g").attr("id", "radarCanvas")
-    let sectorCanvas, ringCanvas
-    if ("sectors" == config.topLayer) { // draw top layer last 
-        ringCanvas = drawRings(radarCanvas)
-        sectorCanvas = drawSectors(radarCanvas)
-    }
-    else {
-        sectorCanvas = drawSectors(radarCanvas)
-        ringCanvas = drawRings(radarCanvas)
-    }
-    //rotation only on sectors - not on rings
-    sectorCanvas.attr("transform", `rotate(${-360 * config.rotation})`) // clockwise rotation
-    drawRingLabels(radar)
-}
-
 
 const handleRotationSlider = function (value) {
     config.rotation = value
-    drawRadar()
+    drawRadar(config)
 }
 
-const rotationSlider = () => {
+const initializeRotationSlider = () => {
     var slider = d3
         .sliderHorizontal()
         .min(0)
@@ -176,13 +248,17 @@ const rotationSlider = () => {
         .call(slider);
 }
 
-const opacitySlider = () => {
+const initializeOpacitySlider = (initialValue = 0) => {
+    const svgOpacitySliderId = "svgOpacitySlider"
+    const svgOpacitySlider = document.getElementById(svgOpacitySliderId);
+    if (svgOpacitySlider != null) svgOpacitySlider.remove()
     var slider = d3
         .sliderHorizontal()
         .min(0)
         .max(1)
         .step(0.05)
         .width(300)
+        .value(initialValue)
         .displayValue(false)
         .on('onchange', (sliderValue) => {
             switchboard.handleOpacitySlider(sliderValue)
@@ -192,196 +268,13 @@ const opacitySlider = () => {
         .append('svg')
         .attr('width', 500)
         .attr('height', 100)
+        .attr('id', svgOpacitySliderId)
         .append('g')
         .attr('transform', 'translate(30,30)')
         .call(slider);
 }
 
 
-const drawSectors = function (radar) {
-
-    const sectorCanvas = radar.append("g").attr("id", "sectorCanvas")
-    let currentAnglePercentage = 0
-    sectorCanvas.append("line") //horizontal sector boundary
-        .attr("x1", 0).attr("y1", 0)
-        .attr("x2", config.sectorBoundariesExtended ? 2000 : config.maxRingRadius)
-        .attr("y2", 0)
-        .style("stroke", config.colors.grid)
-        .style("stroke-width", 1);
-
-    for (let i = 0; i < config.sectorConfiguration.sectors.length; i++) {
-        let sector = config.sectorConfiguration.sectors[i]
-        currentAnglePercentage = currentAnglePercentage + sector.angle
-        let currentAngle = 2 * Math.PI * currentAnglePercentage
-        const sectorEndpoint = cartesianFromPolar({ r: config.sectorBoundariesExtended ? 2000 : config.maxRingRadius, phi: currentAngle })
-        // using angle and maxring radius, determine x and y for endpoint of line, then draw line
-        sectorCanvas.append("line")
-            .attr("x1", 0).attr("y1", 0)
-            .attr("x2", sectorEndpoint.x).attr("y2", - sectorEndpoint.y)
-            .style("stroke", config.colors.grid)
-            .style("stroke-width", 3);
-
-
-        let startAngle = (- 2 * (currentAnglePercentage - sector.angle) + 0.5) * Math.PI
-        let endAngle = (- 2 * currentAnglePercentage + 0.5) * Math.PI
-        const sectorArc = d3.arc()
-            .outerRadius(config.maxRingRadius)
-            .innerRadius(15)
-            // startAngle and endAngle are measured clockwise from the 12 o’clock in radians; the minus takes care of anti-clockwise and the +0.5 is for starting at the horizontal axis pointing east
-            .startAngle(startAngle)
-            .endAngle(endAngle)
-        sectorCanvas.append("path")
-            .attr("id", `piePiece${i}`)
-            .attr("d", sectorArc)
-            .style("fill", sector.backgroundColor)
-            .attr("opacity", sector.opacity!=null? sector.opacity: 0.6)
-            // define borders of sectors
-            .style("stroke", ("sectors" == config.topLayer && config.selectedSector == i) ? "red" : "#000")
-            .style("stroke-width", ("sectors" == config.topLayer && config.selectedSector == i) ? 6 : 2)
-            .style("stroke-dasharray", ("sectors" == config.topLayer && config.selectedSector == i) ? "" : "5 1")
-            .on('click', () => { const sector = i; switchboard.handleSectorSelection(sector) })
-
-
-
-        // print sector label along the edge of the arc
-        displaySectorLabel(currentAnglePercentage, startAngle, endAngle, sectorCanvas, i, sector)
-
-        if ("sectors" == config.topLayer) {
-            // draw sector knob at the outer ring edge, on the sector boundaries
-            const sectorKnobPoint = cartesianFromPolar({ r: config.maxRingRadius, phi: currentAngle })
-            sectorCanvas.append("circle")
-                .attr("id", `sectorKnob${i}`)
-                .attr("cx", sectorKnobPoint.x)
-                .attr("cy", -sectorKnobPoint.y)
-                .attr("r", 15)
-                .style("fill", "red")
-                .attr("opacity", 1)
-                .style("stroke", "#000")
-                .style("stroke-width", 7)
-                .attr("class", "draggable")
-        }
-    }
-    return sectorCanvas
-}
-
-
-const drawRings = function (radar) {
-    const ringCanvas = radar.append("g").attr("id", "ringCanvas")
-    const totalRingPercentage = config.ringConfiguration.rings.reduce((sum, ring) => { return sum + ring.width }, 0)
-    let currentRadiusPercentage = totalRingPercentage
-    for (let i = 0; i < config.ringConfiguration.rings.length; i++) {
-        let ring = config.ringConfiguration.rings[i]
-        let currentRadius = currentRadiusPercentage * config.maxRingRadius
-
-        const ringArc = d3.arc()
-            .outerRadius(config.maxRingRadius * currentRadiusPercentage)
-            .innerRadius(config.maxRingRadius * (currentRadiusPercentage - ring.width))
-            .startAngle(0)
-            .endAngle(359)
-        ringCanvas.append("path")
-            .attr("id", `ring${i}`)
-            .attr("d", ringArc)
-            .style("fill", ring.backgroundColor)
-            .attr("opacity", ring.opacity!=null? ring.opacity: 0.6)
-            // define borders of rings
-            .style("stroke", ("rings" == config.topLayer && config.selectedRing == i) ? "red" : "#000")
-            .style("stroke-width", ("rings" == config.topLayer && config.selectedRing == i) ? 6 : 2)
-            .style("stroke-dasharray", ("rings" == config.topLayer && config.selectedRing == i) ? "" : "5 1")
-            .on('click', () => { const ring = i; switchboard.handleRingSelection(ring) })
-
-        if ("rings" == config.topLayer) {
-            // draw ring knob at the out edge, horizontal axis
-            ringCanvas.append("circle")
-                .attr("id", `ringKnob${i}`)
-                .attr("cx", config.maxRingRadius * currentRadiusPercentage)
-                .attr("cy", 0)
-                .attr("r", 15)
-                .style("fill", "red")
-                .attr("opacity", 1)
-                .style("stroke", "#000")
-                .style("stroke-width", 7)
-                .attr("class", "draggable")
-        }
-
-        currentRadiusPercentage = currentRadiusPercentage - ring.width
-    }
-    return ringCanvas
-}
-
-
-const drawRingLabels = function (radar) {
-    const totalRingPercentage = config.ringConfiguration.rings.reduce((sum, ring) => { return sum + ring.width }, 0)
-    let currentRadiusPercentage = totalRingPercentage
-    for (let i = 0; i < config.ringConfiguration.rings.length; i++) {
-        let ring = config.ringConfiguration.rings[i]
-        let currentRadius = currentRadiusPercentage * config.maxRingRadius
-        radar.append("text")
-            .attr("id", `ringLabel${i}`)
-            .text(ring.label)
-            .attr("y", -currentRadius + 62)
-            .attr("text-anchor", "middle")
-            .style("fill", "#e5e5e5")
-            .style("font-family", "Arial, Helvetica")
-            .style("font-size", "32px")
-            .style("font-weight", "bold")
-            //            .style("pointer-events", "none")
-            .style("user-select", "none")
-            .call(make_editable, ["ringLabel", ring.label, `ringLabel${i}`]);
-
-        currentRadiusPercentage = currentRadiusPercentage - ring.width
-    }
-}
-
-function displaySectorLabel(currentAnglePercentage, startAngle, endAngle, sectorCanvas, sectorIndex, sector) {
-    let textArc = d3.arc()
-        .outerRadius(config.maxRingRadius + 30)
-        .innerRadius(150)
-        // startAngle and endAngle are measured clockwise from the 12 o’clock in radians; the minus takes care of anti-clockwise and the +0.5 is for starting at the horizontal axis pointing east
-        // for angle + rotation percentages up to 70%, we flip the text - by sweeping from end to begin
-        .endAngle((currentAnglePercentage + config.rotation) % 1 < 0.6 ? startAngle : endAngle)
-        .startAngle((currentAnglePercentage + config.rotation) % 1 < 0.6 ? endAngle : startAngle)
-    textArc = textArc().substring(0, textArc().indexOf("L"))
-    // create the path following the circle along which the text is printed; the actual printing of the text is done next
-    sectorCanvas.append("path")
-        .attr("id", `pieText${sectorIndex}`)
-        .attr("d", textArc)
-        .attr("opacity", 0.0)
-
-    const textPaths = sectorCanvas.append("g").attr('class', 'textPaths')
-    textPaths.append("text")
-        .attr("id", `sectorLabel${sectorIndex}`)
-        .attr("dy", 10)
-        .attr("dx", 45)
-        .style("font-family", "sans-serif")
-        .style("font-size", "30px")
-        .style("fill", "#fff")
-
-        .append("textPath")
-        // .attr("class", "textpath tp_avg")
-        .attr('fill', '#000')
-        .attr("startOffset", "40%")
-        .style("text-anchor", "middle")
-        .attr("xlink:href", `#pieText${sectorIndex}`)
-        .text(`${sector.label}`)
-        .call(make_editable, ["sectorLabel", sector.label, `sectorLabel${sectorIndex}`]);
-}
-
-function initializeRadar() {
-    const svg = d3.select(`svg#${config.svg_id}`)
-        .style("background-color", config.colors.background)
-        .attr("width", config.width)
-        .attr("height", config.height)
-
-
-    makeDraggable(svg.node(), switchboard.handleDragEvent)
-
-    if (svg.node().firstChild) {
-        svg.node().removeChild(svg.node().firstChild)
-    }
-    const radar = svg.append("g").attr("id", "radar");
-    radar.attr("transform", `translate(${config.width / 2},${config.height / 2}) `);
-    return radar;
-}
 
 
 const handleInputChange = function (fieldIdentifier, newValue) {
@@ -390,18 +283,28 @@ const handleInputChange = function (fieldIdentifier, newValue) {
     if (fieldIdentifier.startsWith("sectorLabel")) {
         const sectorIndex = fieldIdentifier.substring(sectorLabelStringLength)
         config.sectorConfiguration.sectors[sectorIndex].label = newValue
-        drawRadar()
+        drawRadar(config)
     }
     if (fieldIdentifier.startsWith("ringLabel")) {
         const ringIndex = fieldIdentifier.substring(ringLabelStringLength)
         config.ringConfiguration.rings[ringIndex].label = newValue
-        drawRadar()
+        drawRadar(config)
     }
+    if (fieldIdentifier.startsWith("title")) {
+        config.title.text = newValue
+        drawRadar(config)
+    }
+}
+
+const handleDragSectorBackgroundImage = function (sectorId, newCoordinates) {
+    console.log(`handle drag background image for sector ${sectorId}`)
+    const newPolarCoordinates = polarFromCartesion({ x: newCoordinates.x - config.width / 2, y: newCoordinates.y - config.height / 2 })
+
 }
 
 // copied from http://bl.ocks.org/GerHobbelt/2653660
 function make_editable(d, field) {
-    //console.log("make_editable", arguments);
+
     const valueToEdit = arguments[1][1]
     const fieldIdentifier = arguments[1][2]
     d
@@ -409,7 +312,7 @@ function make_editable(d, field) {
             d3.select(this).style("fill", "red");
         })
         .on("mouseout", function () {
-            d3.select(this).style("fill", null);
+            d3.select(this).style("fill", null); // TODO reset fill style to previous value, not reset to null
         })
         .on("click", function (d) {
             var p = this.parentNode;

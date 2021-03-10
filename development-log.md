@@ -4,6 +4,19 @@
 - sector-label and ring-label styling? (font, size, fill)
 - assign background color to area outside radar (ring == -1? , per sector or in general?)
 
+## March 10th
+
+- title - editable
+- synchronize opacity slider with currently selected ring or sector
+- add rings or sectors
+- remove rings or sectors
+- move/resequence rings and sectors
+
+
+### Resources
+* Add item to/remove item from Array (using splice) - https://flaviocopes.com/how-to-add-item-to-array-javascript/
+
+
 ## March 9th
 
 - extended (or not extended) sector boundaries

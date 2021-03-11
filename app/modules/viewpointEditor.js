@@ -1,7 +1,7 @@
 import { cartesianFromPolar, polarFromCartesion } from './drawingUtilities.js'
 import { makeDraggable } from './drag.js'
 import { drawRadar } from './radar.js'
-
+import { saveDataToLocalStorage, loadDataFromLocalStore } from './data.js'
 export { viewpointEditor, switchboard }
 
 
@@ -143,17 +143,29 @@ const switchboard = {
     },
     handleAddRingOrSector: (event) => {
         if (config.topLayer == "rings") {
-            const halfWidth = config.ringConfiguration.rings[config.selectedRing].width != null?config.ringConfiguration.rings[config.selectedRing].width/2 : 0.1
+            const halfWidth = config.ringConfiguration.rings[config.selectedRing].width != null ? config.ringConfiguration.rings[config.selectedRing].width / 2 : 0.1
             config.ringConfiguration.rings[config.selectedRing].width = halfWidth
             config.ringConfiguration.rings.splice(config.selectedRing, 0, { label: "NEW!!", width: halfWidth })
 
         }
         if (config.topLayer == "sectors") {
-            const halfAngle = config.sectorConfiguration.sectors[config.selectedSector].angle != null ? config.sectorConfiguration.sectors[config.selectedSector].angle/2 : 0.1
-            config.sectorConfiguration.sectors[config.selectedSector].angle= halfAngle 
+            const halfAngle = config.sectorConfiguration.sectors[config.selectedSector].angle != null ? config.sectorConfiguration.sectors[config.selectedSector].angle / 2 : 0.1
+            config.sectorConfiguration.sectors[config.selectedSector].angle = halfAngle
             config.sectorConfiguration.sectors.splice(config.selectedSector, 0, { label: "NEW!!", angle: halfAngle })
         }
         drawRadar(config)
+    },
+    handleSave: () => { saveDataToLocalStorage() }
+    , handleLoad: () => {
+        // swap functions temporarily stored in config and not stored in localstorage 
+        // TODO do not store these functions in CONFIG - they are not linked to a viewpoint template/configuration!
+        const makeEditable = config.make_editable;
+        const switchboard = config.switchboard;
+        config = loadDataFromLocalStore();
+        config.make_editable = makeEditable;
+        config.switchboard = switchboard;
+        drawRadar(config)
+        initializeColorsConfigurator()
     }
 }
 
@@ -174,6 +186,8 @@ const viewpointEditor = function (configuration) {
     initializeRotationSlider()
     initializeOpacitySlider()
     initializeEditListeners()
+
+    initializeColorsConfigurator()
 }
 
 const initializeEditListeners = () => {
@@ -185,6 +199,8 @@ const initializeEditListeners = () => {
     document.getElementById('decreaseRingOrSector').addEventListener("click", switchboard.handleDecreaseRingOrSector);
     document.getElementById('removeRingOrSector').addEventListener("click", switchboard.handleRemoveRingOrSector);
     document.getElementById('newRingOrSector').addEventListener("click", switchboard.handleAddRingOrSector);
+    document.getElementById('save').addEventListener("click", switchboard.handleSave);
+    document.getElementById('load').addEventListener("click", switchboard.handleLoad);
 
 }
 
@@ -272,6 +288,13 @@ const handleInputChange = function (fieldIdentifier, newValue) {
         config.title.text = newValue
         drawRadar(config)
     }
+    if (fieldIdentifier.startsWith("colorLabel")) {
+        const colorLabelStringLength = 10
+        // TODO create new color if there is no color for this index
+        const colorIndex = fieldIdentifier.substring(colorLabelStringLength)
+        config.colorsConfiguration.colors[colorIndex].label = newValue
+        initializeColorsConfigurator()
+    }
 }
 
 const handleDragSectorBackgroundImage = function (sectorId, newCoordinates) {
@@ -281,8 +304,9 @@ const handleDragSectorBackgroundImage = function (sectorId, newCoordinates) {
 }
 
 // copied from http://bl.ocks.org/GerHobbelt/2653660
-function make_editable(d, field) {
+function make_editable(d, field) { // field id an array [svgElementId, valueToEdit, fieldIdentifier]
 
+    const svgElementId = arguments[1][0]
     const valueToEdit = arguments[1][1]
     const fieldIdentifier = arguments[1][2]
     d
@@ -293,16 +317,17 @@ function make_editable(d, field) {
             d3.select(this).style("fill", null); // TODO reset fill style to previous value, not reset to null
         })
         .on("click", function (d) {
-            var p = this.parentNode;
+            //            var p = this.parentNode;
 
             // inject a HTML form to edit the content here...
 
-            const svg = d3.select(`svg#${config.svg_id}`)
+            const svg = d3.select(svgElementId)
             var frm = svg.append("foreignObject");
 
             var inp = frm
-                .attr("x", d.pageX) // use x and y coordinates from mouse event
-                .attr("y", d.pageY)
+                .attr("x", d.layerX) // use x and y coordinates from mouse event // TODO for use in size/color/shape - the location needs to be derived differently 
+                .attr("y", d.layerY)
+
                 .attr("width", 300)
                 .attr("height", 25)
                 .append("xhtml:form")
@@ -312,7 +337,6 @@ function make_editable(d, field) {
                     // nasty spot to place this call, but here we are sure that the <input> tag is available
                     // and is handily pointed at by 'this':
                     this.focus();
-
                     return valueToEdit;
                 })
                 .attr("style", "width: 294px;")
@@ -345,4 +369,82 @@ function make_editable(d, field) {
                     }
                 });
         });
+}
+
+let currentColorsBoxColor
+let colorsBoxColorPicker
+const initializeColorsConfigurator = () => {
+    const maxNumberOfColors = 5
+    const colorsBox = d3.select("svg#colorsBox")
+        .style("background-color", "silver")
+        .attr("width", 450)
+        .attr("height", maxNumberOfColors * 55 + 70)
+    colorsBox.selectAll("*").remove(); // clean content (if there is any)
+
+    colorsBox.append('g').attr('class', 'colorsBox')
+    let configuredColor
+    const checkboxIndent = 15
+    const circleIndent = 60
+    const labelIndent = 130
+    for (let i = 0; i < maxNumberOfColors; i++) {
+        if (config.colorsConfiguration.colors.length > i)
+            configuredColor = config.colorsConfiguration.colors[i]
+        else
+            configuredColor = null
+
+        let checkbox = colorsBox.append('rect')
+            .attr('x', checkboxIndent)
+            .attr('y', 40 + i * 55)
+            .attr("fill", "white")
+            .attr('width', 26)
+            .attr('height', 26)
+            .style("stroke", "black")
+            .style("stroke-width", 1)
+            .on("click", () => {
+                config.colorsConfiguration.colors[i].enabled = !config.colorsConfiguration.colors[i].enabled
+                initializeColorsConfigurator()
+            })
+            ;
+        if (config.colorsConfiguration.colors[i].enabled) {
+        let checked = colorsBox.append('rect')
+            .attr('x', checkboxIndent + 5)
+            .attr('y', 45 + i * 55)
+            .attr("fill", "black")
+            .attr('width', 16)
+            .attr('height', 16)
+            .on("click", () => {
+                config.colorsConfiguration.colors[i].enabled = !config.colorsConfiguration.colors[i].enabled
+                initializeColorsConfigurator()
+            })
+        }
+        colorsBox.append('circle')
+            .attr("id", `templateColors${i}`)
+            .attr("r", 20)
+            .attr("fill", configuredColor ? configuredColor.color : "white")
+            .attr("cx", circleIndent + 20)
+            .attr("cy", 50 + i * 55)
+            .attr("class", "clickableProperty")
+            .on("click", () => {
+                currentColorsBoxColor = i; // to be able to link the color picker to the right circle
+            })
+
+        colorsBox.append("text")
+            .attr("id", `colorLabel${i}`)
+            .text(configuredColor ? configuredColor.label : `COLOR LABEL ${i + 1}`)
+            .attr("x", labelIndent)
+            .attr("y", 65 + i * 55)
+            .style("fill", "#e5e5e5")
+            .style("font-family", "Arial, Helvetica")
+            .style("font-size", "32px")
+            .style("font-weight", "bold")
+            .call(config.make_editable, ["svg#colorsBox", configuredColor ? configuredColor.label : `COLOR LABEL ${i + 1}`, `colorLabel${i}`]);
+
+    }
+    if (colorsBoxColorPicker == null) {
+        colorsBoxColorPicker = new iro.ColorPicker('#colorsBoxColorPicker');
+        colorsBoxColorPicker.on('color:change', (color) => {
+            d3.select(`circle#templateColors${currentColorsBoxColor}`).attr('fill', color.hexString)
+            config.colorsConfiguration.colors[currentColorsBoxColor].color = color.hexString
+        });
+    }
 }

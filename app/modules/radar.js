@@ -11,7 +11,7 @@ function drawRadar(config) {
     .style("font-family", config.title.fontFamily)
     .style("font-size", config.title.fontSize)
     .attr("class", "draggable")
-    .call(config.make_editable, ["title", config.title.text, `title`]);
+    .call(config.make_editable, [`svg#${config.svg_id}`, config.title.text, `title`]);
 
     const radarCanvas = radar.append("g").attr("id", "radarCanvas")
     let sectorCanvas, ringCanvas
@@ -179,7 +179,7 @@ const drawRingLabels = function (radar, config) {
             .style("font-weight", "bold")
             //            .style("pointer-events", "none")
             .style("user-select", "none")
-            .call(config.make_editable, ["ringLabel", ring.label, `ringLabel${i}`]);
+            .call(config.make_editable, [`svg#${config.svg_id}`, ring.label, `ringLabel${i}`]);
 
         currentRadiusPercentage = currentRadiusPercentage - ring.width
     }
@@ -216,5 +216,5 @@ function displaySectorLabel(currentAnglePercentage, startAngle, endAngle, sector
         .style("text-anchor", "middle")
         .attr("xlink:href", `#pieText${sectorIndex}`)
         .text(`${sector.label}`)
-        .call(config.make_editable, ["sectorLabel", sector.label, `sectorLabel${sectorIndex}`]);
+        .call(config.make_editable, [`svg#${config.svg_id}`, sector.label, `sectorLabel${sectorIndex}`]);
 }

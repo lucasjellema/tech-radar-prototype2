@@ -4,6 +4,12 @@
 - sector-label and ring-label styling? (font, size, fill)
 - assign background color to area outside radar (ring == -1? , per sector or in general?)
 
+## March 11th
+
+- save data to local storage
+- load data from local storage
+- configure the colors for the viewpoint template (which colors can be selected for the blips)
+
 ## March 10th
 
 - title - editable

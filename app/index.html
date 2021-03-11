@@ -19,6 +19,14 @@
             width: 30%;
         }
 
+
+        .column1_3 {
+            float: left;
+            width: 33%;
+            height: 800px;
+        }
+
+
         /* Clear floats after the columns */
         .row:after {
             content: "";
@@ -39,6 +47,10 @@
 
             cursor: move;
         }
+        
+.clickableProperty {
+  cursor:pointer;
+}
     </style>
 
 </head>
@@ -79,7 +91,7 @@
                 <a href="#" id="decreaseRingOrSector">&lt;</a>
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 <a href="#" id="increaseRingOrSector">&gt;</a>
-                        </div>
+            </div>
             <div id="layering">
                 <hr />
                 <p>Extended Sector Boundaries?</p>
@@ -94,14 +106,43 @@
                         value="noExtendedSectorBoundaries">
                     <label for="rings">Not Extended</label>
                 </div>
+                <div>
+                    <input type="button" id="save" name="save" value="Save">
+                    <input type="button" id="load" name="load" value="Load (from local)">
+                </div>
             </div>
         </div>
     </div>
+<br/>
+<hr />
+    <div id="sizes" class="column1_3">
+        <h3>Define Sizes in Template</h3>
+   <svg id="sizesBox">
+
+   </svg>    
+    
+    </div>
+
+    <div id="colors" class="column1_3">
+        <h3>Define Colors in Template</h3>
+        <svg id="colorsBox" >
+       
+        </svg>    
+        <div id="colorsBoxColorPicker" ></div>
+
+     </div>
+    <div id="shapes" class="column1_3">
+        Shapes
+        <svg id="shapesBox">
+       
+        </svg>    
+     </div>
+
 
     <script type="module">
         import { viewpointEditor, switchboard } from './modules/viewpointEditor.js';
         import { getConfiguration } from './modules/data.js';
-        viewpointEditor( getConfiguration())
+        viewpointEditor(getConfiguration())
 
     </script>
 

@@ -1,8 +1,18 @@
-export { getConfiguration }
+export { getConfiguration, saveDataToLocalStorage , loadDataFromLocalStore}
+
+const RADAR_INDEX_KEY = "RADAR-INDEX"
 
 const getConfiguration = () => {
-  return config
+    return config
 }
+
+// load index RADAR-INDEX from LocalStorage
+// in RADAR_INDEX are references to other documents
+// { viewpoints : [{title, description, lastupdate}, {title}] 
+// , objects : [ "technologies", "AMIS Staff"]
+// }
+// if it does not exist, create a new radar index
+
 
 let config = {
     svg_id: "radarSVGContainer",
@@ -43,5 +53,41 @@ let config = {
             { label: "Concepts & Methodology", backgroundColor: "red", angle: 0.15 },
         ]
     },
+    colorsConfiguration: {
+         colors: [ 
+            { label: "Super Status", color:"blue"}, 
+            { label: "Unassigned", color:"white"} ,
+            { label: "Unassigned", color:"white"} ,
+            { label: "Unassigned", color:"white"} ,
+            { label: "Unassigned", color:"white"} 
+        ]
+    },
+    sizesConfiguration: {
+         sizes: [ 
+            { label: "Regular", size: 2} 
+        ]
+    },
+    shapesConfiguration: {
+         shapes: [ 
+            { label: "Library & Framework", shape: "square"} 
+            ,{ label: "Tool", shape: "diamond"} 
+        ]
+    }
 }
 
+let radarIndex = { viewpoints: [{ title: encodeURI(config.title.text), description: "", lastupdate: "20210310T192400" }], objects: [] }
+
+const saveDataToLocalStorage = () => {
+    localStorage.setItem(RADAR_INDEX_KEY, JSON.stringify(radarIndex));
+    console.log(`${JSON.stringify(getConfiguration().colorsConfiguration)}`)
+    // for every viewpoint, save viewpoint document
+    localStorage.removeItem(encodeURI(getConfiguration().title.text))
+    localStorage.setItem(encodeURI(getConfiguration().title.text), JSON.stringify(getConfiguration()));
+}
+
+const loadDataFromLocalStore = () => {
+    radarIndex = JSON.parse(localStorage[RADAR_INDEX_KEY])
+    // for every viewpoint in the index, load document
+    config = JSON.parse(localStorage[ radarIndex.viewpoints[0].title])
+    return config
+}

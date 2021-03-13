@@ -1,4 +1,4 @@
-export { getConfiguration, subscribeToRadarRefresh , getState, publishRefreshRadar}
+export { getConfiguration, subscribeToRadarRefresh, getState, publishRefreshRadar }
 
 const RADAR_INDEX_KEY = "RADAR-INDEX"
 
@@ -43,7 +43,8 @@ let config = {
     maxRingRadius: 450,
     sectorBoundariesExtended: true,
     editMode: true,
-    title: { text: "Conclusion Technology Radar", x: -700, y: -470, fontSize: "34px", fontFamily: "Arial, Helvetica" },
+    defaultFont: { color: "blue", fontSize: "38px", fontFamily: "Arial, Helvetica", fontStyle: "italic", fontWeight: "bold" }, // fontStyle: oblique, normal, italic; fontWeight: normal, bold, bolder, lighter; 100 .. 900
+    title: { text: "Conclusion Technology Radar", x: -700, y: -470, font: { fontSize: "34px", fontFamily: "Courier" } },
 
     colors: {
         background: "#fef",
@@ -51,8 +52,11 @@ let config = {
         inactive: "#ddd"
     },
     ringConfiguration: {
-        outsideRingsAllowed: true
-        , rings: [ // rings are defined from outside going in; the first one is the widest
+        outsideRingsAllowed: true,
+        font: { color: "purple", fontSize: "32px", fontFamily: "Arial, Helvetica", fontStyle: "normal", fontWeight: "bolder" }, // fontStyle: oblique, normal, italic; fontWeight: normal, bold, bolder, lighter; 100 .. 900
+
+
+        rings: [ // rings are defined from outside going in; the first one is the widest
             { label: "Spotted", width: 0.15, opacity: 0.2 },
             { label: "Hold", width: 0.2 },
             { label: "Assess", width: 0.25 },
@@ -62,7 +66,8 @@ let config = {
         ]
     },
     sectorConfiguration: {
-        outsideSectorsAllowed: true
+        outsideSectorsAllowed: true,
+        font: { color: "#000", fontSize: "32px", fontFamily: "Arial, Helvetica", fontStyle: "normal", fontWeight: "bolder" } // fontStyle: oblique, normal, italic; fontWeight: normal, bold, bolder, lighter; 100 .. 900
         , sectors: [ // starting from positive X-axis, listed anti-clockwise
             { label: "Data Management", angle: 0.1, backgroundImage: { image: "https://cdn.pixabay.com/photo/2019/07/06/14/02/drawing-4320529_960_720.png" } },
             { label: "Libraries & Frameworks", angle: 0.2, backgroundImage: { image: "https://dappimg.com/media/image/app/eaa3cb625c164f659ecd6db2aae39e46.png" } },
@@ -104,6 +109,73 @@ let config = {
     }
 }
 
+
+const freshTemplate = 
+{
+    svg_id: "radarSVGContainer",
+    width: 1450,
+    height: 1000,
+    topLayer: "sectors", // rings or sectors
+    selectedRing: 0,
+    selectedSector: 0,
+    rotation: 0,
+    maxRingRadius: 450,
+    sectorBoundariesExtended: false,
+    editMode: true,
+    defaultFont: { color: "black", fontSize: "38px", fontFamily: "Arial, Helvetica", fontStyle: "normal", fontWeight: "normal" }, // fontStyle: oblique, normal, italic; fontWeight: normal, bold, bolder, lighter; 100 .. 900
+    title: { text: "Technology Radar", x: -700, y: -470, font: { fontSize: "34px" } },
+
+    colors: {
+        background: "#fef",
+        grid: "#bbb",
+        inactive: "#ddd"
+    },
+    ringConfiguration: {
+        outsideRingsAllowed: true,
+        font: { color: "purple"},
+        rings: [ // rings are defined from outside going in; the first one is the widest
+            { label: "Ring One", width: 0.8, opacity: 0.2 },
+        ]
+    },
+    sectorConfiguration: {
+        outsideSectorsAllowed: true,
+        font: { fontSize: "32px", fontFamily: "Arial, Helvetica"}
+        , sectors: [ // starting from positive X-axis, listed anti-clockwise
+            { label: "Sector 1", angle: 0.7},
+        ]
+    },
+    colorsConfiguration: {
+        colors: [
+            { label: "Super Status", color: "blue", enabled: true },
+            { label: "Unassigned", color: "white", enabled: false },
+            { label: "Unassigned", color: "white", enabled: false },
+            { label: "Unassigned", color: "white", enabled: false },
+            { label: "Unassigned", color: "white" }
+        ]
+    },
+    sizesConfiguration: {
+        sizes: [
+            { label: "Regular", size: 1, enabled: true },
+            { label: "Regular", size: 2, enabled: false },
+            { label: "Regular", size: 3, enabled: true },
+        ]
+    },
+    shapesConfiguration: {
+        shapes: [
+            { label: "Library & Framework", shape: "square" }
+            , { label: "Tool", shape: "diamond" }
+            , { label: "Shape Label", shape: "rectangleHorizontal", enabled: false }
+            , { label: "Shape Label", shape: "circle", enabled: false }
+        ]
+    }
+}
+
+
+
+const getFreshTemplate = () => {
+return freshTemplate
+}
+
 data.templates.push(config)
 
 let radarIndex = { templates: [{ title: encodeURI(config.title.text), description: "", lastupdate: "20210310T192400" }], objects: [] }
@@ -121,7 +193,7 @@ const loadDataFromLocalStore = () => {
     radarIndex = JSON.parse(localStorage[RADAR_INDEX_KEY])
     // for every viewpoint in the index, load document
     data = JSON.parse(localStorage[radarIndex.templates[0].title])
-    
+
     publishRefreshRadar()
 }
 
@@ -168,14 +240,34 @@ async function handleUploadedFiles() {
     }
 }
 
+const createNewTemplate = () => {
+    console.log(        `create new template`)
+    const newTemplate = JSON.parse(JSON.stringify(getFreshTemplate()))
+    newTemplate.title.text = `NEW template`
+    data.templates.push(newTemplate)
+    state.currentTemplate = data.templates.length - 1
+    publishRefreshRadar()
+}
+
+const cloneTemplate = () => {
+    const clone = JSON.parse(JSON.stringify(getConfiguration()))
+    clone.title.text = `CLONE of ${clone.title.text}`
+    data.templates.push(clone)
+    state.currentTemplate = data.templates.length - 1
+    publishRefreshRadar()
+}
+
+
 document.getElementById('save').addEventListener("click", saveDataToLocalStorage);
 document.getElementById('load').addEventListener("click", loadDataFromLocalStore);
 document.getElementById('download').addEventListener("click", downloadRadarData);
 document.getElementById('upload').addEventListener("click", uploadRadarData);
+document.getElementById('newTemplate').addEventListener("click", createNewTemplate);
+document.getElementById('cloneTemplate').addEventListener("click", cloneTemplate);
 
 initializeUpload()
 
 // mini event bus for the Refresh Radar Event
 const subscribers = []
-const subscribeToRadarRefresh = (subscriber)=> { subscribers.push(subscriber)}
-const publishRefreshRadar = () => { subscribers.forEach((subscriber) => {subscriber()})}
+const subscribeToRadarRefresh = (subscriber) => { subscribers.push(subscriber) }
+const publishRefreshRadar = () => { subscribers.forEach((subscriber) => { subscriber() }) }

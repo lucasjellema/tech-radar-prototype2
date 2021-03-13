@@ -1,30 +1,44 @@
 import { cartesianFromPolar, polarFromCartesion } from './drawingUtilities.js'
-export {drawRadar, subscribeToRadarEvents }
+export { drawRadar, subscribeToRadarEvents }
 
 const color_white = "#FFF"
 
 const subscribers = []
-const subscribeToRadarEvents = (subscriber) =>{ subscribers.push(subscriber)}
-const publishRadarEvent = (event) => { subscribers.forEach((subscriber) => {subscriber(event)})}
+const subscribeToRadarEvents = (subscriber) => { subscribers.push(subscriber) }
+const publishRadarEvent = (event) => { subscribers.forEach((subscriber) => { subscriber(event) }) }
 
-function drawRadar(config , elementDecorator=null) {
+const styleText = (textElement, configNode, config, alternativeFontSource=null) => {
+   const fontStyleElements = [{ style: "fill", property: "color" }, { style: "font-size", property: "fontSize" }
+                             , { style: "font-family", property: "fontFamily" }, { style: "font-weight", property: "fontWeight" }
+                             , { style: "font-style", property: "fontStyle" }
+                            ]
+    fontStyleElements.forEach((fontStyleElement) => {
+        try {
+            let styleProperty = (configNode?.font?.[fontStyleElement.property] ?? alternativeFontSource?.font?.[fontStyleElement.property]) ?? config.defaultFont[fontStyleElement.property]
+            textElement
+                .style(fontStyleElement.style
+                    , styleProperty
+                )
+        } catch (e) { console.log(`Exception in styleText for ${JSON.stringify(fontStyleElement)} applied to ${JSON.stringify(textElement)}`) }
+    })
+}
+
+function drawRadar(config, elementDecorator = null) {
     const radar = initializeRadar(config)
-    radar.append("text")
-    .attr("transform", `translate(${config.title.x!=null?config.title.x:-500}, ${config.title.y!=null?config.title.y:-400})`)
-    .text(config.title.text)
-    .style("font-family", config.title.fontFamily)
-    .style("font-size", config.title.fontSize)
-    .attr("class", "draggable")
-    .call(elementDecorator?elementDecorator:()=>{console.log(`no decorator`)}, [`svg#${config.svg_id}`, config.title.text, `title`]);
-
+    const title = radar.append("text")
+        .attr("transform", `translate(${config.title.x != null ? config.title.x : -500}, ${config.title.y != null ? config.title.y : -400})`)
+        .text(config.title.text)
+        .attr("class", "draggable")
+        .call(elementDecorator ? elementDecorator : () => { console.log(`no decorator`) }, [`svg#${config.svg_id}`, config.title.text, `title`]);
+    styleText(title, config.title, config)
     const radarCanvas = radar.append("g").attr("id", "radarCanvas")
     let sectorCanvas, ringCanvas
     if ("sectors" == config.topLayer) { // draw top layer last 
         ringCanvas = drawRings(radarCanvas, config)
-        sectorCanvas = drawSectors(radarCanvas, config,elementDecorator)
+        sectorCanvas = drawSectors(radarCanvas, config, elementDecorator)
     }
     else {
-        sectorCanvas = drawSectors(radarCanvas, config,elementDecorator)
+        sectorCanvas = drawSectors(radarCanvas, config, elementDecorator)
         ringCanvas = drawRings(radarCanvas, config)
     }
     //rotation only on sectors - not on rings
@@ -47,7 +61,7 @@ function initializeRadar(config) {
 
 
 
-const drawSectors = function (radar, config,elementDecorator=null) {
+const drawSectors = function (radar, config, elementDecorator = null) {
 
     const sectorCanvas = radar.append("g").attr("id", "sectorCanvas")
     let currentAnglePercentage = 0
@@ -82,28 +96,28 @@ const drawSectors = function (radar, config,elementDecorator=null) {
         sectorCanvas.append("path")
             .attr("id", `piePiece${i}`)
             .attr("d", sectorArc)
-            .style("fill", sector.backgroundColor!=null?sector.backgroundColor:color_white)
-            .attr("opacity", sector.opacity!=null? sector.opacity: 0.6)
+            .style("fill", sector.backgroundColor != null ? sector.backgroundColor : color_white)
+            .attr("opacity", sector.opacity != null ? sector.opacity : 0.6)
             // define borders of sectors
             .style("stroke", ("sectors" == config.topLayer && config.selectedSector == i) ? "red" : "#000")
             .style("stroke-width", ("sectors" == config.topLayer && config.selectedSector == i) ? 8 : 2)
             .style("stroke-dasharray", ("sectors" == config.topLayer && config.selectedSector == i) ? "" : "9 1")
-            .on('click', () => { const sector = i; publishRadarEvent({type:"sectorClick", sector:i}) })
-            if (sector.backgroundImage && sector.backgroundImage.image) {
+            .on('click', () => { const sector = i; publishRadarEvent({ type: "sectorClick", sector: i }) })
+        if (sector.backgroundImage && sector.backgroundImage.image) {
             sectorCanvas.append('image')
-            .attr("id", `sectorBackgroundImage${i}`)
-            .attr('xlink:href', sector.backgroundImage.image)
-            .attr('width', 100)
-            .attr("transform", "translate(100,100)")
-            .attr("class", "draggable")
-            
-            }
+                .attr("id", `sectorBackgroundImage${i}`)
+                .attr('xlink:href', sector.backgroundImage.image)
+                .attr('width', 100)
+                .attr("transform", "translate(100,100)")
+                .attr("class", "draggable")
+
+        }
 
 
         // print sector label along the edge of the arc
         displaySectorLabel(currentAnglePercentage, startAngle, endAngle, sectorCanvas, i, sector, config, elementDecorator)
 
-        if ( config.editMode &&  "sectors" == config.topLayer) {
+        if (config.editMode && "sectors" == config.topLayer) {
             // draw sector knob at the outer ring edge, on the sector boundaries
             const sectorKnobPoint = cartesianFromPolar({ r: config.maxRingRadius, phi: currentAngle })
             sectorCanvas.append("circle")
@@ -138,15 +152,15 @@ const drawRings = function (radar, config) {
         ringCanvas.append("path")
             .attr("id", `ring${i}`)
             .attr("d", ringArc)
-            .style("fill", ring.backgroundColor!=null? ring.backgroundColor: color_white)
-            .attr("opacity", ring.opacity!=null? ring.opacity: 0.6)
+            .style("fill", ring.backgroundColor != null ? ring.backgroundColor : color_white)
+            .attr("opacity", ring.opacity != null ? ring.opacity : 0.6)
             // define borders of rings
             .style("stroke", ("rings" == config.topLayer && config.selectedRing == i) ? "red" : "#000")
             .style("stroke-width", ("rings" == config.topLayer && config.selectedRing == i) ? 6 : 2)
             .style("stroke-dasharray", ("rings" == config.topLayer && config.selectedRing == i) ? "" : "5 1")
-            .on('click', () => { const ring = i;  publishRadarEvent({type:"ringClick", ring:i}) })
+            .on('click', () => { const ring = i; publishRadarEvent({ type: "ringClick", ring: i }) })
 
-        if (config.editMode &&  "rings" == config.topLayer) {
+        if (config.editMode && "rings" == config.topLayer) {
             // draw ring knob at the out edge, horizontal axis
             ringCanvas.append("circle")
                 .attr("id", `ringKnob${i}`)
@@ -172,24 +186,22 @@ const drawRingLabels = function (radar, config, elementDecorator) {
     for (let i = 0; i < config.ringConfiguration.rings.length; i++) {
         let ring = config.ringConfiguration.rings[i]
         let currentRadius = currentRadiusPercentage * config.maxRingRadius
-        radar.append("text")
+        const ringlabel = radar.append("text")
             .attr("id", `ringLabel${i}`)
             .text(ring.label)
             .attr("y", -currentRadius + 62)
             .attr("text-anchor", "middle")
-            .style("fill", "#e5e5e5")
-            .style("font-family", "Arial, Helvetica")
-            .style("font-size", "32px")
-            .style("font-weight", "bold")
+ 
             //            .style("pointer-events", "none")
             .style("user-select", "none")
-            .call(elementDecorator?elementDecorator:()=>{console.log(`no decorator`)}, [`svg#${config.svg_id}`, ring.label, `ringLabel${i}`]);
-            
+            .call(elementDecorator ? elementDecorator : () => { console.log(`no decorator`) }, [`svg#${config.svg_id}`, ring.label, `ringLabel${i}`]);
+        styleText(ringlabel, ring, config, config.ringConfiguration)
+
         currentRadiusPercentage = currentRadiusPercentage - ring.width
     }
 }
 
-function displaySectorLabel(currentAnglePercentage, startAngle, endAngle, sectorCanvas, sectorIndex, sector, config,elementDecorator=null) {
+function displaySectorLabel(currentAnglePercentage, startAngle, endAngle, sectorCanvas, sectorIndex, sector, config, elementDecorator = null) {
     let textArc = d3.arc()
         .outerRadius(config.maxRingRadius + 30)
         .innerRadius(150)
@@ -205,21 +217,22 @@ function displaySectorLabel(currentAnglePercentage, startAngle, endAngle, sector
         .attr("opacity", 0.0)
 
     const textPaths = sectorCanvas.append("g").attr('class', 'textPaths')
-    textPaths.append("text")
+    const sectorLabel = textPaths.append("text")
         .attr("id", `sectorLabel${sectorIndex}`)
         .attr("dy", 10)
         .attr("dx", 45)
-        .style("font-family", "sans-serif")
-        .style("font-size", "30px")
-        .style("fill", "#fff")
+        // .style("font-family", "sans-serif")
+        // .style("font-size", "30px")
+        // .style("fill", "#fff")
+        styleText(sectorLabel, sector, config, config.sectorConfiguration)
 
-        .append("textPath")
+        sectorLabel.append("textPath")
         // .attr("class", "textpath tp_avg")
-        .attr('fill', '#000')
+      //  .attr('fill', '#000')
         .attr("startOffset", "40%")
         .style("text-anchor", "middle")
         .attr("xlink:href", `#pieText${sectorIndex}`)
         .text(`${sector.label}`)
-        .call(elementDecorator?elementDecorator:()=>{console.log(`no decorator`)}, [`svg#${config.svg_id}`, sector.label, `sectorLabel${sectorIndex}`]);
-        
+        .call(elementDecorator ? elementDecorator : () => { console.log(`no decorator`) }, [`svg#${config.svg_id}`, sector.label, `sectorLabel${sectorIndex}`]);
+
 }

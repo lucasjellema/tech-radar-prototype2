@@ -1,9 +1,9 @@
-export {getEditableDecorator}
+export { getEditableDecorator }
 
 
 const getEditableDecorator = (handleInputChange) => {
-    const textEditHandler = handleInputChange; 
-    return (d, field) => makeEditable(d,field, textEditHandler)
+    const textEditHandler = handleInputChange;
+    return (d, field) => makeEditable(d, field, textEditHandler)
 }
 
 // copied from http://bl.ocks.org/GerHobbelt/2653660
@@ -25,16 +25,24 @@ function makeEditable(d, field, textEditHandler) { // field is an array [svgElem
             // inject a HTML form to edit the content here...
 
             const svg = d3.select(svgElementId)
-            var frm = svg.append("foreignObject");
+            const foreignObject = svg.append("foreignObject");
 
-            var inp = frm
+            foreignObject
                 .attr("x", d.layerX) // use x and y coordinates from mouse event // TODO for use in size/color/shape - the location needs to be derived differently 
                 .attr("y", d.layerY)
 
-                .attr("width", 300)
-                .attr("height", 25)
-                .append("xhtml:form")
-                .append("input")
+                .attr("width", 400)
+                .attr("height", 145)
+
+            const body = foreignObject.append("xhtml:body").attr("style","background-color:#fff4b8; padding:6px")
+            .on("mouseout", function () {
+                // TODO start counter to abandon editor; the counter can be stopped by mouseover on this element or any other
+                    // Note to self: frm.remove() will remove the entire <g> group! Remember the D3 selection logic!
+            //        svg.select("foreignObject").remove();
+                })
+            var frm = body.append("xhtml:form")
+
+            let inp = frm.append("input")
                 .attr("title", "Edit value, then press tab or click outside of field")
                 .attr("value", function () {
                     // nasty spot to place this call, but here we are sure that the <input> tag is available
@@ -42,14 +50,16 @@ function makeEditable(d, field, textEditHandler) { // field is an array [svgElem
                     this.focus();
                     return valueToEdit;
                 })
-                .attr("style", "width: 294px;")
+                .attr("style", "width: 494px;")
+                .attr("style", "height: 45px; padding:8px;font-size:28px")
                 // make the form go away when you jump out (form looses focus) or hit ENTER:
-                .on("blur", function () {
-                    const txt = inp.node().value;
-                    textEditHandler(fieldIdentifier, txt)
-                    // Note to self: frm.remove() will remove the entire <g> group! Remember the D3 selection logic!
-                    svg.select("foreignObject").remove();
-                })
+                // TODO if blur is followed by button, then let button handler act
+                // .on("blur", function () {
+                //     const txt = inp.node().value;
+                //     textEditHandler(fieldIdentifier, txt)
+                //     // Note to self: frm.remove() will remove the entire <g> group! Remember the D3 selection logic!
+                //     svg.select("foreignObject").remove();
+                // })
                 .on("keypress", function () {
                     // IE fix
                     if (!d3.event)
@@ -70,7 +80,23 @@ function makeEditable(d, field, textEditHandler) { // field is an array [svgElem
                         // Anyway, it SHOULD be here and it doesn't hurt otherwise.
                         svg.select("foreignObject").remove();
                     }
-                });
+                })
+            frm.append("button")
+                .on("click", () => {
+                    const txt = inp.node().value;
+                    console.log(`click save value ${txt}`)
+                    textEditHandler(fieldIdentifier, txt)
+                    svg.select("foreignObject").remove();
+
+                })
+                .html("Save")
+            frm.append("button")
+                .on("click", () => {
+                    console.log(`click CANCEL`)
+                    svg.select("foreignObject").remove();
+
+                }).html("Cancel")
+                ;
         });
 }
 

@@ -1,9 +1,11 @@
 # Logbook of explorations in this prototype
 
 ## TODOs
-- sector-label and ring-label styling? (font, size, fill)
+- sector-label and ring-label styling? (font, size, fill) editable in UI 
 - assign background color to area outside radar (ring == -1? , per sector or in general?)
 - extend (foreign object) text editor for labels - larger, add font family/size/color/style
+- extend (foreign object) text editor for different types of input (select, combo, radio)
+- template selection (dropdown/list element to switch between templates)
 - 
 
 ## March 13th
@@ -11,6 +13,12 @@
 - consider radar an ecapsulated component that allows a decorator function (to enhance radar elements/make them editable ) and publishes radar events (ring selection, sector selection)
 - pub/sub mechanism (through data.js) for refresh radar (various events can trigger radar refresh - load data, change template, change template details)
 - code for text editing in module textEditing
+- leverage font styling for element, parent, default at template level (radar.js styleText)
+- clone template & create new template
+
+### Resources
+* Optional Chaining - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Optional_chaining
+* Nullish Coaleascing operator - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing_operator
 
 ## March 12th
 

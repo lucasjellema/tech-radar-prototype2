@@ -51,6 +51,7 @@
         .clickableProperty {
             cursor: pointer;
         }
+        .templates-select{padding:9px 0;width:70%;border:none;border-bottom:1px solid #ccc}
     </style>
 
 </head>
@@ -118,6 +119,11 @@
                 <div>
                     <input type="button" id="newTemplate" name="newTemplate" value="Create New Template">
                     <input type="button" id="cloneTemplate" name="clone" value="Clone Template">
+                </div>
+                <div>
+                    <select id="templateSelector" class="templates-select" name="option">
+                        <option value="" disabled selected>Select Radar Template</option>
+                      </select>
                 </div>
             </div>
         </div>

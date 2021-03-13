@@ -15,6 +15,7 @@
 - code for text editing in module textEditing
 - leverage font styling for element, parent, default at template level (radar.js styleText)
 - clone template & create new template
+- select template (from list of templates)
 
 ### Resources
 * Optional Chaining - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Optional_chaining

@@ -110,7 +110,7 @@ let config = {
 }
 
 
-const freshTemplate = 
+const freshTemplate =
 {
     svg_id: "radarSVGContainer",
     width: 1450,
@@ -132,16 +132,16 @@ const freshTemplate =
     },
     ringConfiguration: {
         outsideRingsAllowed: true,
-        font: { color: "purple"},
+        font: { color: "purple" },
         rings: [ // rings are defined from outside going in; the first one is the widest
             { label: "Ring One", width: 0.8, opacity: 0.2 },
         ]
     },
     sectorConfiguration: {
         outsideSectorsAllowed: true,
-        font: { fontSize: "32px", fontFamily: "Arial, Helvetica"}
+        font: { fontSize: "32px", fontFamily: "Arial, Helvetica" }
         , sectors: [ // starting from positive X-axis, listed anti-clockwise
-            { label: "Sector 1", angle: 0.7},
+            { label: "Sector 1", angle: 0.7 },
         ]
     },
     colorsConfiguration: {
@@ -173,7 +173,7 @@ const freshTemplate =
 
 
 const getFreshTemplate = () => {
-return freshTemplate
+    return freshTemplate
 }
 
 data.templates.push(config)
@@ -241,7 +241,7 @@ async function handleUploadedFiles() {
 }
 
 const createNewTemplate = () => {
-    console.log(        `create new template`)
+    console.log(`create new template`)
     const newTemplate = JSON.parse(JSON.stringify(getFreshTemplate()))
     newTemplate.title.text = `NEW template`
     data.templates.push(newTemplate)
@@ -258,16 +258,45 @@ const cloneTemplate = () => {
 }
 
 
+const handleTemplateSelection = (event) => {
+    console.log(`template selection ${event.target.value}  ${data.templates[event.target.value].title.text}`)
+    //const selectedOption = document.getElementById('templateSelector').options[event.target.value]
+    state.currentTemplate = event.target.value
+    publishRefreshRadar()
+}
+
+const populateTemplateSelector = () => {
+    const selector = document.getElementById('templateSelector')
+    // remove current options beyond 0
+    for (var i = 0; i < selector.options.length + 3; i++) {
+        selector.remove(1)
+    }
+
+    // add options based on data.templates[].title.text
+    for (var i = 0; i < data.templates.length; i++) {
+        var option = document.createElement("option");
+
+        option.value = i;
+        option.text = data.templates[i].title.text;
+        option.selected = i == state.currentTemplate
+        selector.add(option, null);
+    }
+}
+
 document.getElementById('save').addEventListener("click", saveDataToLocalStorage);
 document.getElementById('load').addEventListener("click", loadDataFromLocalStore);
 document.getElementById('download').addEventListener("click", downloadRadarData);
 document.getElementById('upload').addEventListener("click", uploadRadarData);
 document.getElementById('newTemplate').addEventListener("click", createNewTemplate);
 document.getElementById('cloneTemplate').addEventListener("click", cloneTemplate);
-
-initializeUpload()
+document.getElementById('templateSelector').addEventListener("change", handleTemplateSelection);
 
 // mini event bus for the Refresh Radar Event
 const subscribers = []
 const subscribeToRadarRefresh = (subscriber) => { subscribers.push(subscriber) }
 const publishRefreshRadar = () => { subscribers.forEach((subscriber) => { subscriber() }) }
+
+initializeUpload()
+subscribeToRadarRefresh(populateTemplateSelector)
+populateTemplateSelector()
+

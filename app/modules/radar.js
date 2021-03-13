@@ -1,9 +1,13 @@
 import { cartesianFromPolar, polarFromCartesion } from './drawingUtilities.js'
-export {drawRadar }
+export {drawRadar, subscribeToRadarEvents }
 
 const color_white = "#FFF"
 
-function drawRadar(config) {
+const subscribers = []
+const subscribeToRadarEvents = (subscriber) =>{ subscribers.push(subscriber)}
+const publishRadarEvent = (event) => { subscribers.forEach((subscriber) => {subscriber(event)})}
+
+function drawRadar(config , elementDecorator=null) {
     const radar = initializeRadar(config)
     radar.append("text")
     .attr("transform", `translate(${config.title.x!=null?config.title.x:-500}, ${config.title.y!=null?config.title.y:-400})`)
@@ -11,21 +15,21 @@ function drawRadar(config) {
     .style("font-family", config.title.fontFamily)
     .style("font-size", config.title.fontSize)
     .attr("class", "draggable")
-    .call(config.make_editable, [`svg#${config.svg_id}`, config.title.text, `title`]);
+    .call(elementDecorator?elementDecorator:()=>{console.log(`no decorator`)}, [`svg#${config.svg_id}`, config.title.text, `title`]);
 
     const radarCanvas = radar.append("g").attr("id", "radarCanvas")
     let sectorCanvas, ringCanvas
     if ("sectors" == config.topLayer) { // draw top layer last 
         ringCanvas = drawRings(radarCanvas, config)
-        sectorCanvas = drawSectors(radarCanvas, config)
+        sectorCanvas = drawSectors(radarCanvas, config,elementDecorator)
     }
     else {
-        sectorCanvas = drawSectors(radarCanvas, config)
+        sectorCanvas = drawSectors(radarCanvas, config,elementDecorator)
         ringCanvas = drawRings(radarCanvas, config)
     }
     //rotation only on sectors - not on rings
     sectorCanvas.attr("transform", `rotate(${-360 * config.rotation})`) // clockwise rotation
-    drawRingLabels(radar, config)
+    drawRingLabels(radar, config, elementDecorator)
 }
 
 function initializeRadar(config) {
@@ -43,7 +47,7 @@ function initializeRadar(config) {
 
 
 
-const drawSectors = function (radar, config) {
+const drawSectors = function (radar, config,elementDecorator=null) {
 
     const sectorCanvas = radar.append("g").attr("id", "sectorCanvas")
     let currentAnglePercentage = 0
@@ -84,7 +88,7 @@ const drawSectors = function (radar, config) {
             .style("stroke", ("sectors" == config.topLayer && config.selectedSector == i) ? "red" : "#000")
             .style("stroke-width", ("sectors" == config.topLayer && config.selectedSector == i) ? 8 : 2)
             .style("stroke-dasharray", ("sectors" == config.topLayer && config.selectedSector == i) ? "" : "9 1")
-            .on('click', () => { const sector = i; config.switchboard.handleSectorSelection(sector) })
+            .on('click', () => { const sector = i; publishRadarEvent({type:"sectorClick", sector:i}) })
             if (sector.backgroundImage && sector.backgroundImage.image) {
             sectorCanvas.append('image')
             .attr("id", `sectorBackgroundImage${i}`)
@@ -97,7 +101,7 @@ const drawSectors = function (radar, config) {
 
 
         // print sector label along the edge of the arc
-        displaySectorLabel(currentAnglePercentage, startAngle, endAngle, sectorCanvas, i, sector, config)
+        displaySectorLabel(currentAnglePercentage, startAngle, endAngle, sectorCanvas, i, sector, config, elementDecorator)
 
         if ( config.editMode &&  "sectors" == config.topLayer) {
             // draw sector knob at the outer ring edge, on the sector boundaries
@@ -140,7 +144,7 @@ const drawRings = function (radar, config) {
             .style("stroke", ("rings" == config.topLayer && config.selectedRing == i) ? "red" : "#000")
             .style("stroke-width", ("rings" == config.topLayer && config.selectedRing == i) ? 6 : 2)
             .style("stroke-dasharray", ("rings" == config.topLayer && config.selectedRing == i) ? "" : "5 1")
-            .on('click', () => { const ring = i; config.switchboard.handleRingSelection(ring) })
+            .on('click', () => { const ring = i;  publishRadarEvent({type:"ringClick", ring:i}) })
 
         if (config.editMode &&  "rings" == config.topLayer) {
             // draw ring knob at the out edge, horizontal axis
@@ -162,7 +166,7 @@ const drawRings = function (radar, config) {
 }
 
 
-const drawRingLabels = function (radar, config) {
+const drawRingLabels = function (radar, config, elementDecorator) {
     const totalRingPercentage = config.ringConfiguration.rings.reduce((sum, ring) => { return sum + ring.width }, 0)
     let currentRadiusPercentage = totalRingPercentage
     for (let i = 0; i < config.ringConfiguration.rings.length; i++) {
@@ -179,13 +183,13 @@ const drawRingLabels = function (radar, config) {
             .style("font-weight", "bold")
             //            .style("pointer-events", "none")
             .style("user-select", "none")
-            .call(config.make_editable, [`svg#${config.svg_id}`, ring.label, `ringLabel${i}`]);
-
+            .call(elementDecorator?elementDecorator:()=>{console.log(`no decorator`)}, [`svg#${config.svg_id}`, ring.label, `ringLabel${i}`]);
+            
         currentRadiusPercentage = currentRadiusPercentage - ring.width
     }
 }
 
-function displaySectorLabel(currentAnglePercentage, startAngle, endAngle, sectorCanvas, sectorIndex, sector, config) {
+function displaySectorLabel(currentAnglePercentage, startAngle, endAngle, sectorCanvas, sectorIndex, sector, config,elementDecorator=null) {
     let textArc = d3.arc()
         .outerRadius(config.maxRingRadius + 30)
         .innerRadius(150)
@@ -216,5 +220,6 @@ function displaySectorLabel(currentAnglePercentage, startAngle, endAngle, sector
         .style("text-anchor", "middle")
         .attr("xlink:href", `#pieText${sectorIndex}`)
         .text(`${sector.label}`)
-        .call(config.make_editable, [`svg#${config.svg_id}`, sector.label, `sectorLabel${sectorIndex}`]);
+        .call(elementDecorator?elementDecorator:()=>{console.log(`no decorator`)}, [`svg#${config.svg_id}`, sector.label, `sectorLabel${sectorIndex}`]);
+        
 }

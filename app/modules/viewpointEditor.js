@@ -1,7 +1,9 @@
 import { cartesianFromPolar, polarFromCartesion } from './drawingUtilities.js'
 import { makeDraggable } from './drag.js'
-import { drawRadar } from './radar.js'
-import { saveDataToLocalStorage, loadDataFromLocalStore } from './data.js'
+import { subscribeToRadarEvents, drawRadar } from './radar.js'
+import { getConfiguration, subscribeToRadarRefresh, getState, publishRefreshRadar } from './data.js'
+import { getEditableDecorator } from './textEditing.js'
+
 export { viewpointEditor, switchboard }
 
 
@@ -11,23 +13,23 @@ const knobBuffer = 0.04
 const switchboard = {
     handleLayersChange: (e) => {
         config.topLayer = e.currentTarget.id
-        drawRadar(config);
+        publishRefreshRadar()
         synchronizeControlsWithCurrentRingOrSector()
     },
     handleSectorSelection: (sector) => {
         config.selectedSector = sector
-        drawRadar(config);
+        publishRefreshRadar()
         synchronizeControlsWithCurrentRingOrSector()
     },
     handleRingSelection: (ring) => {
         config.selectedRing = ring
-        drawRadar(config);
+        publishRefreshRadar()
         synchronizeControlsWithCurrentRingOrSector()
     },
     handleSectorBoundariesChange: (e) => {
 
         config.sectorBoundariesExtended = "extendedSectorBoundaries" == e.currentTarget.id
-        drawRadar(config);
+        publishRefreshRadar()
     },
     handleColorSelection: (color) => {
         if ("sectors" == config.topLayer)
@@ -35,7 +37,7 @@ const switchboard = {
         if ("rings" == config.topLayer)
             config.ringConfiguration.rings[config.selectedRing].backgroundColor = color.hexString
 
-        drawRadar(config)
+        publishRefreshRadar()
     },
     handleOpacitySlider: (sliderValue) => {
 
@@ -43,11 +45,11 @@ const switchboard = {
             config.sectorConfiguration.sectors[config.selectedSector].opacity = sliderValue
         if ("rings" == config.topLayer)
             config.ringConfiguration.rings[config.selectedRing].opacity = sliderValue
-        drawRadar(config)
+        publishRefreshRadar()
     },
     handleDragEvent: (eventType, element, dragCoordinates) => {
         let newCoordinates = dragCoordinates
-        //console.log(`dragged element: ${element.id}`)
+        console.log(`dragged element: ${element.id}`)
         if (element.id.startsWith("sectorBackgroundImage")) {
             handleDragSectorBackgroundImage(element.id.substring(21), newCoordinates)
         }
@@ -66,7 +68,7 @@ const switchboard = {
             }
             // TODO make sure that sum of ring width <=1
             config.ringConfiguration.rings[ringId].width = config.ringConfiguration.rings[ringId].width + deltaWidth
-            drawRadar(config)
+            publishRefreshRadar()
 
         }
         const isSectorDrag = (element.id != null && element.id.startsWith("sectorKnob"))
@@ -82,7 +84,7 @@ const switchboard = {
             const deltaAngle = dragAnglePercentage - currentAnglePercentage // the change in angle as a result of the drag action
             config.sectorConfiguration.sectors[sectorId].angle = config.sectorConfiguration.sectors[sectorId].angle + deltaAngle;
             // TODO cater for sum of angle percentages > 1 ?  
-            drawRadar(config)
+            publishRefreshRadar()
             // derive new x and y from polar phi and maximumradiun
             newCoordinates = cartesianFromPolar({ phi: newPolarCoordinates.phi, r: config.maxRingRadius })
 
@@ -98,7 +100,7 @@ const switchboard = {
             config.ringConfiguration.rings[config.selectedRing] = config.ringConfiguration.rings[config.selectedRing + 1]
             config.ringConfiguration.rings[config.selectedRing + 1] = tmp
             config.selectedRing++
-            drawRadar(config)
+            publishRefreshRadar()
         }
 
         if (config.topLayer == "sectors" && config.selectedSector < config.sectorConfiguration.sectors.length - 1) {
@@ -106,7 +108,7 @@ const switchboard = {
             config.sectorConfiguration.sectors[config.selectedSector] = config.sectorConfiguration.sectors[config.selectedSector + 1]
             config.sectorConfiguration.sectors[config.selectedSector + 1] = tmp
             config.selectedSector++
-            drawRadar(config)
+            publishRefreshRadar()
         }
 
     },
@@ -117,14 +119,14 @@ const switchboard = {
             config.ringConfiguration.rings[config.selectedRing] = config.ringConfiguration.rings[config.selectedRing - 1]
             config.ringConfiguration.rings[config.selectedRing - 1] = tmp
             config.selectedRing--
-            drawRadar(config)
+            publishRefreshRadar()
         }
         if (config.topLayer == "sectors" && config.selectedSector > 0) {
             const tmp = config.sectorConfiguration.sectors[config.selectedSector]
             config.sectorConfiguration.sectors[config.selectedSector] = config.sectorConfiguration.sectors[config.selectedSector - 1]
             config.sectorConfiguration.sectors[config.selectedSector - 1] = tmp
             config.selectedSector--
-            drawRadar(config)
+            publishRefreshRadar()
         }
     },
     handleRemoveRingOrSector: (event) => {
@@ -138,7 +140,7 @@ const switchboard = {
             config.sectorConfiguration.sectors.splice(config.selectedSector, 1)
             config.sectorConfiguration.sectors[config.selectedSector].angle = config.sectorConfiguration.sectors[config.selectedSector].angle + freedUpAngle
         }
-        drawRadar(config)
+        publishRefreshRadar()
 
     },
     handleAddRingOrSector: (event) => {
@@ -153,31 +155,21 @@ const switchboard = {
             config.sectorConfiguration.sectors[config.selectedSector].angle = halfAngle
             config.sectorConfiguration.sectors.splice(config.selectedSector, 0, { label: "NEW!!", angle: halfAngle })
         }
-        drawRadar(config)
-    },
-    handleSave: () => { saveDataToLocalStorage() }
-    , handleLoad: () => {
-        // swap functions temporarily stored in config and not stored in localstorage 
-        // TODO do not store these functions in CONFIG - they are not linked to a viewpoint template/configuration!
-        const makeEditable = config.make_editable;
-        const switchboard = config.switchboard;
-        config = loadDataFromLocalStore();
-        config.make_editable = makeEditable;
-        config.switchboard = switchboard;
-        drawRadar(config)
-        initializeColorsConfigurator()
+        publishRefreshRadar()
     }
+
+
 }
+
 
 
 
 let config
 
 const viewpointEditor = function (configuration) {
-    config = configuration
-    config['make_editable'] = make_editable
-    config['switchboard'] = switchboard
-    const radar = drawRadar(config)
+    config = getConfiguration() // get configuration from module data
+
+    drawRadar(config, getEditableDecorator(handleInputChange))
     const svg = d3.select(`svg#${config.svg_id}`)
 
     makeDraggable(svg.node(), switchboard.handleDragEvent)
@@ -188,6 +180,24 @@ const viewpointEditor = function (configuration) {
     initializeEditListeners()
 
     initializeColorsConfigurator()
+    initializeSizesConfigurator()
+    initializeShapesConfigurator()
+    subscribeToRadarRefresh(refreshRadar)
+    subscribeToRadarEvents(handleRadarEvent)
+}
+const handleRadarEvent = (radarEvent) => {
+    console.log(`received radar event ${JSON.stringify(radarEvent)}`)
+    if ("ringClick" == radarEvent.type) switchboard.handleRingSelection(radarEvent.ring)
+    if ("sectorClick" == radarEvent.type) switchboard.handleSectorSelection(radarEvent.sector)
+}
+
+const refreshRadar = () => {
+    config = getConfiguration()
+    drawRadar(config, getEditableDecorator(handleInputChange))
+    initializeColorsConfigurator()
+    initializeSizesConfigurator()
+    initializeShapesConfigurator()
+    // TODO synchronize top layer, selected ring/selected sector, 
 }
 
 const initializeEditListeners = () => {
@@ -199,8 +209,6 @@ const initializeEditListeners = () => {
     document.getElementById('decreaseRingOrSector').addEventListener("click", switchboard.handleDecreaseRingOrSector);
     document.getElementById('removeRingOrSector').addEventListener("click", switchboard.handleRemoveRingOrSector);
     document.getElementById('newRingOrSector').addEventListener("click", switchboard.handleAddRingOrSector);
-    document.getElementById('save').addEventListener("click", switchboard.handleSave);
-    document.getElementById('load').addEventListener("click", switchboard.handleLoad);
 
 }
 
@@ -277,24 +285,37 @@ const handleInputChange = function (fieldIdentifier, newValue) {
     if (fieldIdentifier.startsWith("sectorLabel")) {
         const sectorIndex = fieldIdentifier.substring(sectorLabelStringLength)
         config.sectorConfiguration.sectors[sectorIndex].label = newValue
-        drawRadar(config)
+        publishRefreshRadar()
     }
     if (fieldIdentifier.startsWith("ringLabel")) {
         const ringIndex = fieldIdentifier.substring(ringLabelStringLength)
         config.ringConfiguration.rings[ringIndex].label = newValue
-        drawRadar(config)
+        publishRefreshRadar()
     }
     if (fieldIdentifier.startsWith("title")) {
         config.title.text = newValue
-        drawRadar(config)
+        publishRefreshRadar()
     }
     if (fieldIdentifier.startsWith("colorLabel")) {
         const colorLabelStringLength = 10
-        // TODO create new color if there is no color for this index
         const colorIndex = fieldIdentifier.substring(colorLabelStringLength)
         config.colorsConfiguration.colors[colorIndex].label = newValue
         initializeColorsConfigurator()
     }
+    if (fieldIdentifier.startsWith("sizeLabel")) {
+        const sizeLabelStringLength = 9
+        const sizeIndex = fieldIdentifier.substring(sizeLabelStringLength)
+        config.sizesConfiguration.sizes[sizeIndex].label = newValue
+        initializeSizesConfigurator()
+    }
+    if (fieldIdentifier.startsWith("shapeLabel")) {
+        const shapeLabelStringLength = 10
+        const shapeIndex = fieldIdentifier.substring(shapeLabelStringLength)
+        config.shapesConfiguration.shapes[shapeIndex].label = newValue
+        initializeShapesConfigurator()
+    }
+
+
 }
 
 const handleDragSectorBackgroundImage = function (sectorId, newCoordinates) {
@@ -302,82 +323,13 @@ const handleDragSectorBackgroundImage = function (sectorId, newCoordinates) {
     const newPolarCoordinates = polarFromCartesion({ x: newCoordinates.x - config.width / 2, y: newCoordinates.y - config.height / 2 })
 
 }
-
-// copied from http://bl.ocks.org/GerHobbelt/2653660
-function make_editable(d, field) { // field id an array [svgElementId, valueToEdit, fieldIdentifier]
-
-    const svgElementId = arguments[1][0]
-    const valueToEdit = arguments[1][1]
-    const fieldIdentifier = arguments[1][2]
-    d
-        .on("mouseover", function () {
-            d3.select(this).style("fill", "red");
-        })
-        .on("mouseout", function () {
-            d3.select(this).style("fill", null); // TODO reset fill style to previous value, not reset to null
-        })
-        .on("click", function (d) {
-            //            var p = this.parentNode;
-
-            // inject a HTML form to edit the content here...
-
-            const svg = d3.select(svgElementId)
-            var frm = svg.append("foreignObject");
-
-            var inp = frm
-                .attr("x", d.layerX) // use x and y coordinates from mouse event // TODO for use in size/color/shape - the location needs to be derived differently 
-                .attr("y", d.layerY)
-
-                .attr("width", 300)
-                .attr("height", 25)
-                .append("xhtml:form")
-                .append("input")
-                .attr("title", "Edit value, then press tab or click outside of field")
-                .attr("value", function () {
-                    // nasty spot to place this call, but here we are sure that the <input> tag is available
-                    // and is handily pointed at by 'this':
-                    this.focus();
-                    return valueToEdit;
-                })
-                .attr("style", "width: 294px;")
-                // make the form go away when you jump out (form looses focus) or hit ENTER:
-                .on("blur", function () {
-                    const txt = inp.node().value;
-                    handleInputChange(fieldIdentifier, txt)
-                    // Note to self: frm.remove() will remove the entire <g> group! Remember the D3 selection logic!
-                    svg.select("foreignObject").remove();
-                })
-                .on("keypress", function () {
-                    // IE fix
-                    if (!d3.event)
-                        d3.event = window.event;
-
-                    const e = d3.event;
-                    if (e.keyCode == 13) {
-                        if (typeof (e.cancelBubble) !== 'undefined') // IE
-                            e.cancelBubble = true;
-                        if (e.stopPropagation)
-                            e.stopPropagation();
-                        e.preventDefault();
-
-                        const txt = inp.node().value;
-                        handleInputChange(fieldIdentifier, txt)
-
-                        // odd. Should work in Safari, but the debugger crashes on this instead.
-                        // Anyway, it SHOULD be here and it doesn't hurt otherwise.
-                        svg.select("foreignObject").remove();
-                    }
-                });
-        });
-}
-
 let currentColorsBoxColor
 let colorsBoxColorPicker
 const initializeColorsConfigurator = () => {
     const maxNumberOfColors = 5
     const colorsBox = d3.select("svg#colorsBox")
         .style("background-color", "silver")
-        .attr("width", 450)
+        .attr("width", "90%")
         .attr("height", maxNumberOfColors * 55 + 70)
     colorsBox.selectAll("*").remove(); // clean content (if there is any)
 
@@ -406,16 +358,16 @@ const initializeColorsConfigurator = () => {
             })
             ;
         if (config.colorsConfiguration.colors[i].enabled) {
-        let checked = colorsBox.append('rect')
-            .attr('x', checkboxIndent + 5)
-            .attr('y', 45 + i * 55)
-            .attr("fill", "black")
-            .attr('width', 16)
-            .attr('height', 16)
-            .on("click", () => {
-                config.colorsConfiguration.colors[i].enabled = !config.colorsConfiguration.colors[i].enabled
-                initializeColorsConfigurator()
-            })
+            let checked = colorsBox.append('rect')
+                .attr('x', checkboxIndent + 5)
+                .attr('y', 45 + i * 55)
+                .attr("fill", "black")
+                .attr('width', 16)
+                .attr('height', 16)
+                .on("click", () => {
+                    config.colorsConfiguration.colors[i].enabled = !config.colorsConfiguration.colors[i].enabled
+                    initializeColorsConfigurator()
+                })
         }
         colorsBox.append('circle')
             .attr("id", `templateColors${i}`)
@@ -437,14 +389,191 @@ const initializeColorsConfigurator = () => {
             .style("font-family", "Arial, Helvetica")
             .style("font-size", "32px")
             .style("font-weight", "bold")
-            .call(config.make_editable, ["svg#colorsBox", configuredColor ? configuredColor.label : `COLOR LABEL ${i + 1}`, `colorLabel${i}`]);
+            .call(getEditableDecorator(handleInputChange), ["svg#colorsBox", configuredColor ? configuredColor.label : `COLOR LABEL ${i + 1}`, `colorLabel${i}`]);
 
     }
     if (colorsBoxColorPicker == null) {
         colorsBoxColorPicker = new iro.ColorPicker('#colorsBoxColorPicker');
         colorsBoxColorPicker.on('color:change', (color) => {
-            d3.select(`circle#templateColors${currentColorsBoxColor}`).attr('fill', color.hexString)
-            config.colorsConfiguration.colors[currentColorsBoxColor].color = color.hexString
+            if (currentColorsBoxColor != null && d3.select(`circle#templateColors${currentColorsBoxColor}`) != null) {
+                d3.select(`circle#templateColors${currentColorsBoxColor}`).attr('fill', color.hexString)
+
+                config.colorsConfiguration.colors[currentColorsBoxColor].color = color.hexString
+            }
         });
+    }
+}
+
+const sizeRadiuses = [4, 8, 12, 16, 19, 22, 26, 32]
+
+const initializeSizesConfigurator = () => {
+    const maxNumberOfSizes = 7
+    const sizesBox = d3.select("svg#sizesBox")
+        .style("background-color", "silver")
+        .attr("width", "90%")
+        .attr("height", maxNumberOfSizes * 55 + 150)
+    sizesBox.selectAll("*").remove(); // clean content (if there is any)
+
+    sizesBox.append('g').attr('class', 'sizesBox')
+    let configuredColor
+    const checkboxIndent = 15
+    const circleIndent = 60
+    const labelIndent = 130
+    for (let i = 0; i < maxNumberOfSizes; i++) {
+
+        let checkbox = sizesBox.append('rect')
+            .attr('x', checkboxIndent)
+            .attr('y', 40 + i * 55)
+            .attr("fill", "white")
+            .attr('width', 26)
+            .attr('height', 26)
+            .style("stroke", "black")
+            .style("stroke-width", 1)
+            .on("click", () => {
+                config.sizesConfiguration.sizes[i].enabled = !config.sizesConfiguration.sizes[i].enabled
+                initializeSizesConfigurator()
+            })
+            ;
+        if (config.sizesConfiguration.sizes[i] && config.sizesConfiguration.sizes[i].enabled) {
+            let checked = sizesBox.append('rect')
+                .attr('x', checkboxIndent + 5)
+                .attr('y', 45 + i * 55)
+                .attr("fill", "black")
+                .attr('width', 16)
+                .attr('height', 16)
+                .on("click", () => {
+                    config.sizesConfiguration.sizes[i].enabled = !config.sizesConfiguration.sizes[i].enabled
+                    initializeSizesConfigurator()
+                })
+        }
+        sizesBox.append('circle')
+            .attr("id", `templateSizes${i}`)
+            .attr("r", sizeRadiuses[i])
+            .attr("fill", "black")
+            .attr("cx", circleIndent + 20)
+            .attr("cy", 50 + i * 55)
+            .attr("class", "clickableProperty")
+        // .attr("transform", `scale(${i+1} ${i+1})`)
+
+        sizesBox.append("text")
+            .attr("id", `sizeLabel${i}`)
+            .text(config.sizesConfiguration.sizes[i] != null && config.sizesConfiguration.sizes[i].label != null ? config.sizesConfiguration.sizes[i].label : `SIZE LABEL ${i + 1}`)
+            .attr("x", labelIndent)
+            .attr("y", 65 + i * 55)
+            .style("fill", "#e5e5e5")
+            .style("font-family", "Arial, Helvetica")
+            .style("font-size", "32px")
+            .style("font-weight", "bold")
+            .call( getEditableDecorator(handleInputChange), ["svg#sizesBox", config.sizesConfiguration.sizes[i] != null && config.sizesConfiguration.sizes[i].label != null ? config.sizesConfiguration.sizes[i].label : `SIZE LABEL ${i + 1}`
+                , `sizeLabel${i}`]);
+
+    }
+}
+
+const initializeShapesConfigurator = () => {
+    const maxNumberOfshapes = 9
+    const shapesBox = d3.select("svg#shapesBox")
+        .style("background-color", "silver")
+        .attr("width", "90%")
+        .attr("height", maxNumberOfshapes * 55 + 150)
+    shapesBox.selectAll("*").remove(); // clean content (if there is any)
+
+    shapesBox.append('g').attr('class', 'shapesBox')
+
+    const checkboxIndent = 15
+    const circleIndent = 60
+    const labelIndent = 130
+    for (let i = 0; i < maxNumberOfshapes; i++) {
+
+        let checkbox = shapesBox.append('rect')
+            .attr('x', checkboxIndent)
+            .attr('y', 40 + i * 55)
+            .attr("fill", "white")
+            .attr('width', 26)
+            .attr('height', 26)
+            .style("stroke", "black")
+            .style("stroke-width", 1)
+            .on("click", () => {
+                config.shapesConfiguration.shapes[i].enabled = !config.shapesConfiguration.shapes[i].enabled
+                initializeShapesConfigurator()
+            })
+            ;
+        if (config.shapesConfiguration.shapes[i] && config.shapesConfiguration.shapes[i].enabled) {
+            let checked = shapesBox.append('rect')
+                .attr('x', checkboxIndent + 5)
+                .attr('y', 45 + i * 55)
+                .attr("fill", "black")
+                .attr('width', 16)
+                .attr('height', 16)
+                .on("click", () => {
+                    config.shapesConfiguration.shapes[i].enabled = !config.shapesConfiguration.shapes[i].enabled
+                    initializeShapesConfigurator()
+                })
+        }
+
+        let shape, fillColor = "green"
+        //     square, diamond, circle, triangle, star, plus, ring, rectangleVertical, rectangleHorizontal
+        // arrows, triangle left/right/down, <, > , ?, 
+        if (config.shapesConfiguration.shapes[i] != null) {
+            if (config.shapesConfiguration.shapes[i].shape == "square") {
+                const square = d3.symbol().type(d3.symbolSquare).size(800);
+                shape = shapesBox.append('path').attr("d", square)
+            }
+            if (config.shapesConfiguration.shapes[i].shape == "diamond") {
+                const diamond = d3.symbol().type(d3.symbolDiamond).size(800);
+                shape = shapesBox.append('path').attr("d", diamond)
+            }
+            if (config.shapesConfiguration.shapes[i].shape == "star") {
+                const star = d3.symbol().type(d3.symbolStar).size(650);
+                shape = shapesBox.append('path').attr("d", star)
+            }
+            if (config.shapesConfiguration.shapes[i].shape == "triangle") {
+                const triangle = d3.symbol().type(d3.symbolTriangle).size(800);
+                shape = shapesBox.append('path').attr("d", triangle)
+            }
+            if (config.shapesConfiguration.shapes[i].shape == "plus") {
+                const plus = d3.symbol().type(d3.symbolCross).size(800);
+                shape = shapesBox.append('path').attr("d", plus)
+            }
+            if (config.shapesConfiguration.shapes[i].shape == "circle") {
+                shape = shapesBox.append('circle').attr("r", 20)
+            }
+            if (config.shapesConfiguration.shapes[i].shape == "ring") {
+                shape = shapesBox.append('circle').attr("r", 20).style("stroke-width", 11).style("stroke", "green")
+                fillColor = "gray"
+            }
+            if (config.shapesConfiguration.shapes[i].shape == "rectangleHorizontal") {
+                shape = shapesBox.append('rect')
+                    .attr('width', 38)
+                    .attr('height', 10)
+                    .attr('x', -20)
+                    .attr('y', -4)
+            }
+            if (config.shapesConfiguration.shapes[i].shape == "rectangleVertical") {
+                shape = shapesBox.append('rect')
+                    .attr('width', 10)
+                    .attr('height', 38)
+                    .attr('x', -5)
+                    .attr('y', -15)
+            }
+            if (shape) shape
+                .attr("id", `templateShapes${i}`)
+                .attr("fill", fillColor)
+                .attr("transform", `translate( ${circleIndent + 20},  ${50 + i * 55})`)
+        }
+
+
+        shapesBox.append("text")
+            .attr("id", `sizeLabel${i}`)
+            .text(config.shapesConfiguration.shapes[i] != null && config.shapesConfiguration.shapes[i].label != null ? config.shapesConfiguration.shapes[i].label : `SHAPE LABEL ${i + 1}`)
+            .attr("x", labelIndent)
+            .attr("y", 65 + i * 55)
+            .style("fill", "#e5e5e5")
+            .style("font-family", "Arial, Helvetica")
+            .style("font-size", "32px")
+            .style("font-weight", "bold")
+            .call( getEditableDecorator(handleInputChange), ["svg#shapesBox", config.shapesConfiguration.shapes[i] != null && config.shapesConfiguration.shapes[i].label != null ? config.shapesConfiguration.shapes[i].label : ` SHAPE LABEL ${i + 1}`
+                , `shapeLabel${i}`]);
+
     }
 }

@@ -3,10 +3,25 @@
 ## TODOs
 - sector-label and ring-label styling? (font, size, fill)
 - assign background color to area outside radar (ring == -1? , per sector or in general?)
+- extend (foreign object) text editor for labels - larger, add font family/size/color/style
+- 
+
+## March 13th
+- upload/download entire data set 
+- consider radar an ecapsulated component that allows a decorator function (to enhance radar elements/make them editable ) and publishes radar events (ring selection, sector selection)
+- pub/sub mechanism (through data.js) for refresh radar (various events can trigger radar refresh - load data, change template, change template details)
+- code for text editing in module textEditing
+
+## March 12th
+
+- configure the sizes 
+- configure the shapes for the template 
+- blackout function for simple,l custom debouncing (module utils.js)
+- manage data in data.js - complex object with multiple templates
 
 ## March 11th
 
-- save data to local storage
+- save data to local storage // note: with two browser tabs open, race conditions may occur around saving data
 - load data from local storage
 - configure the colors for the viewpoint template (which colors can be selected for the blips)
 

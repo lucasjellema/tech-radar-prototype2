@@ -47,10 +47,10 @@
 
             cursor: move;
         }
-        
-.clickableProperty {
-  cursor:pointer;
-}
+
+        .clickableProperty {
+            cursor: pointer;
+        }
     </style>
 
 </head>
@@ -107,36 +107,41 @@
                     <label for="rings">Not Extended</label>
                 </div>
                 <div>
-                    <input type="button" id="save" name="save" value="Save">
-                    <input type="button" id="load" name="load" value="Load (from local)">
+                    <input type="button" id="save" name="save" value="Save to Local Storage">
+                    <input type="button" id="load" name="load" value="Load (from local storage)">
                 </div>
+                <div>
+                    <input type="button" id="download" name="download" value="Download">
+                    <input type="button" id="upload" name="upload" value="Upload">
+                    <input type="file" id="fileElem" multiple accept="application/json,text/*" style="display:none">
+                                </div>
             </div>
         </div>
     </div>
-<br/>
-<hr />
+    <br />
+    <hr />
     <div id="sizes" class="column1_3">
         <h3>Define Sizes in Template</h3>
-   <svg id="sizesBox">
+        <svg id="sizesBox">
 
-   </svg>    
-    
+        </svg>
+
     </div>
 
     <div id="colors" class="column1_3">
         <h3>Define Colors in Template</h3>
-        <svg id="colorsBox" >
-       
-        </svg>    
-        <div id="colorsBoxColorPicker" ></div>
+        <svg id="colorsBox">
 
-     </div>
+        </svg>
+        <div id="colorsBoxColorPicker"></div>
+
+    </div>
     <div id="shapes" class="column1_3">
-        Shapes
+        <h3>Define Shapes in Template</h3>
         <svg id="shapesBox">
-       
-        </svg>    
-     </div>
+
+        </svg>
+    </div>
 
 
     <script type="module">

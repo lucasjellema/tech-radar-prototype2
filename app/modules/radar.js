@@ -7,11 +7,11 @@ const subscribers = []
 const subscribeToRadarEvents = (subscriber) => { subscribers.push(subscriber) }
 const publishRadarEvent = (event) => { subscribers.forEach((subscriber) => { subscriber(event) }) }
 
-const styleText = (textElement, configNode, config, alternativeFontSource=null) => {
-   const fontStyleElements = [{ style: "fill", property: "color" }, { style: "font-size", property: "fontSize" }
-                             , { style: "font-family", property: "fontFamily" }, { style: "font-weight", property: "fontWeight" }
-                             , { style: "font-style", property: "fontStyle" }
-                            ]
+const styleText = (textElement, configNode, config, alternativeFontSource = null) => {
+    const fontStyleElements = [{ style: "fill", property: "color" }, { style: "font-size", property: "fontSize" }
+        , { style: "font-family", property: "fontFamily" }, { style: "font-weight", property: "fontWeight" }
+        , { style: "font-style", property: "fontStyle" }
+    ]
     fontStyleElements.forEach((fontStyleElement) => {
         try {
             let styleProperty = (configNode?.font?.[fontStyleElement.property] ?? alternativeFontSource?.font?.[fontStyleElement.property]) ?? config.defaultFont[fontStyleElement.property]
@@ -159,7 +159,14 @@ const drawRings = function (radar, config) {
             .style("stroke-width", ("rings" == config.topLayer && config.selectedRing == i) ? 6 : 2)
             .style("stroke-dasharray", ("rings" == config.topLayer && config.selectedRing == i) ? "" : "5 1")
             .on('click', () => { const ring = i; publishRadarEvent({ type: "ringClick", ring: i }) })
-
+        if (ring.backgroundImage && ring.backgroundImage.image) {
+            ringCanvas.append('image')
+                .attr("id", `ringBackgroundImage${i}`)
+                .attr('xlink:href', ring.backgroundImage.image)
+                .attr('width', 100)
+                .attr("transform", "translate(100,100)")
+                .attr("class", "draggable")
+        }
         if (config.editMode && "rings" == config.topLayer) {
             // draw ring knob at the out edge, horizontal axis
             ringCanvas.append("circle")
@@ -191,7 +198,7 @@ const drawRingLabels = function (radar, config, elementDecorator) {
             .text(ring.label)
             .attr("y", -currentRadius + 62)
             .attr("text-anchor", "middle")
- 
+
             //            .style("pointer-events", "none")
             .style("user-select", "none")
             .call(elementDecorator ? elementDecorator : () => { console.log(`no decorator`) }, [`svg#${config.svg_id}`, ring.label, `ringLabel${i}`]);
@@ -221,14 +228,14 @@ function displaySectorLabel(currentAnglePercentage, startAngle, endAngle, sector
         .attr("id", `sectorLabel${sectorIndex}`)
         .attr("dy", 10)
         .attr("dx", 45)
-        // .style("font-family", "sans-serif")
-        // .style("font-size", "30px")
-        // .style("fill", "#fff")
-        styleText(sectorLabel, sector, config, config.sectorConfiguration)
+    // .style("font-family", "sans-serif")
+    // .style("font-size", "30px")
+    // .style("fill", "#fff")
+    styleText(sectorLabel, sector, config, config.sectorConfiguration)
 
-        sectorLabel.append("textPath")
+    sectorLabel.append("textPath")
         // .attr("class", "textpath tp_avg")
-      //  .attr('fill', '#000')
+        //  .attr('fill', '#000')
         .attr("startOffset", "40%")
         .style("text-anchor", "middle")
         .attr("xlink:href", `#pieText${sectorIndex}`)

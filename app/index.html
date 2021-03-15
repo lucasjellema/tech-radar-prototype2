@@ -74,12 +74,16 @@
                     <input type="radio" id="sectors" name="layering" value="sectors" checked>
                     <label for=" sectors">Sectors</label>
                 </div>
-
                 <div>
                     <input type="radio" id="rings" name="layering" value="rings">
                     <label for="rings">Rings</label>
                 </div>
             </div>
+            <hr />
+            <h3 id="selectedRingSector">Selected Sector/Ring </h3>
+            <textarea id="pasteArea" placeholder="Paste Image Here"></textarea>
+            <p>background image</p>
+            <img id="pastedImage" width="100%"></img>
             <div id="picker"></div>
             <div id="opacitySlider">
                 <p>Opacity</p>
@@ -152,7 +156,6 @@
 
         </svg>
     </div>
-
 
     <script type="module">
         import { viewpointEditor, switchboard } from './modules/viewpointEditor.js';

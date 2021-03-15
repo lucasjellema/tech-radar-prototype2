@@ -178,6 +178,7 @@ const viewpointEditor = function (configuration) {
     initializeRotationSlider()
     initializeOpacitySlider()
     initializeEditListeners()
+    initializeImagePaster()
 
     initializeColorsConfigurator()
     initializeSizesConfigurator()
@@ -185,6 +186,37 @@ const viewpointEditor = function (configuration) {
     subscribeToRadarRefresh(refreshRadar)
     subscribeToRadarEvents(handleRadarEvent)
 }
+
+
+
+const initializeImagePaster = () => {
+    document.getElementById('pasteArea').onpaste = function (event) {
+        // use event.originalEvent.clipboard for newer chrome versions
+        var items = (event.clipboardData  || event.originalEvent.clipboardData).items;
+        console.log(JSON.stringify(items)); // will give you the mime types
+        // find pasted image among pasted items
+        var blob = null;
+        for (var i = 0; i < items.length; i++) {
+          if (items[i].type.indexOf("image") === 0) {
+            blob = items[i].getAsFile();
+          }
+        }
+        // load image if there is a pasted image
+        if (blob !== null) {
+          var reader = new FileReader();
+          reader.onload = function(event) {
+            const selectedObject = config.topLayer == "rings" ? config.ringConfiguration.rings[config.selectedRing] : config.sectorConfiguration.sectors[config.selectedSector]
+
+            if (selectedObject.backgroundImage == null)  selectedObject.backgroundImage={}
+            selectedObject.backgroundImage.image = event.target.result
+            document.getElementById("pastedImage").src = event.target.result;
+          };
+          reader.readAsDataURL(blob);
+        }
+      }
+	
+}
+
 const handleRadarEvent = (radarEvent) => {
     console.log(`received radar event ${JSON.stringify(radarEvent)}`)
     if ("ringClick" == radarEvent.type) switchboard.handleRingSelection(radarEvent.ring)
@@ -216,6 +248,8 @@ const synchronizeControlsWithCurrentRingOrSector = () => {
     const selectedObject = config.topLayer == "rings" ? config.ringConfiguration.rings[config.selectedRing] : config.sectorConfiguration.sectors[config.selectedSector]
     // throw away and recreate opacity slider
     initializeOpacitySlider(selectedObject.opacity)
+    // set section title
+    document.getElementById('selectedRingSector').innerText=`Selected ${config.topLayer.substr(0,config.topLayer.length-1)} ${selectedObject.label}`
 }
 
 let colorPicker

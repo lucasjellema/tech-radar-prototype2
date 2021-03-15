@@ -5,8 +5,17 @@
 - assign background color to area outside radar (ring == -1? , per sector or in general?)
 - extend (foreign object) text editor for labels - larger, add font family/size/color/style
 - extend (foreign object) text editor for different types of input (select, combo, radio)
-- template selection (dropdown/list element to switch between templates)
-- 
+- add background image (upload/URL) for sector; position and scale
+
+## March 15th
+
+- paste background image for sector
+
+### Resources
+- Paste Images, capture in JavaScript  https://ourcodeworld.com/articles/read/491/how-to-retrieve-images-from-the-clipboard-with-javascript-in-the-browser
+
+- How does the paste image from clipboard functionality work in Gmail and Google Chrome 12+?
+  https://stackoverflow.com/questions/6333814/how-does-the-paste-image-from-clipboard-functionality-work-in-gmail-and-google-c 
 
 ## March 13th
 - upload/download entire data set 
@@ -25,7 +34,7 @@
 
 - configure the sizes 
 - configure the shapes for the template 
-- blackout function for simple,l custom debouncing (module utils.js)
+- blackout function for simple, custom debouncing (module utils.js)
 - manage data in data.js - complex object with multiple templates
 
 ## March 11th

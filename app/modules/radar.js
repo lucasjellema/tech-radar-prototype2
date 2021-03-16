@@ -70,11 +70,11 @@ const drawSectors = function (radar, config, elementDecorator = null) {
         .attr("x2", config.sectorBoundariesExtended ? 2000 : config.maxRingRadius)
         .attr("y2", 0)
         .style("stroke", config.colors.grid)
-        .style("stroke-width", 1);
+        .style("stroke-width", 3);
 
     for (let layer = 0; layer < 2; layer++) { // TODO if not edit mode then only one layer
         let currentAnglePercentage = 0
-                for (let i = 0; i < config.sectorConfiguration.sectors.length; i++) {
+        for (let i = 0; i < config.sectorConfiguration.sectors.length; i++) {
             let sector = config.sectorConfiguration.sectors[i]
             currentAnglePercentage = currentAnglePercentage + sector.angle
             let currentAngle = 2 * Math.PI * currentAnglePercentage
@@ -82,36 +82,47 @@ const drawSectors = function (radar, config, elementDecorator = null) {
 
             let startAngle = (- 2 * (currentAnglePercentage - sector.angle) + 0.5) * Math.PI
             let endAngle = (- 2 * currentAnglePercentage + 0.5) * Math.PI
-            if (layer==0) {
-            // using angle and maxring radius, determine x and y for endpoint of line, then draw line
-            sectorCanvas.append("line")
-                .attr("x1", 0).attr("y1", 0)
-                .attr("x2", sectorEndpoint.x).attr("y2", - sectorEndpoint.y)
-                .style("stroke", config.colors.grid)
-                .style("stroke-width", 3);
+            if (layer == 0) {
+                // using angle and maxring radius, determine x and y for endpoint of line, then draw line
+                sectorCanvas.append("line")
+                    .attr("x1", 0).attr("y1", 0)
+                    .attr("x2", sectorEndpoint.x).attr("y2", - sectorEndpoint.y)
+                    .style("stroke", config.colors.grid)
+                    .style("stroke-width", 4);
 
-            const sectorArc = d3.arc()
-                .outerRadius(config.maxRingRadius)
-                .innerRadius(15)
-                // startAngle and endAngle are measured clockwise from the 12 o’clock in radians; the minus takes care of anti-clockwise and the +0.5 is for starting at the horizontal axis pointing east
-                .startAngle(startAngle)
-                .endAngle(endAngle)
-            sectorCanvas.append("path")
-                .attr("id", `piePiece${i}`)
-                .attr("d", sectorArc)
-                .style("fill", sector.backgroundColor != null ? sector.backgroundColor : color_white)
-                .attr("opacity", sector.opacity != null ? sector.opacity : 0.6)
-                // define borders of sectors
-                .style("stroke", ("sectors" == config.topLayer && config.selectedSector == i) ? "red" : "#000")
-                .style("stroke-width", ("sectors" == config.topLayer && config.selectedSector == i) ? 8 : 2)
-                .style("stroke-dasharray", ("sectors" == config.topLayer && config.selectedSector == i) ? "" : "9 1")
-                .on('click', () => { const sector = i; publishRadarEvent({ type: "sectorClick", sector: i }) })
+                const sectorArc = d3.arc()
+                    .outerRadius(config.maxRingRadius)
+                    .innerRadius(15)
+                    // startAngle and endAngle are measured clockwise from the 12 o’clock in radians; the minus takes care of anti-clockwise and the +0.5 is for starting at the horizontal axis pointing east
+                    .startAngle(startAngle)
+                    .endAngle(endAngle)
+                sectorCanvas.append("path")
+                    .attr("id", `piePiece${i}`)
+                    .attr("d", sectorArc)
+                    .style("fill", sector.backgroundColor != null ? sector.backgroundColor : color_white)
+                    .attr("opacity", sector.opacity != null ? sector.opacity : 0.6)
+                    // define borders of sectors
+                    .style("stroke", ("sectors" == config.topLayer && config.selectedSector == i) ? "red" : "#000")
+                    .style("stroke-width", ("sectors" == config.topLayer && config.selectedSector == i) ? 8 : 4)
+                    .style("stroke-dasharray", ("sectors" == config.topLayer && config.selectedSector == i) ? "" : "9 1")
+                    .on('click', () => { const sector = i; publishRadarEvent({ type: "sectorClick", sector: i }) })
+                // add color to the sector area outside the outer ring
+                const outerringArc = d3.arc()
+                    .outerRadius(config.maxRingRadius * 4)
+                    .innerRadius(config.maxRingRadius)
+                    .startAngle(startAngle)
+                    .endAngle(endAngle)
+                sectorCanvas.append("path")
+                    .attr("id", `outerring${i}`)
+                    .attr("d", outerringArc)
+                    .style("fill", sector?.outerringBackgroundColor?? "white")
 
-            // print sector label along the edge of the arc
-            displaySectorLabel(currentAnglePercentage, startAngle, endAngle, sectorCanvas, i, sector, config, elementDecorator)
+                // print sector label along the edge of the arc
+                displaySectorLabel(currentAnglePercentage, startAngle, endAngle, sectorCanvas, i, sector, config, elementDecorator)
+
             }
             // TODO make sure that background images are printed after and therefore on top of all sectors    
-            if (layer==1 && sector?.backgroundImage?.image!=null) {
+            if (layer == 1 && sector?.backgroundImage?.image != null) {
                 sectorCanvas.append('image')
                     .attr("id", `sectorBackgroundImage${i}`)
                     .attr('xlink:href', sector.backgroundImage.image)

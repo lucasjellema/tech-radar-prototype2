@@ -19,6 +19,10 @@
             width: 30%;
         }
 
+        .column1_2 {
+            float: left;
+            width: 50%;
+        }
 
         .column1_3 {
             float: left;
@@ -51,7 +55,13 @@
         .clickableProperty {
             cursor: pointer;
         }
-        .templates-select{padding:9px 0;width:70%;border:none;border-bottom:1px solid #ccc}
+
+        .templates-select {
+            padding: 9px 0;
+            width: 70%;
+            border: none;
+            border-bottom: 1px solid #ccc
+        }
     </style>
 
 </head>
@@ -81,12 +91,24 @@
             </div>
             <hr />
             <h3 id="selectedRingSector">Selected Sector/Ring </h3>
-            <textarea id="pasteArea" placeholder="Paste Image Here"></textarea>
-            <label for="imageScaleFactor">background image</label>
-            <input id="imageScaleFactor" style="width: 50px;" title="Specify the image scalefactor - between 0 and 100"></input>
-            <img id="pastedImage" width="200px"></img>
-            <p>Image Scale Factor</p>
-            <div id="picker"></div>
+            <div>
+                <p>Background Image</p>
+                <textarea id="pasteArea" placeholder="Paste Image Here"></textarea>
+                <label for="imageScaleFactor">Scale Factor</label>
+                <input id="imageScaleFactor" style="width: 50px;"
+                    title="Specify the image scalefactor - between 0 and 100"></input>
+                <img id="pastedImage" width="200px"></img>
+            </div>
+            <div>
+                <div class="column1_2">
+                    <h4>Background Color (inside rings)</h4>
+                    <div id="insideRingsColorPicker"></div>
+                </div>
+                <div class="column1_2">
+                    <h4>Background Color (outside rings)</h4>
+                    <div id="outerRingBackgroundColorPicker"></div>
+                </div>
+            </div>
             <div id="opacitySlider">
                 <p>Opacity</p>
             </div>
@@ -129,7 +151,7 @@
                 <div>
                     <select id="templateSelector" class="templates-select" name="option">
                         <option value="" disabled selected>Select Radar Template</option>
-                      </select>
+                    </select>
                 </div>
             </div>
         </div>

@@ -2,12 +2,12 @@
 
 ## TODOs
 - sector-label and ring-label styling? (font, size, fill) editable in UI 
-- assign background color to area outside radar (ring == -1? , per sector or in general?)
+- assign background color to area outside radar (ring == -1? , per sector or in general?) - use ARC
 - extend (foreign object) text editor for labels - larger, add font family/size/color/style
 - extend (foreign object) text editor for different types of input (select, combo, radio)
 - add background image (upload/URL) for sector; 
-- define position (X,Y) and scale for background image
-- remove background image for sector/ring
+- reset/remove background image for sector/ring
+- context menu on sector to bring up form to edit background color, opacity, image (& scalefactor) 
 
 
 
@@ -15,6 +15,7 @@
 
 - drag & drop sector background images
 - set scale factor for sector background image
+- define background color for area outside rings
 
 ## March 15th
 

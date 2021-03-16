@@ -33,12 +33,17 @@ const switchboard = {
         config.sectorBoundariesExtended = "extendedSectorBoundaries" == e.currentTarget.id
         publishRefreshRadar()
     },
-    handleColorSelection: (color) => {
+    handleInsideRingBackgroundColorSelection: (color) => {
         if ("sectors" == config.topLayer)
             config.sectorConfiguration.sectors[config.selectedSector].backgroundColor = color.hexString
         if ("rings" == config.topLayer)
             config.ringConfiguration.rings[config.selectedRing].backgroundColor = color.hexString
 
+        publishRefreshRadar()
+    },
+    handleOuterRingBackgroundColorSelection: (color) => {
+        if ("sectors" == config.topLayer)
+            config.sectorConfiguration.sectors[config.selectedSector].outerringBackgroundColor = color.hexString
         publishRefreshRadar()
     },
     handleOpacitySlider: (sliderValue) => {
@@ -190,7 +195,9 @@ const viewpointEditor = function (configuration) {
 
     makeDraggable(svg.node(), switchboard.handleDragEvent)
 
-    initializeColorPicker()
+    initializeColorPicker('#insideRingsColorPicker', switchboard.handleInsideRingBackgroundColorSelection)
+    initializeColorPicker('#outerRingBackgroundColorPicker', switchboard.handleOuterRingBackgroundColorSelection)
+    
     initializeRotationSlider()
     initializeOpacitySlider()
     initializeEditListeners()
@@ -295,9 +302,9 @@ const synchronizeControlsWithCurrentRingOrSector = () => {
 }
 
 let colorPicker
-const initializeColorPicker = () => {
-    colorPicker = new iro.ColorPicker('#picker');
-    colorPicker.on('color:change', switchboard.handleColorSelection);
+const initializeColorPicker = ( elementId, handleColorSelect) => {
+    colorPicker = new iro.ColorPicker(elementId, {width:140});
+    colorPicker.on('color:change', handleColorSelect);
 }
 
 const handleRotationSlider = function (value) {

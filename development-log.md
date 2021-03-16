@@ -14,6 +14,7 @@
 ## March 16th
 
 - drag & drop sector background images
+- set scale factor for sector background image
 
 ## March 15th
 

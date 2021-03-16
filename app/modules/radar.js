@@ -110,13 +110,13 @@ const drawSectors = function (radar, config, elementDecorator = null) {
             // print sector label along the edge of the arc
             displaySectorLabel(currentAnglePercentage, startAngle, endAngle, sectorCanvas, i, sector, config, elementDecorator)
             }
-            // TODO make sure that background images are printed after all sectors    
+            // TODO make sure that background images are printed after and therefore on top of all sectors    
             if (layer==1 && sector?.backgroundImage?.image!=null) {
                 sectorCanvas.append('image')
                     .attr("id", `sectorBackgroundImage${i}`)
                     .attr('xlink:href', sector.backgroundImage.image)
                     .attr('width', 100)
-                    .attr("transform", `translate(${sector.backgroundImage.x ?? 100},${sector.backgroundImage.y ?? 100})`)
+                    .attr("transform", `translate(${sector.backgroundImage.x ?? 100},${sector.backgroundImage.y ?? 100}) scale(${sector.backgroundImage?.scaleFactor ?? 1}) `)
                     .attr("class", "draggable")
 
             }

@@ -18,11 +18,13 @@ const switchboard = {
     },
     handleSectorSelection: (sector) => {
         config.selectedSector = sector
+        getState().selectedSector = sector
         publishRefreshRadar()
         synchronizeControlsWithCurrentRingOrSector()
     },
     handleRingSelection: (ring) => {
         config.selectedRing = ring
+        getState().selectedRing = ring
         publishRefreshRadar()
         synchronizeControlsWithCurrentRingOrSector()
     },
@@ -47,8 +49,15 @@ const switchboard = {
             config.ringConfiguration.rings[config.selectedRing].opacity = sliderValue
         publishRefreshRadar()
     },
+    handleImageScaleFactor: (event) => {
+        console.log(`scale factor = ${event.target.value} for ${JSON.stringify(getSelectedObject())}`)
+        if (getSelectedObject().backgroundImage != null) {
+            getSelectedObject().backgroundImage.scaleFactor = event.target.value
+            publishRefreshRadar()
+        }
+    },
     handleDragEvent: (eventType, element, dragCoordinates) => {
-        if (element==null || element.id ==null) return
+        if (element == null || element.id == null) return
         let newCoordinates = dragCoordinates
         console.log(`dragged element:${element.id} ${element.id}`)
         if (element.id.startsWith("sectorBackgroundImage")) {
@@ -69,11 +78,11 @@ const switchboard = {
             }
             // TODO make sure that ring 0 is not decreased beyond its width
             if (ringId == 0 && deltaWidth < 0) { // outer ring is decreased in width
-                deltaWidth = Math.max( deltaWidth, -config.ringConfiguration.rings[0].width + knobBuffer) 
+                deltaWidth = Math.max(deltaWidth, -config.ringConfiguration.rings[0].width + knobBuffer)
             }
-            
+
             // TODO make sure that sum of ring width <=1
-            if (deltaWidth > 0.8) deltaWidth=0.8 // bit lazy, capping individual delta width instead of capping the sum 
+            if (deltaWidth > 0.8) deltaWidth = 0.8 // bit lazy, capping individual delta width instead of capping the sum 
             config.ringConfiguration.rings[ringId].width = config.ringConfiguration.rings[ringId].width + deltaWidth
             publishRefreshRadar()
 
@@ -192,10 +201,18 @@ const viewpointEditor = function (configuration) {
     initializeShapesConfigurator()
     subscribeToRadarRefresh(refreshRadar)
     subscribeToRadarEvents(handleRadarEvent)
+    synchronizeControlsWithCurrentRingOrSector()
 }
 
+const getSelectedObject = () => {
+    console.log(`get selected object ${ getConfiguration().topLayer}  ${getState().selectedRing} ${getState().selectedSector}`)
+    console.log(`${getConfiguration().topLayer == "rings" ? getConfiguration().ringConfiguration.rings[getState().selectedRing] : getConfiguration().sectorConfiguration.sectors[getState().selectedSector]}`)
+    return getConfiguration().topLayer == "rings" ? getConfiguration().ringConfiguration.rings[getState().selectedRing] : getConfiguration().sectorConfiguration.sectors[getState().selectedSector]
+}
+
+
 const handleImagePaste = (imageURL) => {
-    const selectedObject = config.topLayer == "rings" ? config.ringConfiguration.rings[config.selectedRing] : config.sectorConfiguration.sectors[config.selectedSector]
+    const selectedObject = getSelectedObject()
 
     if (selectedObject.backgroundImage == null) selectedObject.backgroundImage = {}
     selectedObject.backgroundImage.image = imageURL
@@ -241,6 +258,7 @@ const refreshRadar = () => {
     initializeColorsConfigurator()
     initializeSizesConfigurator()
     initializeShapesConfigurator()
+    synchronizeControlsWithCurrentRingOrSector()
     // TODO synchronize top layer, selected ring/selected sector, 
 }
 
@@ -253,6 +271,7 @@ const initializeEditListeners = () => {
     document.getElementById('decreaseRingOrSector').addEventListener("click", switchboard.handleDecreaseRingOrSector);
     document.getElementById('removeRingOrSector').addEventListener("click", switchboard.handleRemoveRingOrSector);
     document.getElementById('newRingOrSector').addEventListener("click", switchboard.handleAddRingOrSector);
+    document.getElementById('imageScaleFactor').addEventListener("change", switchboard.handleImageScaleFactor);
 
 }
 
@@ -263,13 +282,16 @@ const synchronizeControlsWithCurrentRingOrSector = () => {
     // set section title
     document.getElementById('selectedRingSector').innerText = `Selected ${config.topLayer.substr(0, config.topLayer.length - 1)} ${selectedObject.label}`
     const pastedImageElement = document.getElementById("pastedImage")
-    if (selectedObject?.backgroundImage?.image==null) {
-     // pastedImageElement.width ="1px"
-      pastedImageElement.src = null
+    if (selectedObject?.backgroundImage?.image == null) {
+        // pastedImageElement.width ="1px"
+        pastedImageElement.src = null
     } else {
         pastedImageElement.src = selectedObject.backgroundImage.image
-       // pastedImageElement.width ="300px"
+        // pastedImageElement.width ="300px"
     }
+    const imageScaleFactorElement = document.getElementById("imageScaleFactor")
+    imageScaleFactorElement.value = selectedObject?.backgroundImage?.scaleFactor ?? 1
+
 }
 
 let colorPicker
@@ -379,7 +401,7 @@ const handleDragSectorBackgroundImage = function (sectorId, newCoordinates) {
     if (selectedObject.backgroundImage == null) selectedObject.backgroundImage = {} //very unlikely
     selectedObject.backgroundImage.x = newCoordinates.x - config.width / 2
     selectedObject.backgroundImage.y = newCoordinates.y - config.height / 2
-   console.log(`image for ${JSON.stringify(selectedObject)}`)
+    console.log(`image for ${JSON.stringify(selectedObject)}`)
 }
 let currentColorsBoxColor
 let colorsBoxColorPicker

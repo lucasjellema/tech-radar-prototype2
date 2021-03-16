@@ -5,7 +5,15 @@
 - assign background color to area outside radar (ring == -1? , per sector or in general?)
 - extend (foreign object) text editor for labels - larger, add font family/size/color/style
 - extend (foreign object) text editor for different types of input (select, combo, radio)
-- add background image (upload/URL) for sector; position and scale
+- add background image (upload/URL) for sector; 
+- define position (X,Y) and scale for background image
+- remove background image for sector/ring
+
+
+
+## March 16th
+
+- drag & drop sector background images
 
 ## March 15th
 

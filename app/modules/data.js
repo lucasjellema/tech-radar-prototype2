@@ -70,7 +70,7 @@ let config = {
         font: { color: "#000", fontSize: "32px", fontFamily: "Arial, Helvetica", fontStyle: "normal", fontWeight: "bolder" } // fontStyle: oblique, normal, italic; fontWeight: normal, bold, bolder, lighter; 100 .. 900
         , sectors: [ // starting from positive X-axis, listed anti-clockwise
             { label: "Data Management", angle: 0.1, backgroundImage: { image: "https://cdn.pixabay.com/photo/2019/07/06/14/02/drawing-4320529_960_720.png" } },
-            { label: "Libraries & Frameworks", angle: 0.2, backgroundImage: { image: "https://dappimg.com/media/image/app/eaa3cb625c164f659ecd6db2aae39e46.png" } },
+            { label: "Libraries & Frameworks", angle: 0.2, backgroundImage: { image: "https://dappimg.com/media/image/app/eaa3cb625c164f659ecd6db2aae39e46.png" , x:-600, y:-450} },
             { label: "Infrastructure", angle: 0.25 },
             { label: "Languages", angle: 0.1 },
             { label: "Concepts & Methodology", backgroundColor: "red", angle: 0.15 },

@@ -48,8 +48,9 @@ const switchboard = {
         publishRefreshRadar()
     },
     handleDragEvent: (eventType, element, dragCoordinates) => {
+        if (element==null || element.id ==null) return
         let newCoordinates = dragCoordinates
-        console.log(`dragged element: ${element.id}`)
+        console.log(`dragged element:${element.id} ${element.id}`)
         if (element.id.startsWith("sectorBackgroundImage")) {
             handleDragSectorBackgroundImage(element.id.substring(21), newCoordinates)
         }
@@ -66,7 +67,13 @@ const switchboard = {
                 }
                 config.ringConfiguration.rings[ringId - 1].width = config.ringConfiguration.rings[ringId - 1].width - deltaWidth
             }
+            // TODO make sure that ring 0 is not decreased beyond its width
+            if (ringId == 0 && deltaWidth < 0) { // outer ring is decreased in width
+                deltaWidth = Math.max( deltaWidth, -config.ringConfiguration.rings[0].width + knobBuffer) 
+            }
+            
             // TODO make sure that sum of ring width <=1
+            if (deltaWidth > 0.8) deltaWidth=0.8 // bit lazy, capping individual delta width instead of capping the sum 
             config.ringConfiguration.rings[ringId].width = config.ringConfiguration.rings[ringId].width + deltaWidth
             publishRefreshRadar()
 
@@ -178,7 +185,7 @@ const viewpointEditor = function (configuration) {
     initializeRotationSlider()
     initializeOpacitySlider()
     initializeEditListeners()
-    initializeImagePaster()
+    initializeImagePaster(handleImagePaste)
 
     initializeColorsConfigurator()
     initializeSizesConfigurator()
@@ -187,34 +194,39 @@ const viewpointEditor = function (configuration) {
     subscribeToRadarEvents(handleRadarEvent)
 }
 
+const handleImagePaste = (imageURL) => {
+    const selectedObject = config.topLayer == "rings" ? config.ringConfiguration.rings[config.selectedRing] : config.sectorConfiguration.sectors[config.selectedSector]
 
+    if (selectedObject.backgroundImage == null) selectedObject.backgroundImage = {}
+    selectedObject.backgroundImage.image = imageURL
+    synchronizeControlsWithCurrentRingOrSector()
+    document.getElementById("pastedImage").src = selectedObject.backgroundImage.image;
+    // TODO assign default X, Y position to image - based on sector or ring
 
-const initializeImagePaster = () => {
+}
+
+const initializeImagePaster = (handleImagePaste) => {
     document.getElementById('pasteArea').onpaste = function (event) {
         // use event.originalEvent.clipboard for newer chrome versions
-        var items = (event.clipboardData  || event.originalEvent.clipboardData).items;
+        const items = (event.clipboardData || event.originalEvent.clipboardData).items;
         console.log(JSON.stringify(items)); // will give you the mime types
         // find pasted image among pasted items
-        var blob = null;
+        let blob = null;
         for (var i = 0; i < items.length; i++) {
-          if (items[i].type.indexOf("image") === 0) {
-            blob = items[i].getAsFile();
-          }
+            if (items[i].type.indexOf("image") === 0) {
+                blob = items[i].getAsFile();
+            }
         }
-        // load image if there is a pasted image
+        // load image content and assign to background image for currently selected object (sector or ring)
         if (blob !== null) {
-          var reader = new FileReader();
-          reader.onload = function(event) {
-            const selectedObject = config.topLayer == "rings" ? config.ringConfiguration.rings[config.selectedRing] : config.sectorConfiguration.sectors[config.selectedSector]
-
-            if (selectedObject.backgroundImage == null)  selectedObject.backgroundImage={}
-            selectedObject.backgroundImage.image = event.target.result
-            document.getElementById("pastedImage").src = event.target.result;
-          };
-          reader.readAsDataURL(blob);
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                if (handleImagePaste) handleImagePaste(event.target.result)
+            };
+            reader.readAsDataURL(blob);
         }
-      }
-	
+    }
+
 }
 
 const handleRadarEvent = (radarEvent) => {
@@ -249,7 +261,15 @@ const synchronizeControlsWithCurrentRingOrSector = () => {
     // throw away and recreate opacity slider
     initializeOpacitySlider(selectedObject.opacity)
     // set section title
-    document.getElementById('selectedRingSector').innerText=`Selected ${config.topLayer.substr(0,config.topLayer.length-1)} ${selectedObject.label}`
+    document.getElementById('selectedRingSector').innerText = `Selected ${config.topLayer.substr(0, config.topLayer.length - 1)} ${selectedObject.label}`
+    const pastedImageElement = document.getElementById("pastedImage")
+    if (selectedObject?.backgroundImage?.image==null) {
+     // pastedImageElement.width ="1px"
+      pastedImageElement.src = null
+    } else {
+        pastedImageElement.src = selectedObject.backgroundImage.image
+       // pastedImageElement.width ="300px"
+    }
 }
 
 let colorPicker
@@ -353,9 +373,13 @@ const handleInputChange = function (fieldIdentifier, newValue) {
 }
 
 const handleDragSectorBackgroundImage = function (sectorId, newCoordinates) {
-    console.log(`handle drag background image for sector ${sectorId}`)
-    const newPolarCoordinates = polarFromCartesion({ x: newCoordinates.x - config.width / 2, y: newCoordinates.y - config.height / 2 })
+    console.log(`handle drag background image for sector ${sectorId} coordinates: ${JSON.stringify({ x: newCoordinates.x - config.width / 2, y: newCoordinates.y - config.height / 2 })} `)
+    const selectedObject = config.sectorConfiguration.sectors[sectorId]
 
+    if (selectedObject.backgroundImage == null) selectedObject.backgroundImage = {} //very unlikely
+    selectedObject.backgroundImage.x = newCoordinates.x - config.width / 2
+    selectedObject.backgroundImage.y = newCoordinates.y - config.height / 2
+   console.log(`image for ${JSON.stringify(selectedObject)}`)
 }
 let currentColorsBoxColor
 let colorsBoxColorPicker
@@ -498,7 +522,7 @@ const initializeSizesConfigurator = () => {
             .style("font-family", "Arial, Helvetica")
             .style("font-size", "32px")
             .style("font-weight", "bold")
-            .call( getEditableDecorator(handleInputChange), ["svg#sizesBox", config.sizesConfiguration.sizes[i] != null && config.sizesConfiguration.sizes[i].label != null ? config.sizesConfiguration.sizes[i].label : `SIZE LABEL ${i + 1}`
+            .call(getEditableDecorator(handleInputChange), ["svg#sizesBox", config.sizesConfiguration.sizes[i] != null && config.sizesConfiguration.sizes[i].label != null ? config.sizesConfiguration.sizes[i].label : `SIZE LABEL ${i + 1}`
                 , `sizeLabel${i}`]);
 
     }
@@ -606,7 +630,7 @@ const initializeShapesConfigurator = () => {
             .style("font-family", "Arial, Helvetica")
             .style("font-size", "32px")
             .style("font-weight", "bold")
-            .call( getEditableDecorator(handleInputChange), ["svg#shapesBox", config.shapesConfiguration.shapes[i] != null && config.shapesConfiguration.shapes[i].label != null ? config.shapesConfiguration.shapes[i].label : ` SHAPE LABEL ${i + 1}`
+            .call(getEditableDecorator(handleInputChange), ["svg#shapesBox", config.shapesConfiguration.shapes[i] != null && config.shapesConfiguration.shapes[i].label != null ? config.shapesConfiguration.shapes[i].label : ` SHAPE LABEL ${i + 1}`
                 , `shapeLabel${i}`]);
 
     }

@@ -1,0 +1,587 @@
+{
+    "templates": [
+        {
+            "svg_id": "radarSVGContainer",
+            "width": 1450,
+            "height": 1000,
+            "topLayer": "sectors",
+            "selectedRing": 1,
+            "selectedSector": 2,
+            "rotation": 0,
+            "maxRingRadius": 450,
+            "sectorBoundariesExtended": true,
+            "editMode": true,
+            "defaultFont": {
+                "color": "blue",
+                "fontSize": "38px",
+                "fontFamily": "Arial, Helvetica",
+                "fontStyle": "italic",
+                "fontWeight": "bold"
+            },
+            "title": {
+                "text": "Conclusion Technology Radar",
+                "x": -700,
+                "y": -470,
+                "font": {
+                    "fontSize": "34px",
+                    "fontFamily": "Courier"
+                }
+            },
+            "colors": {
+                "background": "#fFf",
+                "grid": "#bbb",
+                "inactive": "#ddd"
+            },
+            "ringConfiguration": {
+                "outsideRingsAllowed": true,
+                "font": {
+                    "color": "purple",
+                    "fontSize": "24px",
+                    "fontFamily": "Arial, Helvetica",
+                    "fontStyle": "normal",
+                    "fontWeight": "normal"
+                },
+                "stroke": {
+                    "strokeWidth": 4,
+                    "strokeColor": "blue",
+                    "strokeArray": "100 1"
+                },
+                "rings": [
+                    {
+                        "label": "Spotted",
+                        "width": 0.15,
+                        "opacity": 0.2
+                    },
+                    {
+                        "label": "Hold",
+                        "width": 0.2
+                    },
+                    {
+                        "label": "Assess",
+                        "width": 0.25
+                    },
+                    {
+                        "label": "Trial",
+                        "width": 0.18
+                    },
+                    {
+                        "label": "Adopt",
+                        "width": 0.2
+                    }
+                ]
+            },
+            "sectorConfiguration": {
+                "outsideSectorsAllowed": true,
+                "font": {
+                    "color": "#000",
+                    "fontSize": "32px",
+                    "fontFamily": "Arial, Helvetica",
+                    "fontStyle": "normal",
+                    "fontWeight": "bolder"
+                },
+                "stroke": {
+                    "strokeWidth": 2,
+                    "strokeColor": "gray",
+                    "strokeArray": "100 1"
+                },
+                "sectors": [
+                    {
+                        "label": "Data Management",
+                        "angle": 0.1,
+                        "backgroundImage": {
+                            "image": "https://cdn.pixabay.com/photo/2019/07/06/14/02/drawing-4320529_960_720.png"
+                        }
+                    },
+                    {
+                        "label": "Libraries & Frameworks",
+                        "angle": 0.2,
+                        "backgroundImage": {
+                            "image": "https://dappimg.com/media/image/app/eaa3cb625c164f659ecd6db2aae39e46.png",
+                            "x": -600,
+                            "y": -450
+                        }
+                    },
+                    {
+                        "label": "Infrastructure",
+                        "angle": 0.25
+                    },
+                    {
+                        "label": "Languages",
+                        "angle": 0.1,
+                        "outerringBackgroundColor": "yellow"
+                    },
+                    {
+                        "label": "Concepts & Methodology",
+                        "backgroundColor": "red",
+                        "outerringBackgroundColor": "pink",
+                        "angle": 0.15
+                    }
+                ]
+            },
+            "colorsConfiguration": {
+                "colors": [
+                    {
+                        "label": "Super Status",
+                        "color": "blue",
+                        "enabled": true
+                    },
+                    {
+                        "label": "Unassigned",
+                        "color": "white",
+                        "enabled": false
+                    },
+                    {
+                        "label": "Unassigned",
+                        "color": "white",
+                        "enabled": false
+                    },
+                    {
+                        "label": "Unassigned",
+                        "color": "white",
+                        "enabled": false
+                    },
+                    {
+                        "label": "Unassigned",
+                        "color": "white"
+                    }
+                ]
+            },
+            "sizesConfiguration": {
+                "sizes": [
+                    {
+                        "label": "Regular",
+                        "size": 1,
+                        "enabled": true
+                    },
+                    {
+                        "label": "Regular",
+                        "size": 2,
+                        "enabled": false
+                    },
+                    {
+                        "label": "Regular",
+                        "size": 3,
+                        "enabled": true
+                    },
+                    {
+                        "label": "Regular",
+                        "size": 4
+                    },
+                    {
+                        "label": "Regular",
+                        "size": 5,
+                        "enabled": false
+                    }
+                ]
+            },
+            "shapesConfiguration": {
+                "shapes": [
+                    {
+                        "label": "Library & Framework",
+                        "shape": "square"
+                    },
+                    {
+                        "label": "Tool",
+                        "shape": "diamond"
+                    },
+                    {
+                        "label": "Shape Label",
+                        "shape": "rectangleHorizontal",
+                        "enabled": false
+                    },
+                    {
+                        "label": "Shape Label",
+                        "shape": "circle",
+                        "enabled": false
+                    },
+                    {
+                        "label": "Shape Label",
+                        "shape": "star",
+                        "enabled": false
+                    },
+                    {
+                        "label": "Shape Label",
+                        "shape": "rectangleVertical",
+                        "enabled": false
+                    },
+                    {
+                        "label": "Shape Label",
+                        "shape": "triangle",
+                        "enabled": false
+                    },
+                    {
+                        "label": "Shape Label",
+                        "shape": "ring",
+                        "enabled": false
+                    },
+                    {
+                        "label": "Shape Label",
+                        "shape": "plus",
+                        "enabled": false
+                    }
+                ]
+            }
+        },
+        {
+            "svg_id": "radarSVGContainer",
+            "width": 1450,
+            "height": 1000,
+            "topLayer": "rings",
+            "selectedRing": 1,
+            "selectedSector": 0,
+            "rotation": 0,
+            "maxRingRadius": 450,
+            "sectorBoundariesExtended": false,
+            "editMode": true,
+            "defaultFont": {
+                "color": "black",
+                "fontSize": "38px",
+                "fontFamily": "Arial, Helvetica",
+                "fontStyle": "normal",
+                "fontWeight": "normal"
+            },
+            "title": {
+                "text": "AMIS Inzet Overzicht ",
+                "x": -700,
+                "y": -470,
+                "font": {
+                    "fontSize": "34px"
+                }
+            },
+            "colors": {
+                "background": "#FFF",
+                "grid": "#bbb",
+                "inactive": "#ddd"
+            },
+            "ringConfiguration": {
+                "outsideRingsAllowed": true,
+                "font": {
+                    "color": "purple"
+                },
+                "rings": [
+                    {
+                        "label": "> 3 maanden",
+                        "width": 0.25,
+                        "backgroundImage": {},
+                        "backgroundColor": "white"
+                    },
+                    {
+                        "label": "> 1 maand",
+                        "width": 0.25,
+                        "backgroundImage": {},
+                        "backgroundColor": "white"
+                    },
+                    {
+                        "label": "< 1 maand",
+                        "width": 0.25,
+                        "opacity": 0.2,
+                        "backgroundImage": {},
+                        "backgroundColor": "white"
+                    },
+                    {
+                        "label": "Beschikbaar",
+                        "width": 0.25,
+                        "backgroundImage": {},
+                        "backgroundColor": "white"
+                    }
+                ]
+            },
+            "sectorConfiguration": {
+                "outsideSectorsAllowed": true,
+                "font": {
+                    "fontSize": "32px",
+                    "fontFamily": "Arial, Helvetica"
+                },
+                "sectors": [
+                    {
+                        "label": "Frontend",
+                        "angle": 0.2,
+                        "backgroundImage": {},
+                        "backgroundColor": "white",
+                        "outerringBackgroundColor": "#FFF"
+                    },
+                    {
+                        "label": "Integratie",
+                        "angle": 0.2,
+                        "backgroundImage": {},
+                        "backgroundColor": "white",
+                        "outerringBackgroundColor": "#FFF"
+                    },
+                    {
+                        "label": "Platform Engineering",
+                        "angle": 0.2,
+                        "backgroundImage": {},
+                        "backgroundColor": "white",
+                        "outerringBackgroundColor": "#FFF"
+                    },
+                    {
+                        "label": "Regie",
+                        "angle": 0.2,
+                        "backgroundImage": {},
+                        "backgroundColor": "white",
+                        "outerringBackgroundColor": "#FFF"
+                    },
+                    {
+                        "label": "Platform Beheer",
+                        "angle": 0.2,
+                        "backgroundImage": {},
+                        "backgroundColor": "white",
+                        "outerringBackgroundColor": "#FFF"
+                    }
+                ]
+            },
+            "colorsConfiguration": {
+                "colors": [
+                    {
+                        "label": "Super Status",
+                        "color": "blue",
+                        "enabled": true
+                    },
+                    {
+                        "label": "Unassigned",
+                        "color": "white",
+                        "enabled": false
+                    },
+                    {
+                        "label": "Unassigned",
+                        "color": "white",
+                        "enabled": false
+                    },
+                    {
+                        "label": "Unassigned",
+                        "color": "white",
+                        "enabled": false
+                    },
+                    {
+                        "label": "Unassigned",
+                        "color": "white"
+                    }
+                ]
+            },
+            "sizesConfiguration": {
+                "sizes": [
+                    {
+                        "label": "< 8 uur",
+                        "size": 1,
+                        "enabled": true
+                    },
+                    {
+                        "label": "1-4 dagen",
+                        "size": 2,
+                        "enabled": true
+                    },
+                    {
+                        "label": "Full Time",
+                        "size": 3,
+                        "enabled": true
+                    }
+                ]
+            },
+            "shapesConfiguration": {
+                "shapes": [
+                    {
+                        "label": "enkele opties",
+                        "shape": "square",
+                        "enabled": true
+                    },
+                    {
+                        "label": "goede opties",
+                        "shape": "diamond",
+                        "enabled": true
+                    },
+                    {
+                        "label": "geen opties",
+                        "shape": "rectangleHorizontal",
+                        "enabled": true
+                    },
+                    {
+                        "label": "Shape Label",
+                        "shape": "circle",
+                        "enabled": false
+                    }
+                ]
+            }
+        },
+        {
+            "svg_id": "radarSVGContainer",
+            "width": 1450,
+            "height": 1000,
+            "topLayer": "sectors",
+            "selectedRing": 1,
+            "selectedSector": 0,
+            "rotation": 0,
+            "maxRingRadius": 450,
+            "sectorBoundariesExtended": false,
+            "editMode": true,
+            "defaultFont": {
+                "color": "black",
+                "fontSize": "38px",
+                "fontFamily": "Arial, Helvetica",
+                "fontStyle": "normal",
+                "fontWeight": "normal"
+            },
+            "title": {
+                "text": "Project Management",
+                "x": -700,
+                "y": -470,
+                "font": {
+                    "fontSize": "34px"
+                }
+            },
+            "colors": {
+                "background": "#FFF",
+                "grid": "#bbb",
+                "inactive": "#ddd"
+            },
+            "ringConfiguration": {
+                "outsideRingsAllowed": true,
+                "font": {
+                    "color": "purple"
+                },
+                "rings": [
+                    {
+                        "label": "Todo",
+                        "width": 0.2,
+                        "backgroundImage": {},
+                        "backgroundColor": "white"
+                    },
+                    {
+                        "label": "Doing",
+                        "width": 0.2,
+                        "backgroundImage": {},
+                        "backgroundColor": "white"
+                    },
+                    {
+                        "label": "Review",
+                        "width": 0.2,
+                        "backgroundImage": {},
+                        "backgroundColor": "white"
+                    },
+                    {
+                        "label": "Done",
+                        "width": 0.2,
+                        "opacity": 0.2,
+                        "backgroundImage": {},
+                        "backgroundColor": "white"
+                    },
+                    {
+                        "label": "Live",
+                        "width": 0.2,
+                        "backgroundImage": {},
+                        "backgroundColor": "white"
+                    }
+                ]
+            },
+            "sectorConfiguration": {
+                "outsideSectorsAllowed": true,
+                "font": {
+                    "fontSize": "32px",
+                    "fontFamily": "Arial, Helvetica"
+                },
+                "sectors": [
+                    {
+                        "label": "Epic 1",
+                        "angle": 0.25,
+                        "backgroundImage": {},
+                        "backgroundColor": "white",
+                        "outerringBackgroundColor": "#FFF"
+                    },
+                    {
+                        "label": "Epic 4",
+                        "angle": 0.25,
+                        "backgroundImage": {},
+                        "backgroundColor": "white",
+                        "outerringBackgroundColor": "#FFF"
+                    },
+                    {
+                        "label": "Epic 3",
+                        "angle": 0.25,
+                        "backgroundImage": {},
+                        "backgroundColor": "white",
+                        "outerringBackgroundColor": "#FFF"
+                    },
+                    {
+                        "label": "Epic 2",
+                        "angle": 0.25,
+                        "backgroundImage": {},
+                        "backgroundColor": "white",
+                        "outerringBackgroundColor": "#FFF"
+                    }
+                ]
+            },
+            "colorsConfiguration": {
+                "colors": [
+                    {
+                        "label": "Recent",
+                        "color": "#08c42a",
+                        "enabled": true
+                    },
+                    {
+                        "label": "Some Time",
+                        "color": "#f2f25a",
+                        "enabled": true
+                    },
+                    {
+                        "label": "Quite Some Time",
+                        "color": "#f29a1f",
+                        "enabled": true
+                    },
+                    {
+                        "label": "Very Long",
+                        "color": "#f20039",
+                        "enabled": true
+                    },
+                    {
+                        "label": "Impediment",
+                        "color": "#000000",
+                        "enabled": true
+                    }
+                ]
+            },
+            "sizesConfiguration": {
+                "sizes": [
+                    {
+                        "label": "Small",
+                        "size": 1,
+                        "enabled": true
+                    },
+                    {
+                        "label": "Medium",
+                        "size": 2,
+                        "enabled": true
+                    },
+                    {
+                        "label": "Large",
+                        "size": 3,
+                        "enabled": true
+                    }
+                ]
+            },
+            "shapesConfiguration": {
+                "shapes": [
+                    {
+                        "label": "User Interface",
+                        "shape": "square",
+                        "enabled": true
+                    },
+                    {
+                        "label": "API",
+                        "shape": "diamond",
+                        "enabled": true
+                    },
+                    {
+                        "label": "Design",
+                        "shape": "rectangleHorizontal",
+                        "enabled": true
+                    },
+                    {
+                        "label": "Test",
+                        "shape": "circle",
+                        "enabled": true
+                    }
+                ]
+            }
+        }
+    ],
+    "objects": []
+}

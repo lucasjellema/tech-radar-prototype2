@@ -1,0 +1,125 @@
+<html>
+
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <title>PROTOTYPE 2 - AMIS | Conclusion Technology Radar</title>
+    <link rel="shortcut icon" href="https://res.conclusion.nl/inc/img/favicon.gif">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="https://unpkg.com/d3-simple-slider"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jaames/iro@5"></script>
+    <style>
+        .column {
+            float: left;
+            width: 70%;
+        }
+
+        .column2 {
+            float: left;
+            width: 30%;
+        }
+
+        .column1_2 {
+            float: left;
+            width: 50%;
+        }
+
+        .column1_3 {
+            float: left;
+            width: 33%;
+            height: 800px;
+        }
+        .outlinedImage { 
+    filter: drop-shadow(0px 0px 1px red);
+}
+
+        /* Clear floats after the columns */
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        .selected {
+            stroke: red;
+            stroke-width: 7;
+            stroke-dasharray: 6 2;
+        }
+
+        /* used for selecting sectors and rings */
+        .draggable,
+        .draggable-group {
+            /* used for draggable elements such as ring and sector knobs */
+
+            cursor: move;
+        }
+
+        .clickableProperty {
+            cursor: pointer;
+        }
+
+        .templates-select {
+            padding: 9px 0;
+            width: 70%;
+            border: none;
+            border-bottom: 1px solid #ccc
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="row">
+        <div class="column">
+            <svg id="radarSVGContainer">
+            </svg>
+        </div>
+
+        <div class="column2">
+        </div>
+        <br />
+        <hr />
+
+
+    </div>
+    <script type="module">
+        import { drawRadar } from './modules/radar.js';
+        import { drawRadarBlips } from './modules/radarBlips.js';
+        import { getConfiguration, getViewpoint, getState, subscribeToRadarRefresh } from './modules/data.js';
+        const viewpoint = getConfiguration()
+        viewpoint.editMode = false
+        drawRadar(viewpoint)
+        drawRadarBlips(viewpoint, getViewpoint().blips)
+
+        subscribeToRadarRefresh(() => {
+            const viewpoint = getConfiguration()
+            viewpoint.editMode = false
+        })
+
+
+    </script>
+    <div>
+        <div>
+            <h3>Template management</h3>
+            <div>
+                <input type="button" id="save" name="save" value="Save to Local Storage">
+                <input type="button" id="load" name="load" value="Load (from local storage)">
+            </div>
+            <div>
+                <input type="button" id="download" name="download" value="Download">
+                <input type="button" id="upload" name="upload" value="Upload">
+                <input type="file" id="fileElem" multiple accept="application/json,text/*" style="display:none">
+            </div>
+            <div>
+                <input type="button" id="newTemplate" name="newTemplate" value="Create New Template">
+                <input type="button" id="cloneTemplate" name="clone" value="Clone Template">
+                <input type="button" id="resetTemplate" name="reset" value="Reset Current Template">
+            </div>
+            <div>
+                <select id="templateSelector" class="templates-select" name="option">
+                    <option value="" disabled selected>Select Radar Template</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</body>

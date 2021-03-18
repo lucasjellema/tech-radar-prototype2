@@ -2,20 +2,41 @@
 
 ## TODOs
 - sector-label and ring-label styling? (font, size, fill) editable in UI 
-- assign background color to area outside radar (ring == -1? , per sector or in general?) - use ARC
 - extend (foreign object) text editor for labels - larger, add font family/size/color/style
 - extend (foreign object) text editor for different types of input (select, combo, radio)
-- add background image (upload/URL) for sector; 
-- reset/remove background image for sector/ring
 - context menu on sector to bring up form to edit background color, opacity, image (& scalefactor) 
 
+- themes: filter with selection of positive tags and negative tags 
 
+- new page for displaying an editor - with blips (no radar edit options)
+- hover/popup for blips
+  - a short quick popup with just a label
+  - a popup that appears after 1 second? with more details for the rating, including scope, timestamp, author and comment
+- drag & drop of blips
+  - to refine x and y
+  - to set sector and ring
+- derive property to sector map from meta-model 
+
+## March 18th
+- new page viewpoint.html, new module radarBlips.js , start of meta model in sampleData.js
+- show (generated sample data) blips using hardcoded property <=> sector/ring/size maps
+- derive location of blip from sector and ring (and somewhat randomized with in the segment)
+- show image and label for blip 
+
+## March 17th
+- reset template (equal distribution for rings and sectors, no backgroundcolors, no background images)
+- include 3 radar templates (for project management, consultant allocation, technology radar)
+
+### Resources
+- CNCF Radars - https://radar.cncf.io/overview - for inspiration, for themes and for individual products/technologies
 
 ## March 16th
 
 - drag & drop sector background images
 - set scale factor for sector background image
 - define background color for area outside rings
+- specify background image through URL
+- define stroke properties for ring edges in data model
 
 ## March 15th
 

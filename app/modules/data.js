@@ -1,4 +1,5 @@
-export { getConfiguration, subscribeToRadarRefresh, getState, publishRefreshRadar }
+export { getConfiguration, getViewpoint, subscribeToRadarRefresh, getState, publishRefreshRadar }
+import { getSampleData} from './sampleData.js'
 
 const RADAR_INDEX_KEY = "RADAR-INDEX"
 
@@ -21,6 +22,9 @@ const getConfiguration = () => {
     return data.templates[state.currentTemplate]
 }
 
+const getViewpoint = () => {
+    return data.viewpoints[0] //TODO dynamically select current viewpoint 
+}
 const getState = () => {
     return state
 }
@@ -30,86 +34,6 @@ const getState = () => {
 // , objects : [ "technologies", "AMIS Staff"]
 // }
 // if it does not exist, create a new radar index
-
-
-let config = {
-    svg_id: "radarSVGContainer",
-    width: 1450,
-    height: 1000,
-    topLayer: "sectors", // rings or sectors
-    selectedRing: 3,
-    selectedSector: 0,
-    rotation: 0,
-    maxRingRadius: 450,
-    sectorBoundariesExtended: true,
-    editMode: true,
-    defaultFont: { color: "blue", fontSize: "38px", fontFamily: "Arial, Helvetica", fontStyle: "italic", fontWeight: "bold" }, // fontStyle: oblique, normal, italic; fontWeight: normal, bold, bolder, lighter; 100 .. 900
-    title: { text: "Conclusion Technology Radar", x: -700, y: -470, font: { fontSize: "34px", fontFamily: "Courier" } },
-
-    colors: {
-        background: "#fef",
-        grid: "#bbb",
-        inactive: "#ddd"
-    },
-    ringConfiguration: {
-        outsideRingsAllowed: true,
-        font: { color: "purple", fontSize: "32px", fontFamily: "Arial, Helvetica", fontStyle: "normal", fontWeight: "bolder" }, // fontStyle: oblique, normal, italic; fontWeight: normal, bold, bolder, lighter; 100 .. 900
-
-
-        rings: [ // rings are defined from outside going in; the first one is the widest
-            { label: "Spotted", width: 0.15, opacity: 0.2 },
-            { label: "Hold", width: 0.2 },
-            { label: "Assess", width: 0.25 },
-            { label: "Trial", width: 0.18 },
-            { label: "Adopt", width: 0.2 },
-
-        ]
-    },
-    sectorConfiguration: {
-        outsideSectorsAllowed: true,
-        font: { color: "#000", fontSize: "32px", fontFamily: "Arial, Helvetica", fontStyle: "normal", fontWeight: "bolder" } // fontStyle: oblique, normal, italic; fontWeight: normal, bold, bolder, lighter; 100 .. 900
-        , sectors: [ // starting from positive X-axis, listed anti-clockwise
-            { label: "Data Management", angle: 0.1, backgroundImage: { image: "https://cdn.pixabay.com/photo/2019/07/06/14/02/drawing-4320529_960_720.png" } },
-            { label: "Libraries & Frameworks", angle: 0.2, backgroundImage: { image: "https://dappimg.com/media/image/app/eaa3cb625c164f659ecd6db2aae39e46.png" , x:-600, y:-450} },
-            { label: "Infrastructure", angle: 0.25 },
-            { label: "Languages", angle: 0.1 ,outerringBackgroundColor: "yellow"},
-            { label: "Concepts & Methodology", backgroundColor: "red", outerringBackgroundColor: "pink", angle: 0.15 },
-        ]
-    },
-    colorsConfiguration: {
-        colors: [
-            { label: "Super Status", color: "blue", enabled: true },
-            { label: "Unassigned", color: "white", enabled: false },
-            { label: "Unassigned", color: "white", enabled: false },
-            { label: "Unassigned", color: "white", enabled: false },
-            { label: "Unassigned", color: "white" }
-        ]
-    },
-    sizesConfiguration: {
-        sizes: [
-            { label: "Regular", size: 1, enabled: true },
-            { label: "Regular", size: 2, enabled: false },
-            { label: "Regular", size: 3, enabled: true },
-            { label: "Regular", size: 4 },
-            { label: "Regular", size: 5, enabled: false },
-        ]
-    },
-    shapesConfiguration: {
-        shapes: [
-            { label: "Library & Framework", shape: "square" }
-            , { label: "Tool", shape: "diamond" }
-            , { label: "Shape Label", shape: "rectangleHorizontal", enabled: false }
-            , { label: "Shape Label", shape: "circle", enabled: false }
-            , { label: "Shape Label", shape: "star", enabled: false }
-            , { label: "Shape Label", shape: "rectangleVertical", enabled: false }
-            , { label: "Shape Label", shape: "triangle", enabled: false }
-            , { label: "Shape Label", shape: "ring", enabled: false } // circle with fat stroke-width
-            , { label: "Shape Label", shape: "plus", enabled: false } // circle with fat stroke-width
-        ]
-    }
-}
-
-
 const freshTemplate =
 {
     svg_id: "radarSVGContainer",
@@ -134,7 +58,8 @@ const freshTemplate =
         outsideRingsAllowed: true,
         font: { color: "purple" },
         rings: [ // rings are defined from outside going in; the first one is the widest
-            { label: "Ring One", width: 0.8, opacity: 0.2 },
+            { label: "Ring One", width: 0.3 },
+            { label: "Ring Two", width: 0.5 },
         ]
     },
     sectorConfiguration: {
@@ -142,14 +67,15 @@ const freshTemplate =
         font: { fontSize: "32px", fontFamily: "Arial, Helvetica" }
         , sectors: [ // starting from positive X-axis, listed anti-clockwise
             { label: "Sector 1", angle: 0.7 },
+            { label: "Sector 2", angle: 0.3 },
         ]
     },
     colorsConfiguration: {
         colors: [
-            { label: "Super Status", color: "blue", enabled: true },
-            { label: "Unassigned", color: "white", enabled: false },
-            { label: "Unassigned", color: "white", enabled: false },
-            { label: "Unassigned", color: "white", enabled: false },
+            { label: "Unassigned", color: "blue", enabled: true },
+            { label: "Unassigned", color: "green", enabled: false },
+            { label: "Unassigned", color: "gray", enabled: false },
+            { label: "Unassigned", color: "red", enabled: false },
             { label: "Unassigned", color: "white" }
         ]
     },
@@ -162,10 +88,10 @@ const freshTemplate =
     },
     shapesConfiguration: {
         shapes: [
-            { label: "Library & Framework", shape: "square" }
-            , { label: "Tool", shape: "diamond" }
-            , { label: "Shape Label", shape: "rectangleHorizontal", enabled: false }
-            , { label: "Shape Label", shape: "circle", enabled: false }
+            { label: "Unassigned", shape: "square" }
+            , { label: "Unassigend", shape: "diamond" }
+            , { label: "Unassigend", shape: "rectangleHorizontal", enabled: false }
+            , { label: "Unassigned", shape: "circle", enabled: false }
         ]
     }
 }
@@ -176,8 +102,8 @@ const getFreshTemplate = () => {
     return freshTemplate
 }
 
-data.templates.push(config)
-
+data = getSampleData()
+let config = data.templates[0]
 let radarIndex = { templates: [{ title: encodeURI(config.title.text), description: "", lastupdate: "20210310T192400" }], objects: [] }
 
 const saveDataToLocalStorage = () => {
@@ -257,6 +183,29 @@ const cloneTemplate = () => {
     publishRefreshRadar()
 }
 
+const resetTemplate = (template) => {
+    template.colors.background = "#FFF"
+    // all sectors same angle, all rings same width = adding to 1
+    for (let i = 0; i < template.ringConfiguration.rings.length; i++) {
+        const ring = template.ringConfiguration.rings[i]
+        ring.width = 1 / template.ringConfiguration.rings.length
+        ring.backgroundImage = {}
+        ring.backgroundColor = "white"
+    }
+
+    for (let i = 0; i < template.sectorConfiguration.sectors.length; i++) {
+        const sector = template.sectorConfiguration.sectors[i]
+        sector.angle = 1 / template.sectorConfiguration.sectors.length
+        sector.backgroundImage = {}
+        sector.backgroundColor = "white"
+        sector.outerringBackgroundColor = "#FFF"
+    }
+}
+
+const resetCurrentTemplate = () => {
+    resetTemplate(getConfiguration())
+    publishRefreshRadar()
+}
 
 const handleTemplateSelection = (event) => {
     console.log(`template selection ${event.target.value}  ${data.templates[event.target.value].title.text}`)
@@ -289,6 +238,7 @@ document.getElementById('download').addEventListener("click", downloadRadarData)
 document.getElementById('upload').addEventListener("click", uploadRadarData);
 document.getElementById('newTemplate').addEventListener("click", createNewTemplate);
 document.getElementById('cloneTemplate').addEventListener("click", cloneTemplate);
+document.getElementById('resetTemplate').addEventListener("click", resetCurrentTemplate);
 document.getElementById('templateSelector').addEventListener("change", handleTemplateSelection);
 
 // mini event bus for the Refresh Radar Event

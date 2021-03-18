@@ -93,6 +93,9 @@
             <h3 id="selectedRingSector">Selected Sector/Ring </h3>
             <div>
                 <p>Background Image</p>
+                <label for="backgroundImageURL">URL for Image</label>
+                <input id="backgroundImageURL" style="width: 250px;"
+                    title="Specify the URL for the background image"></input>
                 <textarea id="pasteArea" placeholder="Paste Image Here"></textarea>
                 <label for="imageScaleFactor">Scale Factor</label>
                 <input id="imageScaleFactor" style="width: 50px;"
@@ -121,8 +124,8 @@
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 <a href="#" id="increaseRingOrSector">&gt;</a>
             </div>
+            <hr />
             <div id="layering">
-                <hr />
                 <p>Extended Sector Boundaries?</p>
                 <div>
                     <input type="radio" id="extendedSectorBoundaries" name="sectorBoundaries"
@@ -135,6 +138,10 @@
                         value="noExtendedSectorBoundaries">
                     <label for="rings">Not Extended</label>
                 </div>
+            </div>
+            <hr />
+            <div>
+                <h3>Template management</h3>
                 <div>
                     <input type="button" id="save" name="save" value="Save to Local Storage">
                     <input type="button" id="load" name="load" value="Load (from local storage)">
@@ -147,6 +154,7 @@
                 <div>
                     <input type="button" id="newTemplate" name="newTemplate" value="Create New Template">
                     <input type="button" id="cloneTemplate" name="clone" value="Clone Template">
+                    <input type="button" id="resetTemplate" name="reset" value="Reset Current Template">
                 </div>
                 <div>
                     <select id="templateSelector" class="templates-select" name="option">
@@ -182,7 +190,7 @@
     </div>
 
     <script type="module">
-        import { viewpointEditor, switchboard } from './modules/viewpointEditor.js';
+        import { viewpointEditor } from './modules/viewpointEditor.js';
         import { getConfiguration } from './modules/data.js';
         viewpointEditor(getConfiguration())
 

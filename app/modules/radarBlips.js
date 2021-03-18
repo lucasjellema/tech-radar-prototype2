@@ -1,14 +1,14 @@
-import { cartesianFromPolar, polarFromCartesion } from './drawingUtilities.js'
+import { cartesianFromPolar, polarFromCartesian } from './drawingUtilities.js'
 export { drawRadarBlips }
 
 const color_white = "#FFF"
 const radarCanvasElementId = "#radarCanvas"
 
-const drawRadarBlips = function (viewpoint, blips) {
+const drawRadarBlips = function (viewpoint) {
     console.log(`drawradarblips`)
     const radarCanvasElement = d3.select(radarCanvasElementId)
     const blipElements = radarCanvasElement.selectAll(".blip")
-        .data(blips)
+        .data(viewpoint.blips)
         .enter()
         .append("g")
         .attr("class", "blip")
@@ -29,7 +29,7 @@ const drawRadarBlips = function (viewpoint, blips) {
         drawRadarBlip(blip, d, viewpoint);
 
     });
-    return blips
+    return viewpoint.blips
 }
 
 const priorSectorsAnglePercentageSum = (sectorId, config) => config.sectorConfiguration.sectors.filter((sector, index) => index < sectorId)
@@ -45,18 +45,13 @@ const sectorRingToPosition = (sector, ring, config) => { // return X,Y coordinat
 }
 
 const drawRadarBlip = (blip, d, viewpoint) => {
-    const sizeMap = { "tiny": 0.6, "medium": 1, "large": 1.5 } // the rating magnitude property drives the size; the values of magnitude are mapped to values for size
-    const sectorMap = { "database": 0, "language": 3, "infrastructure": 2 } // the object category property drives the sector; the values of category are mapped to values for sector
-    const ringMap = { "hold": 1, "assess": 2, "adopt": 4, "spotted": 0 } // the rating ambition property drives the ring; the values of ambition are mapped to values for ring
-    // hoe vertalen we de sector en de ring naar een locatie
-    // en verifieren we dat de x en y passend zijn voor deze sector en ring
-    const blipSector = sectorMap[d.rating.object.category]
-    const blipRing = ringMap[d.rating.ambition]
+    const blipSector = viewpoint.propertyVisualMaps.sectorMap[d.rating.object.category]
+    const blipRing = viewpoint.propertyVisualMaps.ringMap[d.rating.ambition]
 
-    const xy = sectorRingToPosition(blipSector, blipRing, viewpoint)
+    const xy = sectorRingToPosition(blipSector, blipRing, viewpoint.template)
 
-    blip.attr("transform", `translate(${xy.x},${xy.y}) scale(${sizeMap[d.rating.magnitude]})`)
-        .attr("id", d.id)
+    blip.attr("transform", `translate(${xy.x},${xy.y}) scale(${viewpoint.propertyVisualMaps.sizeMap[d.rating.magnitude]})`)
+        .attr("id", `blip-${d.id}`)
 
 
 
@@ -74,7 +69,7 @@ const drawRadarBlip = (blip, d, viewpoint) => {
         .style("font-family", "Arial, Helvetica")
         .style("font-stretch", "extra-condensed")
         .style("font-size", function (d) { return label.length > 2 ? `${14}px` : "17px"; })
-        
+
     const shape = blip.append("circle")
         .attr("r", 15)
     shape.attr("fill", "blue");

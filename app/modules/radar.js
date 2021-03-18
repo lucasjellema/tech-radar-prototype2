@@ -1,4 +1,4 @@
-import { cartesianFromPolar, polarFromCartesion } from './drawingUtilities.js'
+import { cartesianFromPolar, polarFromCartesian } from './drawingUtilities.js'
 export { drawRadar, subscribeToRadarEvents }
 
 const color_white = "#FFF"

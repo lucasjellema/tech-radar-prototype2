@@ -77,7 +77,13 @@ const viewpoints = [
         name: "AMIS Technology Radar - Integration"
         , template: "Conclusion Technology Radar"
         , ratingTypes: []  // which rating type(s) - for which objectTypes - are displayed
-        , propertyVisualMap: {} // mapping between property values and visual characteristics; 
+        , propertyVisualMaps: { // mapping between property values and visual characteristics; 
+            sizeMap: { "tiny": 0.6, "medium": 1, "large": 1.5 } // the rating magnitude property drives the size; the values of magnitude are mapped to values for size
+            , sectorMap: { "database": 0, "language": 3, "infrastructure": 2 } // the object category property drives the sector; the values of category are mapped to values for sector
+            , ringMap: { "hold": 1, "assess": 2, "adopt": 4, "spotted": 0 } // the rating ambition property drives the ring; the values of ambition are mapped to values for ring
+            , shapeMap: {}
+            , colorMap: {}
+        }
         //for example: property category in objectType technology is mapped to sector in radar
         // the specific value mapping: maps technology.category values to sectors in the selected radar template
         // one of the sectors can be used to assign "others" - any value not already explicity mapped
@@ -95,9 +101,11 @@ const generateBlips = () => {
     const blips = []
     for (let i = 0; i < technologies.length; i++) {
         const object = technologies[i]
-        const rating = { ambition: Math.random() < 0.3? "spotted": (Math.random() < 0.5?"assess":"adopt")
-                       , magnitude: Math.random() < 0.3? "medium": (Math.random() < 0.5?"tiny":"large")
-                       , object: object }
+        const rating = {
+            ambition: Math.random() < 0.3 ? "spotted" : (Math.random() < 0.5 ? "assess" : "adopt")
+            , magnitude: Math.random() < 0.3 ? "medium" : (Math.random() < 0.5 ? "tiny" : "large")
+            , object: object
+        }
         const blip = { id: `${i}`, rating: rating, x: -400 + i * 50, y: 400 - i * 50 }
         blips.push(blip)
     }
@@ -701,3 +709,5 @@ const sample = {
     ],
     "objects": []
 }
+
+sample.viewpoints[0].template = sample.templates[0]

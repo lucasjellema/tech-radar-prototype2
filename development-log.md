@@ -13,8 +13,7 @@
   - a short quick popup with just a label
   - a popup that appears after 1 second? with more details for the rating, including scope, timestamp, author and comment
 - drag & drop of blips
-  - to refine x and y
-  - to set sector and ring
+  - to set sector and ring based on meta-data
 - derive property to sector map from meta-model 
 
 ## March 18th
@@ -22,6 +21,7 @@
 - show (generated sample data) blips using hardcoded property <=> sector/ring/size maps
 - derive location of blip from sector and ring (and somewhat randomized with in the segment)
 - show image and label for blip 
+- allow drag & drop; set x and y and derive property values from new sector and ring (for now hard coded for category and ambition)
 
 ## March 17th
 - reset template (equal distribution for rings and sectors, no backgroundcolors, no background images)

@@ -86,10 +86,16 @@
         import { drawRadar } from './modules/radar.js';
         import { drawRadarBlips } from './modules/radarBlips.js';
         import { getConfiguration, getViewpoint, getState, subscribeToRadarRefresh } from './modules/data.js';
+        import { makeDraggable } from './modules/blipDrag.js'
+        import { handleBlipDrag } from './modules/blipEditing.js'
+
         const viewpoint = getConfiguration()
         viewpoint.editMode = false
-        drawRadar(viewpoint)
-        drawRadarBlips(viewpoint, getViewpoint().blips)
+        drawRadar(getViewpoint().template)
+        drawRadarBlips(getViewpoint())
+
+        const svg = d3.select(`svg#${viewpoint.svg_id}`)
+        makeDraggable(svg.node(), (dragEvent) => {handleBlipDrag(dragEvent, getViewpoint())})
 
         subscribeToRadarRefresh(() => {
             const viewpoint = getConfiguration()

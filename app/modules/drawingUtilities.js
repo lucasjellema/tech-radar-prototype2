@@ -1,4 +1,4 @@
-export {cartesianFromPolar , polarFromCartesion}
+export {cartesianFromPolar , polarFromCartesian}
 
   const cartesianFromPolar = function(polar) {
     return {
@@ -7,7 +7,7 @@ export {cartesianFromPolar , polarFromCartesion}
     }
   }
 
-  const polarFromCartesion = function (cartesian) {
+  const polarFromCartesian = function (cartesian) {
     const x = cartesian.x;
     const y = cartesian.y;
   

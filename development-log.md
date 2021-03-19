@@ -16,6 +16,11 @@
   - to set sector and ring based on meta-data
 - derive property to sector map from meta-model 
 
+## March 19th
+- show shape (derived from object.offerType)
+- show color (derived from rating.experience)
+- allow user to determine display style (show image or shape and/or label)
+
 ## March 18th
 - new page viewpoint.html, new module radarBlips.js , start of meta model in sampleData.js
 - show (generated sample data) blips using hardcoded property <=> sector/ring/size maps

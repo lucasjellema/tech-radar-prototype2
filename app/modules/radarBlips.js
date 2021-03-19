@@ -2,12 +2,25 @@ import { cartesianFromPolar, polarFromCartesian } from './drawingUtilities.js'
 export { drawRadarBlips }
 
 const color_white = "#FFF"
-const radarCanvasElementId = "#radarCanvas"
-
+const radarCanvasElementId = "radarCanvas"
+const blipsLayerElementId = "blipsLayer"
+let currentViewpoint
 const drawRadarBlips = function (viewpoint) {
+    currentViewpoint = viewpoint
     console.log(`drawradarblips`)
-    const radarCanvasElement = d3.select(radarCanvasElementId)
-    const blipElements = radarCanvasElement.selectAll(".blip")
+    let blipsLayer
+    blipsLayer = d3.select(`#${blipsLayerElementId}`)
+    if (blipsLayer.empty()) {
+        console.log(`create blips layer`)
+        const radarCanvasElement = d3.select(`#${radarCanvasElementId}`)
+        blipsLayer = radarCanvasElement.append("g")
+            .attr("id", blipsLayerElementId)
+    }
+    else {
+        console.log(`wipe  blips layer`)
+        blipsLayer.selectAll("*").remove();
+    }
+    const blipElements = blipsLayer.selectAll(".blip")
         .data(viewpoint.blips)
         .enter()
         .append("g")
@@ -47,34 +60,59 @@ const sectorRingToPosition = (sector, ring, config) => { // return X,Y coordinat
 const drawRadarBlip = (blip, d, viewpoint) => {
     const blipSector = viewpoint.propertyVisualMaps.sectorMap[d.rating.object.category]
     const blipRing = viewpoint.propertyVisualMaps.ringMap[d.rating.ambition]
+    const blipShape = viewpoint.propertyVisualMaps.shapeMap[d.rating.object?.offering] ?? viewpoint.propertyVisualMaps.shapeMap["other"]
+    const blipColor = viewpoint.propertyVisualMaps.colorMap[d.rating?.experience] ?? viewpoint.propertyVisualMaps.colorMap["other"]
+    const blipSize = viewpoint.propertyVisualMaps.sizeMap[d.rating.magnitude]
 
     const xy = sectorRingToPosition(blipSector, blipRing, viewpoint.template)
 
-    blip.attr("transform", `translate(${xy.x},${xy.y}) scale(${viewpoint.propertyVisualMaps.sizeMap[d.rating.magnitude]})`)
+    blip.attr("transform", `translate(${xy.x},${xy.y}) scale(${blipSize})`)
         .attr("id", `blip-${d.id}`)
 
 
 
     // the blip can consist of:
-    // text/label
-    // image or shape
-    const label = d.rating.object.label
-    blip.append("text")
-        .text(label.length > 10 ? label.split(" ")[0] : label)
-        .attr("x", 0) // if on left side, then move to the left, if on the right side then move to the right
-        .attr("y", -30) // if on upper side, then move up, if on the down side then move down
-        .attr("text-anchor", "middle")
-        .attr("alignment-baseline", "before-edge")
-        .style("fill", "#000")
-        .style("font-family", "Arial, Helvetica")
-        .style("font-stretch", "extra-condensed")
-        .style("font-size", function (d) { return label.length > 2 ? `${14}px` : "17px"; })
+    // text/label (with color and text style?) and/or either an image or a shape
+    // the user determines which elements should be displayed for a blip 
+    // perhaps the user can also indicate whether colors, shapes and sizes should be visualized (or set to default values instead)
+    // and if text font size should decrease/increase with size?
+    if (viewpoint.blipDisplaySettings.showLabels) {
+        const label = d.rating.object.label
+        blip.append("text")
+            .text(label.length > 10 ? label.split(" ")[0] : label)
+            .attr("x", 0) // if on left side, then move to the left, if on the right side then move to the right
+            .attr("y", -30) // if on upper side, then move up, if on the down side then move down
+            .attr("text-anchor", "middle")
+            .attr("alignment-baseline", "before-edge")
+            .style("fill", "#000")
+            .style("font-family", "Arial, Helvetica")
+            .style("font-stretch", "extra-condensed")
+            .style("font-size", function (d) { return label.length > 2 ? `${14}px` : "17px"; })
+    }
 
-    const shape = blip.append("circle")
-        .attr("r", 15)
-    shape.attr("fill", "blue");
-    shape.attr("opacity", "0.4");
-    if (d.rating.object.image != null) {
+    if (viewpoint.blipDisplaySettings.showShapes) {
+        let shape
+
+        if (blipShape == "circle") {
+            shape = blip.append("circle")
+                .attr("r", 15)
+        }
+        if (blipShape == "diamond") {
+            const diamond = d3.symbol().type(d3.symbolDiamond).size(800);
+            shape = blip.append('path').attr("d", diamond)
+        }
+        if (blipShape == "square") {
+            const square = d3.symbol().type(d3.symbolSquare).size(800);
+            shape = blip.append('path').attr("d", square)
+        }
+
+
+
+        shape.attr("fill", blipColor);
+        shape.attr("opacity", "0.4");
+    }
+
+    if (viewpoint.blipDisplaySettings.showImages && d.rating.object.image != null) {
         let image = blip.append('image')
             .attr('xlink:href', d.rating.object.image)
             .attr('width', 80)
@@ -94,3 +132,21 @@ const drawRadarBlip = (blip, d, viewpoint) => {
     }
 }
 
+const handleShowImagesChange = (event) => {
+    currentViewpoint.blipDisplaySettings.showImages = event.target.checked
+    drawRadarBlips(currentViewpoint)
+}
+
+const handleShowLabelsChange = (event) => {
+    currentViewpoint.blipDisplaySettings.showLabels = event.target.checked
+    drawRadarBlips(currentViewpoint)
+}
+const handleShowShapesChange = (event) => {
+    currentViewpoint.blipDisplaySettings.showShapes = event.target.checked
+    drawRadarBlips(currentViewpoint)
+}
+
+
+document.getElementById('showImages').addEventListener("change", handleShowImagesChange);
+document.getElementById('showLabels').addEventListener("change", handleShowLabelsChange);
+document.getElementById('showShapes').addEventListener("change", handleShowShapesChange);

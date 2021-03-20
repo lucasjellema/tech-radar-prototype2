@@ -75,14 +75,14 @@ const model =
 const viewpoints = [
     {
         name: "AMIS Technology Radar - Integration"
-        , template: "Conclusion Technology Radar"
+        , template: null
         , ratingTypes: []  // which rating type(s) - for which objectTypes - are displayed
         , propertyVisualMaps: { // mapping between property values and visual characteristics; 
-            sizeMap: { "tiny": 0.5, "medium": 0.8, "large": 1.15 } // the rating magnitude property drives the size; the values of magnitude are mapped to values for size
+            sizeMap: { "tiny": 0, "medium": 1, "large": 2 } // the rating magnitude property drives the size; the values of magnitude are mapped to values for size
             , sectorMap: { "database": 0, "language": 3, "infrastructure": 2,"concepts": 4,"libraries":1 } // the object category property drives the sector; the values of category are mapped to values for sector
             , ringMap: { "hold": 1, "assess": 2, "adopt": 4, "spotted": 0,"trial":3 } // the rating ambition property drives the ring; the values of ambition are mapped to values for ring
-            , shapeMap: {"oss" : "diamond", "commercial" : "square" ,"other":"circle"}
-            , colorMap: { "short": "green", "long":"blue","other":"gray"}
+            , shapeMap: {"oss" : 1, "commercial" : 0 ,"other":3}
+            , colorMap: { "short": 0, "long":1,"intermediate":3, "other":2}
         },
         blipDisplaySettings: {showImages: true, showShapes: false, showLabels:true}
         //for example: property category in objectType technology is mapped to sector in radar
@@ -247,24 +247,24 @@ const sample = {
             "colorsConfiguration": {
                 "colors": [
                     {
-                        "label": "Super Status",
+                        "label": "Fresh",
+                        "color": "green",
+                        "enabled": true
+                    },
+                    {
+                        "label": "Been Around",
                         "color": "blue",
                         "enabled": true
                     },
                     {
-                        "label": "Unassigned",
-                        "color": "white",
-                        "enabled": false
+                        "label": "Very Mature",
+                        "color": "gray",
+                        "enabled": true
                     },
                     {
-                        "label": "Unassigned",
-                        "color": "white",
-                        "enabled": false
-                    },
-                    {
-                        "label": "Unassigned",
-                        "color": "white",
-                        "enabled": false
+                        "label": "Intermediate",
+                        "color": "pink",
+                        "enabled": true
                     },
                     {
                         "label": "Unassigned",
@@ -275,18 +275,18 @@ const sample = {
             "sizesConfiguration": {
                 "sizes": [
                     {
-                        "label": "Regular",
-                        "size": 1,
+                        "label": "Niche",
+                        "size": 0.7,
                         "enabled": true
                     },
                     {
-                        "label": "Regular",
-                        "size": 2,
+                        "label": "Medium    ",
+                        "size": 0.9,
                         "enabled": false
                     },
                     {
-                        "label": "Regular",
-                        "size": 3,
+                        "label": "Very relevant",
+                        "size": 1.6,
                         "enabled": true
                     },
                     {
@@ -303,45 +303,45 @@ const sample = {
             "shapesConfiguration": {
                 "shapes": [
                     {
-                        "label": "Library & Framework",
+                        "label": "Commercial",
                         "shape": "square"
                     },
                     {
-                        "label": "Tool",
+                        "label": "Open Source",
                         "shape": "diamond"
                     },
                     {
-                        "label": "Shape Label",
+                        "label": "Label",
                         "shape": "rectangleHorizontal",
                         "enabled": false
                     },
                     {
-                        "label": "Shape Label",
+                        "label": "Other",
                         "shape": "circle",
                         "enabled": false
                     },
                     {
-                        "label": "Shape Label",
+                        "label": "Label",
                         "shape": "star",
                         "enabled": false
                     },
                     {
-                        "label": "Shape Label",
+                        "label": "Label",
                         "shape": "rectangleVertical",
                         "enabled": false
                     },
                     {
-                        "label": "Shape Label",
+                        "label": "Label",
                         "shape": "triangle",
                         "enabled": false
                     },
                     {
-                        "label": "Shape Label",
+                        "label": "Label",
                         "shape": "ring",
                         "enabled": false
                     },
                     {
-                        "label": "Shape Label",
+                        "label": "Label",
                         "shape": "plus",
                         "enabled": false
                     }

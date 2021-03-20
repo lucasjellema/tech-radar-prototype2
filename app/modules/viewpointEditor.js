@@ -1,4 +1,4 @@
-import { cartesianFromPolar, polarFromCartesion } from './drawingUtilities.js'
+import { cartesianFromPolar, polarFromCartesian } from './drawingUtilities.js'
 import { makeDraggable } from './drag.js'
 import { subscribeToRadarEvents, drawRadar } from './radar.js'
 import { getConfiguration, subscribeToRadarRefresh, getState, publishRefreshRadar } from './data.js'

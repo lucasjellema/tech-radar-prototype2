@@ -64,8 +64,8 @@ function makeDraggable(svg, handleEndDragEvent) {
             }
             //   // find entry with blipId
             //   const entry = getCurrentConfiguration().getEntries().filter((entry) => entry.label == blipId)[0]
-           // console.log(`end drag of ${blipId} x= ${coord.x}, y = ${coord.y}`)
-           // console.log(`new x  ${coord.x - offset.x}, new y  ${coord.y - offset.y}, coord x: ${coord.x}, offset.x ${offset.x}`)
+            console.log(`end drag of ${blipId} x= ${coord.x}, y = ${coord.y}`)
+            console.log(`new x  ${coord.x - offset.x}, new y  ${coord.y - offset.y}, coord x: ${coord.x}, offset.x ${offset.x}`)
             //   const sector = getSectorForXYCoordinates(coord.x - offset.x, coord.y - offset.y)
             //   //console.log(`drop Sector  ${JSON.stringify(sector)} `)
             //   entry.x= (coord.x - offset.x)

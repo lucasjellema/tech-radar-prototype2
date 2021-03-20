@@ -8,17 +8,26 @@
 
 - themes: filter with selection of positive tags and negative tags 
 
-- new page for displaying an editor - with blips (no radar edit options)
 - hover/popup for blips
   - a short quick popup with just a label
   - a popup that appears after 1 second? with more details for the rating, including scope, timestamp, author and comment
 - drag & drop of blips
-  - to set sector and ring based on meta-data
-- derive property to sector map from meta-model 
+  - to derive property values on rating and object from  sector and ring based on meta-data - instead of hardcoded as in blipEditing.handleBlipDrag)
+- 
+- derive property to sector map from meta-model (instead of hard coded in radarBlips.drawRadarBlip - category, ambition, offering, experience, magnitude)
+- prepare prototype as Azure Static Webapp - sample data loaded
+
+## March 20th
+
+- show legend for sizes, shapes, colors
+- save blips-data (incl ratings and objects)
+- load blips data from file
+- if not text to be displayed and images displayed but no image available then show text
+- use X and Y as stored for blip (unless X, Y are outside segment - defined by ring and sector)
 
 ## March 19th
-- show shape (derived from object.offerType)
-- show color (derived from rating.experience)
+- show shape for blip (derived from object.offerType)
+- show color for blip (derived from rating.experience)
 - allow user to determine display style (show image or shape and/or label)
 
 ## March 18th

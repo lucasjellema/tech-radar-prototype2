@@ -23,7 +23,8 @@ const styleText = (textElement, configNode, config, alternativeFontSource = null
     })
 }
 
-function drawRadar(config, elementDecorator = null) {
+function drawRadar(viewpoint, elementDecorator = null) {
+    const config = viewpoint.template
     const radar = initializeRadar(config)
     const radarCanvas = radar.append("g").attr("id", "radarCanvas")
     let sectorCanvas, ringCanvas
@@ -44,6 +45,11 @@ function drawRadar(config, elementDecorator = null) {
         .attr("class", "draggable")
         .call(elementDecorator ? elementDecorator : () => { }, [`svg#${config.svg_id}`, config.title.text, `title`]);
     styleText(title, config.title, config)
+
+    // legend
+    initializeSizesLegend(viewpoint)
+    initializeShapesLegend(viewpoint)
+    initializeColorsLegend(viewpoint)
 }
 
 function initializeRadar(config) {
@@ -102,9 +108,9 @@ const drawSectors = function (radar, config, elementDecorator = null) {
                     .style("fill", sector.backgroundColor != null ? sector.backgroundColor : color_white)
                     .attr("opacity", sector.opacity != null ? sector.opacity : 0.6)
                     // define borders of sectors
-                    .style("stroke", ("sectors" == config.topLayer && config.selectedSector == i  && config.editMode) ? "red" : config.sectorConfiguration?.stroke?.strokeColor ?? "#000")
-                    .style("stroke-width", ("sectors" == config.topLayer && config.selectedSector == i  && config.editMode) ? 8 : config.sectorConfiguration?.stroke?.strokeWidth ?? 3)
-                    .style("stroke-dasharray", ("sectors" == config.topLayer && config.selectedSector == i  && config.editMode) ? "" : config.sectorConfiguration?.stroke?.strokeArray ?? "#000")
+                    .style("stroke", ("sectors" == config.topLayer && config.selectedSector == i && config.editMode) ? "red" : config.sectorConfiguration?.stroke?.strokeColor ?? "#000")
+                    .style("stroke-width", ("sectors" == config.topLayer && config.selectedSector == i && config.editMode) ? 8 : config.sectorConfiguration?.stroke?.strokeWidth ?? 3)
+                    .style("stroke-dasharray", ("sectors" == config.topLayer && config.selectedSector == i && config.editMode) ? "" : config.sectorConfiguration?.stroke?.strokeArray ?? "#000")
                     .on('click', () => { const sector = i; publishRadarEvent({ type: "sectorClick", sector: i }) })
                 // add color to the sector area outside the outer ring
                 const outerringArc = d3.arc()
@@ -115,7 +121,7 @@ const drawSectors = function (radar, config, elementDecorator = null) {
                 sectorCanvas.append("path")
                     .attr("id", `outerring${i}`)
                     .attr("d", outerringArc)
-                    .style("fill", sector?.outerringBackgroundColor?? "white")
+                    .style("fill", sector?.outerringBackgroundColor ?? "white")
 
                 // print sector label along the edge of the arc
                 displaySectorLabel(currentAnglePercentage, startAngle, endAngle, sectorCanvas, i, sector, config, elementDecorator)
@@ -173,9 +179,9 @@ const drawRings = function (radar, config) {
             .style("fill", ring.backgroundColor != null ? ring.backgroundColor : color_white)
             .attr("opacity", ring.opacity != null ? ring.opacity : 0.6)
             // define borders of rings
-            .style("stroke", ("rings" == config.topLayer && config.selectedRing == i  && config.editMode) ? "red" : config.ringConfiguration?.stroke?.strokeColor ?? "#000")
-            .style("stroke-width", ("rings" == config.topLayer && config.selectedRing == i  && config.editMode) ? 6 : config.ringConfiguration?.stroke?.strokeWidth ?? 2)
-            .style("stroke-dasharray", ("rings" == config.topLayer && config.selectedRing == i  && config.editMode) ? "" : config.ringConfiguration?.stroke?.strokeArray ?? "9 1" )
+            .style("stroke", ("rings" == config.topLayer && config.selectedRing == i && config.editMode) ? "red" : config.ringConfiguration?.stroke?.strokeColor ?? "#000")
+            .style("stroke-width", ("rings" == config.topLayer && config.selectedRing == i && config.editMode) ? 6 : config.ringConfiguration?.stroke?.strokeWidth ?? 2)
+            .style("stroke-dasharray", ("rings" == config.topLayer && config.selectedRing == i && config.editMode) ? "" : config.ringConfiguration?.stroke?.strokeArray ?? "9 1")
             .on('click', () => { const ring = i; publishRadarEvent({ type: "ringClick", ring: i }) })
         if (ring.backgroundImage && ring.backgroundImage.image) {
             ringCanvas.append('image')
@@ -219,12 +225,14 @@ const drawRingLabels = function (radar, config, elementDecorator) {
 
             //            .style("pointer-events", "none")
             .style("user-select", "none")
-            .call(elementDecorator ? elementDecorator : () => {  }, [`svg#${config.svg_id}`, ring.label, `ringLabel${i}`]);
+            .call(elementDecorator ? elementDecorator : () => { }, [`svg#${config.svg_id}`, ring.label, `ringLabel${i}`]);
         styleText(ringlabel, ring, config, config.ringConfiguration)
 
         currentRadiusPercentage = currentRadiusPercentage - ring.width
     }
 }
+
+
 
 function displaySectorLabel(currentAnglePercentage, startAngle, endAngle, sectorCanvas, sectorIndex, sector, config, elementDecorator = null) {
     let textArc = d3.arc()
@@ -246,18 +254,149 @@ function displaySectorLabel(currentAnglePercentage, startAngle, endAngle, sector
         .attr("id", `sectorLabel${sectorIndex}`)
         .attr("dy", 10)
         .attr("dx", 45)
-    // .style("font-family", "sans-serif")
-    // .style("font-size", "30px")
-    // .style("fill", "#fff")
     styleText(sectorLabel, sector, config, config.sectorConfiguration)
 
     sectorLabel.append("textPath")
-        // .attr("class", "textpath tp_avg")
-        //  .attr('fill', '#000')
+
         .attr("startOffset", "40%")
         .style("text-anchor", "middle")
         .attr("xlink:href", `#pieText${sectorIndex}`)
         .text(`${sector.label}`)
-        .call(elementDecorator ? elementDecorator : () => {  }, [`svg#${config.svg_id}`, sector.label, `sectorLabel${sectorIndex}`]);
+        .call(elementDecorator ? elementDecorator : () => { }, [`svg#${config.svg_id}`, sector.label, `sectorLabel${sectorIndex}`]);
 
+}
+
+const initializeSizesLegend = (viewpoint) => {
+    const config = viewpoint.template
+    const sizesBox = d3.select("svg#sizesLegend")
+        .style("background-color", "silver")
+        .attr("width", "80%")
+        .attr("height", Object.keys(viewpoint.propertyVisualMaps.sizeMap).length * 55 + 20)
+    sizesBox.selectAll("*").remove(); // clean content (if there is any)
+
+    sizesBox.append('g').attr('class', 'sizesBox')
+    const circleIndent = 10
+    const labelIndent = 70
+    for (let i = 0; i < Object.keys(viewpoint.propertyVisualMaps.sizeMap).length; i++) {
+        const key = Object.keys(viewpoint.propertyVisualMaps.sizeMap)[i]
+        const scaleFactor = config.sizesConfiguration.sizes[viewpoint.propertyVisualMaps.sizeMap[key]].size
+        const label = config.sizesConfiguration.sizes[viewpoint.propertyVisualMaps.sizeMap[key]].label
+
+        const sizeEntry = sizesBox.append('g')
+            .attr("transform", `translate(${circleIndent + 20}, ${30 + i * 55})`)
+
+            .append('circle')
+            .attr("id", `templateSizes${i}`)
+            .attr("r", 12)
+            .attr("fill", "black")
+            .attr("transform", `scale(${scaleFactor})`)
+
+        sizesBox.append("text")
+            .attr("id", `sizeLabel${i}`)
+            .text(label)
+            .attr("x", labelIndent)
+            .attr("y", 42 + i * 55)
+            .style("fill", "#e5e5e5")
+            .style("font-family", "Arial, Helvetica")
+            .style("font-size", "25px")
+            .style("font-weight", "bold")
+
+
+    }
+}
+
+
+
+const initializeShapesLegend = (viewpoint) => {
+    const config = viewpoint.template
+    const shapesBox = d3.select("svg#shapesLegend")
+        .style("background-color", "#FEE")
+        .attr("width", "80%")
+        .attr("height", Object.keys(viewpoint.propertyVisualMaps.shapeMap).length * 45 + 20)
+    shapesBox.selectAll("*").remove(); // clean content (if there is any)
+
+    shapesBox.append('g').attr('class', 'shapesBox')
+    const circleIndent = 5
+    const labelIndent = 50
+    for (let i = 0; i < Object.keys(viewpoint.propertyVisualMaps.shapeMap).length; i++) {
+        const key = Object.keys(viewpoint.propertyVisualMaps.shapeMap)[i]
+        const shapeToDraw = config.shapesConfiguration.shapes[viewpoint.propertyVisualMaps.shapeMap[key]].shape
+        const label = config.shapesConfiguration.shapes[viewpoint.propertyVisualMaps.shapeMap[key]].label
+
+        shapesBox.append("text")
+        .attr("id", `shapeLabel${i}`)
+        .text(label)
+        .attr("x", labelIndent)
+        .attr("y", 38 + i * 45)
+        .style("fill", "#000")
+        .style("font-family", "Arial, Helvetica")
+        .style("font-size", "18px")
+        .style("font-weight", "normal")
+
+        const shapeEntry = shapesBox.append('g')
+            .attr("transform", `translate(${circleIndent + 20}, ${30 + i * 45})`)
+            .attr("id", `templateShapes${i}`)
+            // .append('circle')
+            // .attr("r", 12)
+            // .attr("fill", "black")
+
+            let shape
+
+            if (shapeToDraw == "circle") {
+                shape = shapeEntry.append("circle")
+                    .attr("r", 12)
+            }
+            if (shapeToDraw == "diamond") {
+                const diamond = d3.symbol().type(d3.symbolDiamond).size(500);
+                shape = shapeEntry.append('path').attr("d", diamond)
+            }
+            if (shapeToDraw == "square") {
+                const square = d3.symbol().type(d3.symbolSquare).size(500);
+                shape = shapeEntry.append('path').attr("d", square)
+            }
+    
+    
+    
+            shape.attr("fill", "#000");
+            shape.attr("opacity", "0.9");
+
+    }
+}
+
+const initializeColorsLegend = (viewpoint) => {
+    const config = viewpoint.template
+    const colorsBox = d3.select("svg#colorsLegend")
+        .style("background-color", "#EFF")
+        .attr("width", "80%")
+        .attr("height", Object.keys(viewpoint.propertyVisualMaps.colorMap).length * 45 + 20)
+    colorsBox.selectAll("*").remove(); // clean content (if there is any)
+
+    colorsBox.append('g').attr('class', 'colorsBox')
+    const circleIndent = 5
+    const labelIndent = 50
+    for (let i = 0; i < Object.keys(viewpoint.propertyVisualMaps.colorMap).length; i++) {
+        const key = Object.keys(viewpoint.propertyVisualMaps.colorMap)[i]
+        const colorToShow = config.colorsConfiguration.colors[viewpoint.propertyVisualMaps.colorMap[key]].color
+        const label = config.colorsConfiguration.colors[viewpoint.propertyVisualMaps.colorMap[key]].label
+
+        const colorEntry = colorsBox.append('g')
+            .attr("transform", `translate(${circleIndent + 20}, ${30 + i * 45})`)
+
+            .append('circle')
+            .attr("id", `templatecolors${i}`)
+            .attr("r", 12)
+            .attr("fill", colorToShow)
+
+        colorsBox.append("text")
+            .attr("id", `colorLabel${i}`)
+            .text(label)
+            .attr("x", labelIndent)
+            .attr("y", 38 + i * 45)
+            .style("fill", "#000")
+        .style("font-family", "Arial, Helvetica")
+        .style("font-size", "18px")
+        .style("font-weight", "normal")
+
+
+    }
 }

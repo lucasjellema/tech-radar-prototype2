@@ -11,12 +11,12 @@
     <style>
         .column {
             float: left;
-            width: 70%;
+            width: 80%;
         }
 
         .column2 {
             float: left;
-            width: 30%;
+            width: 20%;
         }
 
         .column1_2 {
@@ -29,9 +29,10 @@
             width: 33%;
             height: 800px;
         }
-        .outlinedImage { 
-    filter: drop-shadow(0px 0px 1px red);
-}
+
+        .outlinedImage {
+            filter: drop-shadow(0px 0px 1px red);
+        }
 
         /* Clear floats after the columns */
         .row:after {
@@ -91,9 +92,52 @@
                     <label for="showLabels">Show Labels</label>
                 </div>
             </div>
-        </div>
-        <br />
+            <hr />
+            <div id="sizeLegend">
+                <h3  id="sizesLegendTitle">Sizes</h3>
+                <div>
+                    <input type="checkbox" id="applySizes" name="displayStyle" value="applySizes" checked>
+                    <label for="applySizes">Apply Sizes</label>
+                </div>
+                <svg id="sizesLegend">
+
+                </svg>
+            </div>
+            <hr />
+            <div id="shapeLegend">
+                <h3  id="shapesLegendTitle">Shapes</h3>
+                <div>
+                    <input type="checkbox" id="applyShapes" name="displayStyle" value="applyShapes" checked>
+                    <label for="applyShapes">Apply Shapes</label>
+                </div>
+                <svg id="shapesLegend">
+
+                </svg>
+            </div>
+            <hr />
+            <div id="colorLegend">
+                <h3 id="colorLegendTitle">Colors</h3>
+                <div>
+                    <input type="checkbox" id="applyColors" name="displayStyle" value="applyColors" checked>
+                    <label for="applyColors">Apply Colors</label>
+                </div>
+                <svg id="colorsLegend">
+
+                </svg>
+            </div>
+
+            <br />
         <hr />
+        <div id="dataManagement">
+            <h3 id="dataManagementTitle">Data Management</h3>
+            <div>
+                <input type="button" id="download" name="download" value="Download">
+                <input type="button" id="upload" name="upload" value="Upload">
+                <input type="file" id="fileElem" multiple accept="application/json,text/*" style="display:none">
+            </div>
+        </div>
+        </div>
+        
 
 
     </div>
@@ -106,20 +150,23 @@
 
         const viewpoint = getConfiguration()
         viewpoint.editMode = false
-        drawRadar(getViewpoint().template)
+        drawRadar(getViewpoint())
         drawRadarBlips(getViewpoint())
 
         const svg = d3.select(`svg#${viewpoint.svg_id}`)
-        makeDraggable(svg.node(), (dragEvent) => {handleBlipDrag(dragEvent, getViewpoint())})
+        makeDraggable(svg.node(), (dragEvent) => { handleBlipDrag(dragEvent, getViewpoint()) })
 
         subscribeToRadarRefresh(() => {
+            console.log(`refresh`)
             const viewpoint = getConfiguration()
             viewpoint.editMode = false
+            drawRadar(getViewpoint())
+            drawRadarBlips(getViewpoint())
         })
 
 
     </script>
-    <div>
+    <div style="display:none">
         <div>
             <h3>Template management</h3>
             <div>
@@ -127,9 +174,9 @@
                 <input type="button" id="load" name="load" value="Load (from local storage)">
             </div>
             <div>
-                <input type="button" id="download" name="download" value="Download">
-                <input type="button" id="upload" name="upload" value="Upload">
-                <input type="file" id="fileElem" multiple accept="application/json,text/*" style="display:none">
+                // <input type="button" id="download" name="download" value="Download">
+                // <input type="button" id="upload" name="upload" value="Upload">
+                // <input type="file" id="fileElem" multiple accept="application/json,text/*" style="display:none">
             </div>
             <div>
                 <input type="button" id="newTemplate" name="newTemplate" value="Create New Template">

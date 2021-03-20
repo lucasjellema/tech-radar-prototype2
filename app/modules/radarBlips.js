@@ -1,4 +1,4 @@
-import { cartesianFromPolar, polarFromCartesian } from './drawingUtilities.js'
+import { cartesianFromPolar, polarFromCartesian,segmentFromCartesian } from './drawingUtilities.js'
 export { drawRadarBlips }
 
 const color_white = "#FFF"
@@ -7,17 +7,14 @@ const blipsLayerElementId = "blipsLayer"
 let currentViewpoint
 const drawRadarBlips = function (viewpoint) {
     currentViewpoint = viewpoint
-    console.log(`drawradarblips`)
     let blipsLayer
     blipsLayer = d3.select(`#${blipsLayerElementId}`)
     if (blipsLayer.empty()) {
-        console.log(`create blips layer`)
         const radarCanvasElement = d3.select(`#${radarCanvasElementId}`)
         blipsLayer = radarCanvasElement.append("g")
             .attr("id", blipsLayerElementId)
     }
     else {
-        console.log(`wipe  blips layer`)
         blipsLayer.selectAll("*").remove();
     }
     const blipElements = blipsLayer.selectAll(".blip")
@@ -51,22 +48,37 @@ const priorSectorsAnglePercentageSum = (sectorId, config) => config.sectorConfig
 const priorRingsWidthPercentageSum = (ringId, config) => config.ringConfiguration.rings.filter((ring, index) => index < ringId)
     .reduce((sum, ring) => sum + ring.width, 0)
 
-const sectorRingToPosition = (sector, ring, config) => { // return X,Y coordinates corresponding to the sector and ring 
+const sectorRingToPosition = (sector, ring, config) => { // return randomized X,Y coordinates in segment corresponding to the sector and ring 
     const phi = priorSectorsAnglePercentageSum(sector, config) + (0.1 + Math.random() * 0.8) * config.sectorConfiguration.sectors[sector].angle
     const r = config.maxRingRadius * (1 - priorRingsWidthPercentageSum(ring, config) - (0.1 + Math.random() * 0.8) * config.ringConfiguration.rings[ring].width) // 0.1 to not position the on the outer edge of the segment
     return cartesianFromPolar({ r: r, phi: 2 * (1 - phi) * Math.PI })
 }
 
+const blipInSegment = (cartesian, viewpoint, segment) => {
+    const cartesianSegment = segmentFromCartesian (cartesian, viewpoint)
+    //console.log(`REAL sector ${segment.sector} ring ${segment.ring};XY RING  ${cartesianSegment.ring} sector ${cartesianSegment.sector}`)
+    return cartesianSegment.sector == segment.sector 
+        && ((cartesianSegment.ring ?? -1) == (segment.ring ?? -1))
+}
+
 const drawRadarBlip = (blip, d, viewpoint) => {
     const blipSector = viewpoint.propertyVisualMaps.sectorMap[d.rating.object.category]
     const blipRing = viewpoint.propertyVisualMaps.ringMap[d.rating.ambition]
-    const blipShape = viewpoint.propertyVisualMaps.shapeMap[d.rating.object?.offering] ?? viewpoint.propertyVisualMaps.shapeMap["other"]
+    const blipShapeId = viewpoint.propertyVisualMaps.shapeMap
+    [d.rating.object?.offering] ?? viewpoint.propertyVisualMaps.shapeMap["other"]
+    const blipShape = viewpoint.template.shapesConfiguration.shapes[blipShapeId].shape
+
     const blipColor = viewpoint.propertyVisualMaps.colorMap[d.rating?.experience] ?? viewpoint.propertyVisualMaps.colorMap["other"]
     const blipSize = viewpoint.propertyVisualMaps.sizeMap[d.rating.magnitude]
 
-    const xy = sectorRingToPosition(blipSector, blipRing, viewpoint.template)
+    let xy
 
-    blip.attr("transform", `translate(${xy.x},${xy.y}) scale(${blipSize})`)
+    if (d.x != null && d.y != null && blipInSegment(d, viewpoint, {sector:blipSector, ring:blipRing}) != null) { // TODO and x,y is located within ring/.sector segment
+        xy = { x: d.x, y: d.y }
+    } else {
+        xy = sectorRingToPosition(blipSector, blipRing, viewpoint.template)
+    }
+    blip.attr("transform", `translate(${xy.x},${xy.y}) scale(${viewpoint.template.sizesConfiguration.sizes[blipSize].size})`)
         .attr("id", `blip-${d.id}`)
 
 
@@ -76,7 +88,7 @@ const drawRadarBlip = (blip, d, viewpoint) => {
     // the user determines which elements should be displayed for a blip 
     // perhaps the user can also indicate whether colors, shapes and sizes should be visualized (or set to default values instead)
     // and if text font size should decrease/increase with size?
-    if (viewpoint.blipDisplaySettings.showLabels) {
+    if (viewpoint.blipDisplaySettings.showLabels || ((viewpoint.blipDisplaySettings.showImages && d.rating.object.image == null))) {
         const label = d.rating.object.label
         blip.append("text")
             .text(label.length > 10 ? label.split(" ")[0] : label)

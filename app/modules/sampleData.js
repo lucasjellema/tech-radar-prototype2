@@ -74,7 +74,7 @@ const model =
 
 const viewpoints = [
     {
-        name: "AMIS Technology Radar - Integration"
+        name: "My Technology Radar - Integration"
         , template: null
         , ratingTypes: []  // which rating type(s) - for which objectTypes - are displayed
         , propertyVisualMaps: { // mapping between property values and visual characteristics; 
@@ -286,7 +286,7 @@ const sample = {
                     },
                     {
                         "label": "Very relevant",
-                        "size": 1.6,
+                        "size": 1.3,
                         "enabled": true
                     },
                     {

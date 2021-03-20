@@ -39,12 +39,13 @@ function drawRadar(viewpoint, elementDecorator = null) {
     //rotation only on sectors - not on rings
     sectorCanvas.attr("transform", `rotate(${-360 * config.rotation})`) // clockwise rotation
     drawRingLabels(radar, config, elementDecorator)
-    const title = radar.append("text")
+    const title = viewpoint.name??config.title.text
+    const titleElement = radar.append("text")
         .attr("transform", `translate(${config.title.x != null ? config.title.x : -500}, ${config.title.y != null ? config.title.y : -400})`)
-        .text(config.title.text)
+        .text(title)
         .attr("class", "draggable")
         .call(elementDecorator ? elementDecorator : () => { }, [`svg#${config.svg_id}`, config.title.text, `title`]);
-    styleText(title, config.title, config)
+    styleText(titleElement, config.title, config)
 
     // legend
     initializeSizesLegend(viewpoint)

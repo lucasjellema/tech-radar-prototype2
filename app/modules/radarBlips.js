@@ -1,4 +1,4 @@
-import { cartesianFromPolar, polarFromCartesian,segmentFromCartesian } from './drawingUtilities.js'
+import { cartesianFromPolar, polarFromCartesian, segmentFromCartesian } from './drawingUtilities.js'
 export { drawRadarBlips }
 
 const color_white = "#FFF"
@@ -22,16 +22,15 @@ const drawRadarBlips = function (viewpoint) {
         .enter()
         .append("g")
         .attr("class", "blip")
-        .attr("class", "draggable-group");
-    // .attr("transform", function (d, i) { return legend_transform(config.getQuadrant(d), config.getRing(d), segmented, i); })
-    // .on("dblclick", function (d) { showModal(d); })
-    // .on("mouseover", function (d) { showBubble(d); highlightLegendItem(d); })
-    // .on("mouseout", function (d) { hideBubble(d); unhighlightLegendItem(d); })
+        .attr("class", "draggable-group")
+        // .attr("transform", function (d, i) { return legend_transform(config.getQuadrant(d), config.getRing(d), segmented, i); })
+        // .on("dblclick", function (d) { showModal(d); })
+        // .on("mouseover", function (d) { showBubble(d); highlightLegendItem(d); })
+        // .on("mouseout", function (d) { hideBubble(d); unhighlightLegendItem(d); })
+        .on('contextmenu', (e, d) => {
 
-    // .on('contextmenu', function (d) {
-    //     d3.event.preventDefault();
-    //     menu(d3.event.pageX, d3.event.pageY, d, this);
-    // })
+            createContextMenu(e, d, this, viewpoint);
+        })
 
     // configure each blip
     blipElements.each(function (d) {
@@ -55,9 +54,9 @@ const sectorRingToPosition = (sector, ring, config) => { // return randomized X,
 }
 
 const blipInSegment = (cartesian, viewpoint, segment) => {
-    const cartesianSegment = segmentFromCartesian (cartesian, viewpoint)
+    const cartesianSegment = segmentFromCartesian(cartesian, viewpoint)
     //console.log(`REAL sector ${segment.sector} ring ${segment.ring};XY RING  ${cartesianSegment.ring} sector ${cartesianSegment.sector}`)
-    return cartesianSegment.sector == segment.sector 
+    return cartesianSegment.sector == segment.sector
         && ((cartesianSegment.ring ?? -1) == (segment.ring ?? -1))
 }
 
@@ -73,7 +72,7 @@ const drawRadarBlip = (blip, d, viewpoint) => {
 
     let xy
 
-    if (d.x != null && d.y != null && blipInSegment(d, viewpoint, {sector:blipSector, ring:blipRing}) != null) { // TODO and x,y is located within ring/.sector segment
+    if (d.x != null && d.y != null && blipInSegment(d, viewpoint, { sector: blipSector, ring: blipRing }) != null) { // TODO and x,y is located within ring/.sector segment
         xy = { x: d.x, y: d.y }
     } else {
         xy = sectorRingToPosition(blipSector, blipRing, viewpoint.template)
@@ -158,6 +157,81 @@ const handleShowShapesChange = (event) => {
     drawRadarBlips(currentViewpoint)
 }
 
+const createContextMenu = (e, d, blip, viewpoint) => {
+    menu(e.pageX, e.pageY, d, blip, viewpoint);
+    e.preventDefault();
+}
+
+const menu = (x, y, d, blip, viewpoint) => {
+    const config = viewpoint.template
+    d3.select('.context-menu').remove(); // if already showing, get rid of it.
+    d3.select('body') // click anywhere outside the context menu to hide it TODO perhaps remove on mouse out?
+        .on('click', function () {
+            //  d3.select('.context-menu').remove();
+        });
+
+    // Draw the menu
+    const width = 200
+    const height = 160
+    const contextMenu = d3.select(`svg#${config.svg_id}`)
+        .append('g').attr('class', 'context-menu')
+        .attr('transform', `translate(${x},${y})`)
+
+    contextMenu.append('rect')
+        .attr('width', width)
+        .attr('height', height)
+        .attr('class', 'rect')
+        .attr("style", "fill:lightgray;")
+        .style("opacity", 0.8)
+        .on("mouseout", (e) => {
+            // check x and y - to see whether they are really outside context menu area (mouse out also fires when mouse is on elements inside context menu)
+            const deltaX = x - e.pageX
+            const deltaY = y - e.pageY
+            if (((deltaX > 0) || (deltaX <= - width ) || (deltaY > 0) || (deltaY <= - height))
+            ) {
+                d3.select('.context-menu').remove();
+            }
+        })
+    // draw available shapes (just as legend, without label) vertically or horizontally?, highlight current shape? and allow shape to be selected
+    const sizesBox = contextMenu.append('g')
+        .attr('class', 'sizesBox')
+
+    for (let i = 0; i < Object.keys(viewpoint.propertyVisualMaps.sizeMap).length; i++) {
+        const key = Object.keys(viewpoint.propertyVisualMaps.sizeMap)[i]
+        const scaleFactor = config.sizesConfiguration.sizes[viewpoint.propertyVisualMaps.sizeMap[key]].size
+        const label = config.sizesConfiguration.sizes[viewpoint.propertyVisualMaps.sizeMap[key]].label
+
+        const sizeEntry = sizesBox.append('g')
+            .attr("transform", `translate(${20}, ${30 + i * 45})`)
+            .append('circle')
+            .attr("id", `templateSizes${i}`)
+            .attr("r", 12)
+            .attr("fill", "black")
+            .attr("transform", `scale(${scaleFactor})`)
+
+        decorateContextMenuEntry(sizeEntry, "size", i, d, viewpoint)
+    }
+
+    // todo draw shapes
+    // draw color
+}
+
+function decorateContextMenuEntry(menuEntry, dimension, dimensionSequence, blip, viewpoint) { // dimension = shape, size, color
+    menuEntry.attr("class", "clickableProperty")
+        .on("click", () => {
+            console.log(`clicked ${dimensionSequence} for ${dimension} for blip: ${blip.rating.object.label}; new value = ${getKeyForValue(viewpoint.propertyVisualMaps.sizeMap, dimensionSequence)}`);
+            if (dimension == "size") {
+                blip["rating"]["magnitude"] = getKeyForValue(viewpoint.propertyVisualMaps.sizeMap, dimensionSequence)
+                drawRadarBlips(viewpoint)
+            }
+        });
+}
+
+
+
+const getKeyForValue = function (object, value) {
+    return Object.keys(object).find(key => object[key] === value);
+  }
 
 document.getElementById('showImages').addEventListener("change", handleShowImagesChange);
 document.getElementById('showLabels').addEventListener("change", handleShowLabelsChange);

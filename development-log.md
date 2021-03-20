@@ -16,6 +16,8 @@
 - 
 - derive property to sector map from meta-model (instead of hard coded in radarBlips.drawRadarBlip - category, ambition, offering, experience, magnitude)
 - prepare prototype as Azure Static Webapp - sample data loaded
+- honor 'applyColors, applySizes, applyShapes' (either show specifically derived shapes/colors/sizes or use generic)
+- context menu to set color, size, shape  
 
 ## March 20th
 
@@ -24,6 +26,12 @@
 - load blips data from file
 - if not text to be displayed and images displayed but no image available then show text
 - use X and Y as stored for blip (unless X, Y are outside segment - defined by ring and sector)
+- show context menu for blip; show sizes
+- hide context menu for mouse out of context menu
+- set property value on blip (rating/object) for selected size in context menu
+
+### Resources
+- d3 V6 event handling: https://observablehq.com/@d3/d3v6-migration-guide#events
 
 ## March 19th
 - show shape for blip (derived from object.offerType)

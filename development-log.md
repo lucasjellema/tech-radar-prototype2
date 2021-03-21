@@ -24,10 +24,18 @@
 - show heading for columns in context menu
 - set properties on blip derived from shape and color in context menu
 - synch display style settings (checkboxes) with blip display
+- hide tooltip when dragging a blip
+- generate blips without x & y coordinates 
+- generate rating without artifical ambition (i.e. ring == -1)
+- deal with blips in ring -1 (no ring assigned); find location
+- double click on blip brings up blip property window
+- edit button opens blip property edit window (this window can be closed and changes can be saved back to blip; radar is synchronized)
+- save data to and load data from local storage
 
 ### Resources
 - Using Font Attributes with D3.js https://richardbrath.wordpress.com/2018/11/24/using-font-attributes-with-d3-js/
 - Omnibus Type for making a well-designed open-source font super-family in a variety of widths and weights freely available. 
+- Get selected value from select list: https://mkyong.com/javascript/javascript-get-selected-value-from-dropdown-list/
 
 ## March 20th
 

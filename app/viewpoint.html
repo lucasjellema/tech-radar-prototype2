@@ -9,6 +9,53 @@
     <script src="https://unpkg.com/d3-simple-slider"></script>
     <script src="https://cdn.jsdelivr.net/npm/@jaames/iro@5"></script>
     <style>
+        /* The Modal (background) */
+        .modal {
+            display: none;
+            /* Hidden by default */
+            position: fixed;
+            /* Stay in place */
+            z-index: 1;
+            /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 90%;
+            height: 90%;
+            overflow: auto;
+            /* Enable scroll if needed */
+            background-color: rgb(0, 0, 0);
+            /* Fallback color */
+            background-color: rgba(0, 0, 0, 0.4);
+            /* Black w/ opacity */
+        }
+
+        /* Modal Content/Box */
+        .modal-content {
+            background-color: #f8f1f1;
+            opacity: 0.9;
+            margin: 15% auto;
+            /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            /* Could be more or less, depending on screen size */
+        }
+
+        /* The Close Button */
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
         .column {
             float: left;
             width: 80%;
@@ -70,7 +117,7 @@
         div.tooltip {
             position: absolute;
             text-align: center;
-            width: 110px;
+            width: 130px;
             padding: 10px;
             font: 12px sans-serif;
             background: lightsteelblue;
@@ -78,12 +125,83 @@
             border-radius: 8px;
             pointer-events: none;
         }
+
+        div.blipWindow {
+            position: absolute;
+            text-align: center;
+            width: 1030px;
+            padding: 10px;
+            font: 12px sans-serif;
+            background: rgb(237, 240, 243);
+            border: 0;
+            border-radius: 8px;
+            pointer-events: none;
+        }
+
+
+        .button {
+            background-color: #49694a;
+            border: none;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 12px;
+            margin: 4px 2px;
+        }
+
+        .button1 {
+            border-radius: 8px;
+        }
     </style>
 
 </head>
 
 <body>
+
+
+    <!-- The Modal -->
+    <div id="modalBlipEditor" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3 id="blipEditorTitle">Editing Blip</h3>
+            <label for="blipLabel">Technoloy</label>
+            <input id="blipLabel" type="text" ></input>
+            <label for="blipHomepage">Homepage</label>
+            <input id="blipHomepage" type="text" ></input>
+            <label for="blipCategorySelect">Category</label>
+            <select name="blipCategory" id="blipCategorySelect"></select>
+            <label for="blipAmbitionSelect">Ambition</label>
+
+            <select name="blipAmbition" id="blipAmbitionSelect"></select>
+
+        <div id="blipEditorButtonBar" style="position: absolute; bottom: 25;right: 100;">
+            <input id="saveBlipEdits" type="button" value="Save Changes"></input>
+            </div>
+
+        </div>
+        <script>
+            var modal = document.getElementById("modalBlipEditor");
+            // Get the <span> element that closes the modal
+            var span = document.getElementsByClassName("close")[0];
+            // When the user clicks on <span> (x), close the modal
+            span.onclick = function () {
+                modal.style.display = "none";
+            }
+            // When the user clicks anywhere outside of the modal, close it
+            window.onclick = function (event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            }
+        </script>
+    </div>
+
     <div class="row">
+
         <div class="column">
             <svg id="radarSVGContainer">
             </svg>
@@ -108,7 +226,8 @@
             <hr />
             <div id="sizeLegend">
                 <h3 id="sizesLegendTitle">Sizes</h3>
-                <div><!--
+                <div>
+                    <!--
                     <input type="checkbox" id="applySizes" name="displayStyle" value="applySizes" checked>
                     <label for="applySizes">Apply Sizes</label>
                 -->
@@ -120,7 +239,8 @@
             <hr />
             <div id="shapeLegend">
                 <h3 id="shapesLegendTitle">Shapes</h3>
-                <div><!--
+                <div>
+                    <!--
                     <input type="checkbox" id="applyShapes" name="displayStyle" value="applyShapes" checked>
                     <label for="applyShapes">Apply Shapes</label>
                 -->
@@ -132,7 +252,8 @@
             <hr />
             <div id="colorLegend">
                 <h3 id="colorLegendTitle">Colors</h3>
-                <div> <!--
+                <div>
+                    <!--
                     <input type="checkbox" id="applyColors" name="displayStyle" value="applyColors" checked>
                     <label for="applyColors">Apply Colors</label>
                 -->
@@ -150,6 +271,12 @@
                     <input type="button" id="download" name="download" value="Download">
                     <input type="button" id="upload" name="upload" value="Upload">
                     <input type="file" id="fileElem" multiple accept="application/json,text/*" style="display:none">
+                </div>
+                <br />
+                <hr />
+                <div>
+                    <input type="button" id="save" name="save" value="Save to Local Storage">
+                    <input type="button" id="load" name="load" value="Load (from local storage)">
                 </div>
             </div>
         </div>
@@ -182,18 +309,13 @@
 
 
     </script>
+
+
+
     <div style="display:none">
         <div>
             <h3>Template management</h3>
-            <div>
-                <input type="button" id="save" name="save" value="Save to Local Storage">
-                <input type="button" id="load" name="load" value="Load (from local storage)">
-            </div>
-            <div>
-                // <input type="button" id="download" name="download" value="Download">
-                // <input type="button" id="upload" name="upload" value="Upload">
-                // <input type="file" id="fileElem" multiple accept="application/json,text/*" style="display:none">
-            </div>
+
             <div>
                 <input type="button" id="newTemplate" name="newTemplate" value="Create New Template">
                 <input type="button" id="cloneTemplate" name="clone" value="Clone Template">

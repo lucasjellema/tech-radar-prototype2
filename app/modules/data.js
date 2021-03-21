@@ -107,18 +107,19 @@ let config = data.templates[0]
 let radarIndex = { templates: [{ title: encodeURI(config.title.text), description: "", lastupdate: "20210310T192400" }], objects: [] }
 
 const saveDataToLocalStorage = () => {
-    localStorage.setItem(RADAR_INDEX_KEY, JSON.stringify(radarIndex));
-    console.log(`${JSON.stringify(getConfiguration().colorsConfiguration)}`)
-    // for every viewpoint, save viewpoint document
-    // TODO save project? save individual templates and object sets?
-    localStorage.removeItem(encodeURI(getConfiguration().title.text))
-    localStorage.setItem(encodeURI(getConfiguration().title.text), JSON.stringify(data));
+    localStorage.setItem(RADAR_INDEX_KEY, JSON.stringify(data));
+    // console.log(`${JSON.stringify(getConfiguration().colorsConfiguration)}`)
+    // // for every viewpoint, save viewpoint document
+    // // TODO save project? save individual templates and object sets?
+    // localStorage.removeItem(encodeURI(getConfiguration().title.text))
+    // localStorage.setItem(encodeURI(getConfiguration().title.text), JSON.stringify(data));
 }
 
 const loadDataFromLocalStore = () => {
-    radarIndex = JSON.parse(localStorage[RADAR_INDEX_KEY])
+//    radarIndex = JSON.parse(localStorage[RADAR_INDEX_KEY])
     // for every viewpoint in the index, load document
-    data = JSON.parse(localStorage[radarIndex.templates[0].title])
+//    data = JSON.parse(localStorage[radarIndex.templates[0].title])
+    data = JSON.parse(localStorage[RADAR_INDEX_KEY])
 
     publishRefreshRadar()
 }

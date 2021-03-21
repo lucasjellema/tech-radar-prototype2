@@ -26,7 +26,9 @@ const styleText = (textElement, configNode, config, alternativeFontSource = null
 function drawRadar(viewpoint, elementDecorator = null) {
     const config = viewpoint.template
     const radar = initializeRadar(config)
-    const radarCanvas = radar.append("g").attr("id", "radarCanvas")
+    const radarCanvas = radar.append("g")
+        .attr("id", "radarCanvas")
+
     let sectorCanvas, ringCanvas
     if ("sectors" == config.topLayer) { // draw top layer last 
         ringCanvas = drawRings(radarCanvas, config)
@@ -39,12 +41,15 @@ function drawRadar(viewpoint, elementDecorator = null) {
     //rotation only on sectors - not on rings
     sectorCanvas.attr("transform", `rotate(${-360 * config.rotation})`) // clockwise rotation
     drawRingLabels(radar, config, elementDecorator)
-    const title = viewpoint.name??config.title.text
+    const title = viewpoint.name ?? config.title.text
     const titleElement = radar.append("text")
         .attr("transform", `translate(${config.title.x != null ? config.title.x : -500}, ${config.title.y != null ? config.title.y : -400})`)
         .text(title)
-        .attr("class", "draggable")
-        .call(elementDecorator ? elementDecorator : () => { }, [`svg#${config.svg_id}`, config.title.text, `title`]);
+       // .attr("class", "draggable")
+        .on('contextmenu', (e, d) => {
+            createRadarContextMenu(e, d, this, viewpoint);
+        })
+        .call(elementDecorator ? elementDecorator : () => { }, [`svg#${config.svg_id}`, config.title.text, `title`])
     styleText(titleElement, config.title, config)
 
     // legend
@@ -269,9 +274,9 @@ function displaySectorLabel(currentAnglePercentage, startAngle, endAngle, sector
 
 const initializeSizesLegend = (viewpoint) => {
     const config = viewpoint.template
-    document.getElementById('sizesLegendTitle').innerText=config.sizesConfiguration.label;
+    document.getElementById('sizesLegendTitle').innerText = config.sizesConfiguration.label;
 
-    
+
     const sizesBox = d3.select("svg#sizesLegend")
         .style("background-color", "silver")
         .attr("width", "80%")
@@ -313,7 +318,7 @@ const initializeSizesLegend = (viewpoint) => {
 
 const initializeShapesLegend = (viewpoint) => {
     const config = viewpoint.template
-    document.getElementById('shapesLegendTitle').innerText=config.shapesConfiguration.label;
+    document.getElementById('shapesLegendTitle').innerText = config.shapesConfiguration.label;
 
     const shapesBox = d3.select("svg#shapesLegend")
         .style("background-color", "#FEE")
@@ -330,48 +335,48 @@ const initializeShapesLegend = (viewpoint) => {
         const label = config.shapesConfiguration.shapes[viewpoint.propertyVisualMaps.shapeMap[key]].label
 
         shapesBox.append("text")
-        .attr("id", `shapeLabel${i}`)
-        .text(label)
-        .attr("x", labelIndent)
-        .attr("y", 38 + i * 45)
-        .style("fill", "#000")
-        .style("font-family", "Arial, Helvetica")
-        .style("font-size", "18px")
-        .style("font-weight", "normal")
+            .attr("id", `shapeLabel${i}`)
+            .text(label)
+            .attr("x", labelIndent)
+            .attr("y", 38 + i * 45)
+            .style("fill", "#000")
+            .style("font-family", "Arial, Helvetica")
+            .style("font-size", "18px")
+            .style("font-weight", "normal")
 
         const shapeEntry = shapesBox.append('g')
             .attr("transform", `translate(${circleIndent + 20}, ${30 + i * 45})`)
             .attr("id", `templateShapes${i}`)
-            // .append('circle')
-            // .attr("r", 12)
-            // .attr("fill", "black")
+        // .append('circle')
+        // .attr("r", 12)
+        // .attr("fill", "black")
 
-            let shape
+        let shape
 
-            if (shapeToDraw == "circle") {
-                shape = shapeEntry.append("circle")
-                    .attr("r", 12)
-            }
-            if (shapeToDraw == "diamond") {
-                const diamond = d3.symbol().type(d3.symbolDiamond).size(500);
-                shape = shapeEntry.append('path').attr("d", diamond)
-            }
-            if (shapeToDraw == "square") {
-                const square = d3.symbol().type(d3.symbolSquare).size(500);
-                shape = shapeEntry.append('path').attr("d", square)
-            }
-    
-    
-    
-            shape.attr("fill", "#000");
-            shape.attr("opacity", "0.9");
+        if (shapeToDraw == "circle") {
+            shape = shapeEntry.append("circle")
+                .attr("r", 12)
+        }
+        if (shapeToDraw == "diamond") {
+            const diamond = d3.symbol().type(d3.symbolDiamond).size(500);
+            shape = shapeEntry.append('path').attr("d", diamond)
+        }
+        if (shapeToDraw == "square") {
+            const square = d3.symbol().type(d3.symbolSquare).size(500);
+            shape = shapeEntry.append('path').attr("d", square)
+        }
+
+
+
+        shape.attr("fill", "#000");
+        shape.attr("opacity", "0.9");
 
     }
 }
 
 const initializeColorsLegend = (viewpoint) => {
     const config = viewpoint.template
-    document.getElementById('colorLegendTitle').innerText=config.colorsConfiguration.label;
+    document.getElementById('colorLegendTitle').innerText = config.colorsConfiguration.label;
 
     const colorsBox = d3.select("svg#colorsLegend")
         .style("background-color", "#EFF")
@@ -401,10 +406,59 @@ const initializeColorsLegend = (viewpoint) => {
             .attr("x", labelIndent)
             .attr("y", 38 + i * 45)
             .style("fill", "#000")
-        .style("font-family", "Arial, Helvetica")
-        .style("font-size", "18px")
-        .style("font-weight", "normal")
+            .style("font-family", "Arial, Helvetica")
+            .style("font-size", "18px")
+            .style("font-weight", "normal")
 
 
     }
+}
+
+const createRadarContextMenu = (e, d, blip, viewpoint) => {
+    radarMenu(e.pageX, e.pageY, d, blip, viewpoint);
+    e.preventDefault();
+}
+
+const radarMenu = (x, y, d, blip, viewpoint) => {
+    const config = viewpoint.template
+    d3.select('.radar-context-menu').remove(); // if already showing, get rid of it.
+
+    const contextMenu = d3.select(`svg#${config.svg_id}`)
+        .append('g').attr('class', 'radar-context-menu')
+        .attr('transform', `translate(${x},${y+30})`)
+    const width = 100
+    const height = 100
+    contextMenu.append('rect')
+        .attr('width', width)
+        .attr('height', height)
+        .attr('class', 'rect')
+        .attr("style", "fill:lightgray;")
+        .style("opacity", 0.8)
+        .on("mouseout", (e) => {
+
+            // check x and y - to see whether they are really outside context menu area (mouse out also fires when mouse is on elements inside context menu)
+            const deltaX = x - e.pageX
+            const deltaY = y - e.pageY
+            console.log(`mouse out ${x}${deltaX}`)
+            if (((deltaX > 0) || (deltaX <= - width) || (deltaY > 0) || (deltaY <= - height))
+            ) {
+                d3.select('.radar-context-menu').remove();
+            }
+        })
+
+        const initialColumnIndent = 10
+        const menuOptions = contextMenu.append('g')
+        .attr('class', 'sizesBox')
+        .attr("transform", `translate(${initialColumnIndent}, ${20})`)
+
+        menuOptions.append("text")
+        .text(`Create Blip`)
+        .style("fill", "blue")
+        .style("font-family", "Arial, Helvetica")
+        .style("font-size", "15px")
+        .style("font-weight","bold")
+        .on("click", (e) => {console.log(`Create Blip was clicked`)
+        d3.select('.radar-context-menu').remove();
+    
+    })
 }

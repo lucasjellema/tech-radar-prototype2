@@ -35,12 +35,23 @@ function makeDraggable(svg, handleEndDragEvent) {
         transform = transforms.getItem(0);
         offset.x -= transform.matrix.e;
         offset.y -= transform.matrix.f;
+        hideTooltip()
     }
+            //hide tooltip during dragging
+            const div = d3.select("#graph-tooltip");
 
+    const hideTooltip = () => {
+            div
+                .transition()
+                .duration(200)
+                .style("opacity", 0);
+}
     function startDrag(evt) {
         if (evt.target.classList.contains('draggable')) {
+            if (evt.target.id !=null) {
             selectedElement = evt.target;
             initialiseDragging(evt);
+            }
         } else if (evt.target.parentNode.classList.contains('draggable-group')) {
             selectedElement = evt.target.parentNode;
             initialiseDragging(evt);
@@ -48,10 +59,12 @@ function makeDraggable(svg, handleEndDragEvent) {
     }
 
     function drag(evt) {
+        
         if (selectedElement) {
             evt.preventDefault();
             var coord = getMousePosition(evt);
-             transform.setTranslate(coord.x - offset.x, coord.y - offset.y);
+            transform.setTranslate(coord.x - offset.x, coord.y - offset.y);
+            hideTooltip()
         }
     }
 
@@ -60,18 +73,9 @@ function makeDraggable(svg, handleEndDragEvent) {
             var coord = getMousePosition(evt);
             const blipId = selectedElement.getAttributeNS(null, "id")
             if (handleEndDragEvent) {
-                handleEndDragEvent({blipId : blipId, newX: (coord.x - offset.x), newY: (coord.y - offset.y) })
+                handleEndDragEvent({ blipId: blipId, newX: (coord.x - offset.x), newY: (coord.y - offset.y) })
             }
-            //   // find entry with blipId
-            //   const entry = getCurrentConfiguration().getEntries().filter((entry) => entry.label == blipId)[0]
-            console.log(`end drag of ${blipId} x= ${coord.x}, y = ${coord.y}`)
-            console.log(`new x  ${coord.x - offset.x}, new y  ${coord.y - offset.y}, coord x: ${coord.x}, offset.x ${offset.x}`)
-            //   const sector = getSectorForXYCoordinates(coord.x - offset.x, coord.y - offset.y)
-            //   //console.log(`drop Sector  ${JSON.stringify(sector)} `)
-            //   entry.x= (coord.x - offset.x)
-            //   entry.y =  coord.y - offset.y
-            //   if (getCurrentConfiguration().handleSectorDrop)
-            //     getCurrentConfiguration().handleSectorDrop(entry, sector)
+            hideTooltip()
             selectedElement = false;
         }
     }

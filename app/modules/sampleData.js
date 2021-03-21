@@ -105,12 +105,16 @@ const generateBlips = () => {
     for (let i = 0; i < technologies.length; i++) {
         const object = technologies[i]
         const rating = {
-            ambition: Math.random() < 0.3 ? "spotted" : (Math.random() < 0.5 ? "assess" : "adopt")
-            , magnitude: Math.random() < 0.3 ? "medium" : (Math.random() < 0.5 ? "tiny" : "large")
+           // ambition: Math.random() < 0.3 ? "spotted" : (Math.random() < 0.5 ? "assess" : "adopt")
+             magnitude: Math.random() < 0.3 ? "medium" : (Math.random() < 0.5 ? "tiny" : "large")
             , experience: Math.random() < 0.3 ? "short" : (Math.random() < 0.5 ? "long" : "medium")
+            , timestamp : Date.now()
+            , scope: "Conclusion"
+            , comment : "no comment yet"
+            , author : "system generated"
             , object: object
         }
-        const blip = { id: `${i}`, rating: rating, x: -400 + i * 50, y: 400 - i * 50 }
+        const blip = { id: `${i}`, rating: rating, }
         blips.push(blip)
     }
     return blips
@@ -137,7 +141,7 @@ const sample = {
         {
             "svg_id": "radarSVGContainer",
             "width": 1450,
-            "height": 1000,
+            "height": 1100,
             "topLayer": "sectors",
             "selectedRing": 1,
             "selectedSector": 2,

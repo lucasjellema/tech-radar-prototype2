@@ -26,6 +26,12 @@ const populateSelect = (selectElementId, data, defaultValue = null) => { // data
     }
 }
 const populateBlipEditor = (blip, viewpoint, drawRadarBlips) => {
+    var modal = document.getElementById("modalBlipEditor");
+    modal.style.display = "block";
+
+    const blipEditorTitle = document.getElementById("blipEditorTitle")
+    blipEditorTitle.innerText = `Editing ${blip.rating.object.label} `
+
     console.log(`pop blip editor for ${JSON.stringify(blip)}`)
 
     populateSelect("blipAmbitionSelect", [{ data: "assess", label: "Assess" }, { data: "hold", label: "Hold" }, { data: "trial", label: "Trial" }, { data: "adopt", label: "Adopt" }, { data: "spotted", label: "Spotted" }], blip.rating.ambition)
@@ -36,7 +42,7 @@ const populateBlipEditor = (blip, viewpoint, drawRadarBlips) => {
     document.getElementById("blipImageURL").value = blip.rating.object.image
     document.getElementById("blipImageURL").addEventListener("change", (e) => { document.getElementById("blipImage").src = e.target.value })
     document.getElementById("blipImage").src = blip.rating.object.image
-
+    
     document.getElementById("blipRemark").value = blip.rating.comment
     document.getElementById("blipAuthor").value = blip.rating.author
     document.getElementById("blipScope").value = blip.rating.scope

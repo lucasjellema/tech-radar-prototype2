@@ -45,7 +45,7 @@ function drawRadar(viewpoint, elementDecorator = null) {
     const titleElement = radar.append("text")
         .attr("transform", `translate(${config.title.x != null ? config.title.x : -500}, ${config.title.y != null ? config.title.y : -400})`)
         .text(title)
-       // .attr("class", "draggable")
+        // .attr("class", "draggable")
         .on('contextmenu', (e, d) => {
             createRadarContextMenu(e, d, this, viewpoint);
         })
@@ -425,7 +425,7 @@ const radarMenu = (x, y, d, blip, viewpoint) => {
 
     const contextMenu = d3.select(`svg#${config.svg_id}`)
         .append('g').attr('class', 'radar-context-menu')
-        .attr('transform', `translate(${x},${y+30})`)
+        .attr('transform', `translate(${x},${y + 30})`)
     const width = 100
     const height = 100
     contextMenu.append('rect')
@@ -446,19 +446,24 @@ const radarMenu = (x, y, d, blip, viewpoint) => {
             }
         })
 
-        const initialColumnIndent = 10
-        const menuOptions = contextMenu.append('g')
+    const initialColumnIndent = 10
+    const menuOptions = contextMenu.append('g')
         .attr('class', 'sizesBox')
         .attr("transform", `translate(${initialColumnIndent}, ${20})`)
 
-        menuOptions.append("text")
+    menuOptions.append("text")
         .text(`Create Blip`)
         .style("fill", "blue")
         .style("font-family", "Arial, Helvetica")
         .style("font-size", "15px")
-        .style("font-weight","bold")
-        .on("click", (e) => {console.log(`Create Blip was clicked`)
-        d3.select('.radar-context-menu').remove();
-    
-    })
+        .style("font-weight", "bold")
+        .on("click", (e) => {
+            console.log(`Create Blip was clicked`)
+            d3.select('.radar-context-menu').remove();
+            // create blip
+            publishRadarEvent({ type: "blipCreation"})
+            // enage blip editing ?? via event ? 
+            
+
+        })
 }

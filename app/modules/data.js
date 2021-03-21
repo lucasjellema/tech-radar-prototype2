@@ -1,5 +1,5 @@
-export { getConfiguration, getViewpoint, subscribeToRadarRefresh, getState, publishRefreshRadar }
-import { getSampleData} from './sampleData.js'
+export { getConfiguration, getViewpoint, createBlip, subscribeToRadarRefresh, getState, publishRefreshRadar }
+import { getSampleData } from './sampleData.js'
 
 const RADAR_INDEX_KEY = "RADAR-INDEX"
 
@@ -106,6 +106,24 @@ data = getSampleData()
 let config = data.templates[0]
 let radarIndex = { templates: [{ title: encodeURI(config.title.text), description: "", lastupdate: "20210310T192400" }], objects: [] }
 
+// TODO use default values for all properties as defined in the meta-model
+const createBlip = () => {
+    const object = {label: "NEW", category: "infrastructure"}
+    const rating = {
+        timestamp: Date.now()
+        , scope: "Conclusion"
+        , comment: "no comment yet"
+        , author: "system generated"
+        , object: object
+        , magnitude :"medium"
+        , ambition :"trial"
+    }
+    const blip = { id: `${getViewpoint().blips.length}`, rating: rating }
+    getViewpoint().blips.push(blip)
+    return blip
+
+}
+
 const saveDataToLocalStorage = () => {
     localStorage.setItem(RADAR_INDEX_KEY, JSON.stringify(data));
     // console.log(`${JSON.stringify(getConfiguration().colorsConfiguration)}`)
@@ -116,9 +134,9 @@ const saveDataToLocalStorage = () => {
 }
 
 const loadDataFromLocalStore = () => {
-//    radarIndex = JSON.parse(localStorage[RADAR_INDEX_KEY])
+    //    radarIndex = JSON.parse(localStorage[RADAR_INDEX_KEY])
     // for every viewpoint in the index, load document
-//    data = JSON.parse(localStorage[radarIndex.templates[0].title])
+    //    data = JSON.parse(localStorage[radarIndex.templates[0].title])
     data = JSON.parse(localStorage[RADAR_INDEX_KEY])
 
     publishRefreshRadar()

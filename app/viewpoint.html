@@ -178,22 +178,24 @@
             <input id="blipImageURL" type="text"></input>
             <textarea id="pasteArea" placeholder="Paste Image Here"></textarea>
             <img id="blipImage" width="150px" style="float:right" />
-            <br/>
-            <hr/>
+            <br />
+            <hr />
             <label for="blipAmbitionSelect">Ambition</label>
             <select name="blipAmbition" id="blipAmbitionSelect"></select>
             <label for="blipMagnitudeSelect">Magnitude</label>
             <select name="blipMagnitude" id="blipMagnitudeSelect"></select>
             <label for="blipMaturitySelect">Maturity</label>
             <select name="blipMaturity" id="blipMaturitySelect"></select>
-            <br/>
-            <hr/>
+            <br />
+            <hr />
             <label for="blipScope">Scope</label>
-            <input id="blipScope" title="to which individual, team, department, company, industry does this rating apply" type="text"></input>
+            <input id="blipScope"
+                title="to which individual, team, department, company, industry does this rating apply"
+                type="text"></input>
             <label for="blipAuthor">Author</label>
             <input id="blipAuthor" type="text"></input>
-            <br/>
-            <hr/>
+            <br />
+            <hr />
             <label for="blipRemark">Comment</label>
             <textarea name="blipRemark" id="blipRemark" rows="2" cols="100"></textarea>
 
@@ -304,11 +306,11 @@
 
     </div>
     <script type="module">
-        import { drawRadar } from './modules/radar.js';
+        import { drawRadar, subscribeToRadarEvents } from './modules/radar.js';
         import { drawRadarBlips } from './modules/radarBlips.js';
-        import { getConfiguration, getViewpoint, getState, subscribeToRadarRefresh } from './modules/data.js';
+        import { getConfiguration, getViewpoint, createBlip, getState, subscribeToRadarRefresh } from './modules/data.js';
         import { makeDraggable } from './modules/blipDrag.js'
-        import { handleBlipDrag } from './modules/blipEditing.js'
+        import { handleBlipDrag, populateBlipEditor } from './modules/blipEditing.js'
 
         const viewpoint = getConfiguration()
         viewpoint.editMode = false
@@ -325,7 +327,13 @@
             drawRadar(getViewpoint())
             drawRadarBlips(getViewpoint())
         })
-
+        subscribeToRadarEvents((event) => {
+            if (event.type == "blipCreation") {
+                console.log(`radar event ${JSON.stringify(event)}`)
+                const blip = createBlip()
+                populateBlipEditor(blip, getViewpoint(), drawRadarBlips)
+            }
+        })
 
     </script>
 

@@ -467,11 +467,7 @@ function blipWindow(blip, viewpoint) {
         .attr("style", "float:left;padding:15px")
         .on("click", () => {
             svg.select("foreignObject").remove();
-            var modal = document.getElementById("modalBlipEditor");
-            modal.style.display = "block";
-
-            const blipEditorTitle = document.getElementById("blipEditorTitle")
-            blipEditorTitle.innerText = `Editing ${blip.rating.object.label} `
+           
             // TODO invoke function that popupates the blip editor
             populateBlipEditor(blip, viewpoint, drawRadarBlips)
         })

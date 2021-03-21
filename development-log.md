@@ -33,6 +33,7 @@
 - save data to and load data from local storage
 - edit properties author,scope, ..
 - support paste images into blip editor
+- create new blip (with default values) (from context menu on dashboard title)
 
 ### Resources
 - Using Font Attributes with D3.js https://richardbrath.wordpress.com/2018/11/24/using-font-attributes-with-d3-js/

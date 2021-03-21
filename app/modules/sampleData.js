@@ -159,7 +159,7 @@ const sample = {
             "title": {
                 "text": "Conclusion Technology Radar",
                 "x": -700,
-                "y": -470,
+                "y": -520,
                 "font": {
                     "fontSize": "34px",
                     "fontFamily": "Courier"

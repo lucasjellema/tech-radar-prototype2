@@ -77,14 +77,16 @@ const viewpoints = [
         name: "My Technology Radar - Integration"
         , template: null
         , ratingTypes: []  // which rating type(s) - for which objectTypes - are displayed
-        , propertyVisualMaps: { // mapping between property values and visual characteristics; 
+        , propertyVisualMaps: { // mapping between property values in rating and object on the one hand and the corresponding visual elements on the other sectors, rings, shapes, colors, sizes ;
+                                // which property value maps to which of visual elements (indicated by their sequence number in th template) 
+            // note: the order of elements in these maps drives the order in which color/size/shape elements are shown in legend and context menu
             sizeMap: { "tiny": 0, "medium": 1, "large": 2 } // the rating magnitude property drives the size; the values of magnitude are mapped to values for size
             , sectorMap: { "database": 0, "language": 3, "infrastructure": 2,"concepts": 4,"libraries":1 } // the object category property drives the sector; the values of category are mapped to values for sector
             , ringMap: { "hold": 1, "assess": 2, "adopt": 4, "spotted": 0,"trial":3 } // the rating ambition property drives the ring; the values of ambition are mapped to values for ring
             , shapeMap: {"oss" : 1, "commercial" : 0 ,"other":3}
             , colorMap: { "short": 0, "long":1,"intermediate":3, "other":2}
         },
-        blipDisplaySettings: {showImages: true, showShapes: false, showLabels:true}
+        blipDisplaySettings: {showImages: false, showShapes: true, showLabels:true}
         //for example: property category in objectType technology is mapped to sector in radar
         // the specific value mapping: maps technology.category values to sectors in the selected radar template
         // one of the sectors can be used to assign "others" - any value not already explicity mapped
@@ -244,7 +246,7 @@ const sample = {
                     }
                 ]
             },
-            "colorsConfiguration": {
+            "colorsConfiguration": { "label":"Maturity",
                 "colors": [
                     {
                         "label": "Fresh",
@@ -272,7 +274,7 @@ const sample = {
                     }
                 ]
             },
-            "sizesConfiguration": {
+            "sizesConfiguration": {"label":"Relevance",
                 "sizes": [
                     {
                         "label": "Niche",
@@ -300,7 +302,7 @@ const sample = {
                     }
                 ]
             },
-            "shapesConfiguration": {
+            "shapesConfiguration": {"label":"Offering",
                 "shapes": [
                     {
                         "label": "Commercial",

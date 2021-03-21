@@ -1,4 +1,5 @@
 import { cartesianFromPolar, polarFromCartesian, segmentFromCartesian } from './drawingUtilities.js'
+
 export { drawRadarBlips }
 
 const color_white = "#FFF"
@@ -7,6 +8,11 @@ const blipsLayerElementId = "blipsLayer"
 let currentViewpoint
 const drawRadarBlips = function (viewpoint) {
     currentViewpoint = viewpoint
+    document.getElementById('showImages').checked = currentViewpoint.blipDisplaySettings.showImages 
+
+document.getElementById('showLabels').checked = currentViewpoint.blipDisplaySettings.showLabels 
+
+document.getElementById('showShapes').checked = currentViewpoint.blipDisplaySettings.showShapes 
     let blipsLayer
     blipsLayer = d3.select(`#${blipsLayerElementId}`)
     if (blipsLayer.empty()) {
@@ -63,12 +69,17 @@ const blipInSegment = (cartesian, viewpoint, segment) => {
 const drawRadarBlip = (blip, d, viewpoint) => {
     const blipSector = viewpoint.propertyVisualMaps.sectorMap[d.rating.object.category]
     const blipRing = viewpoint.propertyVisualMaps.ringMap[d.rating.ambition]
-    const blipShapeId = viewpoint.propertyVisualMaps.shapeMap
-    [d.rating.object?.offering] ?? viewpoint.propertyVisualMaps.shapeMap["other"]
+    const blipShapeId = viewpoint.propertyVisualMaps.shapeMap[d.rating.object?.offering] 
+                        ?? viewpoint.propertyVisualMaps.shapeMap["other"]
     const blipShape = viewpoint.template.shapesConfiguration.shapes[blipShapeId].shape
 
-    const blipColor = viewpoint.propertyVisualMaps.colorMap[d.rating?.experience] ?? viewpoint.propertyVisualMaps.colorMap["other"]
-    const blipSize = viewpoint.propertyVisualMaps.sizeMap[d.rating.magnitude]
+    const blipColorId = viewpoint.propertyVisualMaps.colorMap[d.rating?.experience] 
+                      ?? viewpoint.propertyVisualMaps.colorMap["other"]
+                      const blipColor = viewpoint.template.colorsConfiguration.colors[blipColorId].color
+
+    const blipSizeId = viewpoint.propertyVisualMaps.sizeMap[d.rating.magnitude] 
+    ?? viewpoint.propertyVisualMaps.sizeMap["other"]
+    const blipSize = viewpoint.template.sizesConfiguration.sizes[blipSizeId].size
 
     let xy
 
@@ -77,7 +88,7 @@ const drawRadarBlip = (blip, d, viewpoint) => {
     } else {
         xy = sectorRingToPosition(blipSector, blipRing, viewpoint.template)
     }
-    blip.attr("transform", `translate(${xy.x},${xy.y}) scale(${viewpoint.template.sizesConfiguration.sizes[blipSize].size})`)
+    blip.attr("transform", `translate(${xy.x},${xy.y}) scale(${blipSize})`)
         .attr("id", `blip-${d.id}`)
 
 
@@ -170,9 +181,13 @@ const menu = (x, y, d, blip, viewpoint) => {
             //  d3.select('.context-menu').remove();
         });
 
-    // Draw the menu
-    const width = 200
-    const height = 160
+    const entryHeight = 42 // number vertical pixel per context menu entry
+    let height = 25 + Math.max(Object.keys(viewpoint.propertyVisualMaps.sizeMap).length, Object.keys(viewpoint.propertyVisualMaps.shapeMap).length, Object.keys(viewpoint.propertyVisualMaps.colorMap).length) * entryHeight // derive from maximum number of entries in each category
+    const circleRadius = 12
+    const initialColumnIndent = 30
+    const columnWidth = 70
+    let width = initialColumnIndent + 10 + 3*columnWidth
+
     const contextMenu = d3.select(`svg#${config.svg_id}`)
         .append('g').attr('class', 'context-menu')
         .attr('transform', `translate(${x},${y})`)
@@ -192,41 +207,159 @@ const menu = (x, y, d, blip, viewpoint) => {
                 d3.select('.context-menu').remove();
             }
         })
-    // draw available shapes (just as legend, without label) vertically or horizontally?, highlight current shape? and allow shape to be selected
     const sizesBox = contextMenu.append('g')
         .attr('class', 'sizesBox')
+        .attr("transform", `translate(${initialColumnIndent}, ${15})`)
 
+        sizesBox.append("text")       
+        .text(config.sizesConfiguration.label)
+        .attr("x", -25)
+        .style("fill", "#000")
+        .style("font-family", "Arial, Helvetica")
+        .style("font-size", "12px")
+        .style("font-weight", "normal")
+        .attr("transform","scale(0.7,1)")
+        
     for (let i = 0; i < Object.keys(viewpoint.propertyVisualMaps.sizeMap).length; i++) {
         const key = Object.keys(viewpoint.propertyVisualMaps.sizeMap)[i]
         const scaleFactor = config.sizesConfiguration.sizes[viewpoint.propertyVisualMaps.sizeMap[key]].size
         const label = config.sizesConfiguration.sizes[viewpoint.propertyVisualMaps.sizeMap[key]].label
-
         const sizeEntry = sizesBox.append('g')
-            .attr("transform", `translate(${20}, ${30 + i * 45})`)
+            .attr("transform", `translate(0, ${30+ i * entryHeight})`)
             .append('circle')
             .attr("id", `templateSizes${i}`)
-            .attr("r", 12)
+            .attr("r", circleRadius)
             .attr("fill", "black")
             .attr("transform", `scale(${scaleFactor})`)
-
-        decorateContextMenuEntry(sizeEntry, "size", i, d, viewpoint)
+        decorateContextMenuEntry(sizeEntry, "size", key, d, viewpoint,label)
     }
+    const shapesBox = contextMenu.append('g')
+        .attr('class', 'shapesBox')
+        .attr("transform", `translate(${initialColumnIndent + columnWidth}, ${15})`)
+        
+        shapesBox.append("text")       
+        .text(config.shapesConfiguration.label)
+        .attr("x", -25)
+        .style("fill", "#000")
+        .style("font-family", "Arial, Helvetica")
+        .style("font-size", "12px")
+        .style("font-weight", "normal")
+        .attr("transform","scale(0.7,1)")
 
-    // todo draw shapes
+        
+    for (let i = 0; i < Object.keys(viewpoint.propertyVisualMaps.shapeMap).length; i++) {
+        const key = Object.keys(viewpoint.propertyVisualMaps.shapeMap)[i]
+        const shapeToDraw = config.shapesConfiguration.shapes[viewpoint.propertyVisualMaps.shapeMap[key]].shape
+        const label = config.shapesConfiguration.shapes[viewpoint.propertyVisualMaps.shapeMap[key]].label
+        const shapeEntry = shapesBox.append('g')
+            .attr("transform", `translate(0, ${30+ i * entryHeight})`)
+            let shape
+
+            if (shapeToDraw == "circle") {
+                shape = shapeEntry.append("circle")
+                    .attr("r", circleRadius)
+            }
+            if (shapeToDraw == "diamond") {
+                const diamond = d3.symbol().type(d3.symbolDiamond).size(420);
+                shape = shapeEntry.append('path').attr("d", diamond)
+            }
+            if (shapeToDraw == "square") {
+                const square = d3.symbol().type(d3.symbolSquare).size(420);
+                shape = shapeEntry.append('path').attr("d", square)
+            }
+            shape
+            .attr("id", `templateSizes${i}`)
+            .attr("fill", "black")
+            
+        decorateContextMenuEntry(shapeEntry, "shape", key, d, viewpoint,label)
+    }
     // draw color
+    const colorsBox = contextMenu.append('g')
+    .attr('class', 'colorsBox')
+    .attr("transform", `translate(${initialColumnIndent + 2* columnWidth}, ${15})`)
+    colorsBox.append("text")       
+    .text(config.colorsConfiguration.label)
+    .attr("x", -25)
+    .style("fill", "#000")
+    .style("font-family", "Arial, Helvetica")
+    .style("font-size", "12px")
+    .style("font-weight", "normal")
+    .attr("transform","scale(0.7,1)")
+for (let i = 0; i < Object.keys(viewpoint.propertyVisualMaps.colorMap).length; i++) {
+    const key = Object.keys(viewpoint.propertyVisualMaps.colorMap)[i]
+    const colorToFill = config.colorsConfiguration.colors[viewpoint.propertyVisualMaps.colorMap[key]].color
+    const label = config.colorsConfiguration.colors[viewpoint.propertyVisualMaps.colorMap[key]].label
+    const colorEntry = colorsBox.append('g')
+        .attr("transform", `translate(0, ${30+ i * entryHeight})`)
+        .append('circle')
+        .attr("id", `templateSizes${i}`)
+        .attr("r", circleRadius)
+        .attr("fill", colorToFill)
+        
+    decorateContextMenuEntry(colorEntry, "color", key, d, viewpoint,label)
+}
 }
 
-function decorateContextMenuEntry(menuEntry, dimension, dimensionSequence, blip, viewpoint) { // dimension = shape, size, color
+function decorateContextMenuEntry(menuEntry, dimension, value, blip, viewpoint, label) { // dimension = shape, size, color
     menuEntry.attr("class", "clickableProperty")
         .on("click", () => {
-            console.log(`clicked ${dimensionSequence} for ${dimension} for blip: ${blip.rating.object.label}; new value = ${getKeyForValue(viewpoint.propertyVisualMaps.sizeMap, dimensionSequence)}`);
             if (dimension == "size") {
-                blip["rating"]["magnitude"] = getKeyForValue(viewpoint.propertyVisualMaps.sizeMap, dimensionSequence)
+                // translate dimensionSequence 
+                blip["rating"]["magnitude"] = value // getKeyForValue(viewpoint.propertyVisualMaps.sizeMap, dimensionSequence)
                 drawRadarBlips(viewpoint)
             }
-        });
+            if (dimension == "shape") {
+                console.log(`clicked ${label}   for ${dimension} for blip: ${blip.rating.object.label}; new value = ${value}`);
+                blip["rating"]["object"]["offering"] = value // getKeyForValue(viewpoint.propertyVisualMaps.shapeMap, dimensionSequence)
+                drawRadarBlips(viewpoint)
+            }
+            if (dimension == "color") {
+                console.log(`clicked ${label}   for ${dimension} for blip: ${blip.rating.experience}; new value = ${value}`);
+                blip["rating"]["experience"] = value // getKeyForValue(viewpoint.propertyVisualMaps.shapeMap, dimensionSequence)
+                drawRadarBlips(viewpoint)
+            }
+        })
+        .on("mouseover", (e,d) => {
+            addTooltip(
+                (d) => {return `<div>     
+            <b>${label}</b>
+          </div>`}
+          , d, e.pageX, e.pageY);
+          })
+            .on("mouseout", () => {
+              removeTooltip();
+            });
+;
 }
 
+ // Add the tooltip element to the graph
+ const tooltip = document.querySelector("#graph-tooltip");
+ if (!tooltip) {
+   const tooltipDiv = document.createElement("div");
+   tooltipDiv.classList.add("tooltip"); // refers to div.tooltip CSS style definition
+   tooltipDiv.style.opacity = "0";
+   tooltipDiv.id = "graph-tooltip";
+   document.body.appendChild(tooltipDiv);
+ }
+ const div = d3.select("#graph-tooltip");
+
+ const addTooltip = (hoverTooltip, d, x, y) => { // hoverToolTip is a function that returns the HTML to be displayed in the tooltip
+   div
+     .transition()
+     .duration(200)
+     .style("opacity", 0.9);
+   div
+     .html(hoverTooltip(d))
+     .style("left", `${x}px`)
+     .style("top", `${y - 28}px`);
+ };
+
+ const removeTooltip = () => {
+   div
+     .transition()
+     .duration(200)
+     .style("opacity", 0);
+ };
 
 
 const getKeyForValue = function (object, value) {

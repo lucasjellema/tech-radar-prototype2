@@ -269,6 +269,9 @@ function displaySectorLabel(currentAnglePercentage, startAngle, endAngle, sector
 
 const initializeSizesLegend = (viewpoint) => {
     const config = viewpoint.template
+    document.getElementById('sizesLegendTitle').innerText=config.sizesConfiguration.label;
+
+    
     const sizesBox = d3.select("svg#sizesLegend")
         .style("background-color", "silver")
         .attr("width", "80%")
@@ -310,6 +313,8 @@ const initializeSizesLegend = (viewpoint) => {
 
 const initializeShapesLegend = (viewpoint) => {
     const config = viewpoint.template
+    document.getElementById('shapesLegendTitle').innerText=config.shapesConfiguration.label;
+
     const shapesBox = d3.select("svg#shapesLegend")
         .style("background-color", "#FEE")
         .attr("width", "80%")
@@ -366,6 +371,8 @@ const initializeShapesLegend = (viewpoint) => {
 
 const initializeColorsLegend = (viewpoint) => {
     const config = viewpoint.template
+    document.getElementById('colorLegendTitle').innerText=config.colorsConfiguration.label;
+
     const colorsBox = d3.select("svg#colorsLegend")
         .style("background-color", "#EFF")
         .attr("width", "80%")

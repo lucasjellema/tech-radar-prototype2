@@ -65,6 +65,19 @@
             border: none;
             border-bottom: 1px solid #ccc
         }
+
+
+        div.tooltip {
+            position: absolute;
+            text-align: center;
+            width: 110px;
+            padding: 10px;
+            font: 12px sans-serif;
+            background: lightsteelblue;
+            border: 0;
+            border-radius: 8px;
+            pointer-events: none;
+        }
     </style>
 
 </head>
@@ -94,10 +107,11 @@
             </div>
             <hr />
             <div id="sizeLegend">
-                <h3  id="sizesLegendTitle">Sizes</h3>
-                <div>
+                <h3 id="sizesLegendTitle">Sizes</h3>
+                <div><!--
                     <input type="checkbox" id="applySizes" name="displayStyle" value="applySizes" checked>
                     <label for="applySizes">Apply Sizes</label>
+                -->
                 </div>
                 <svg id="sizesLegend">
 
@@ -105,10 +119,11 @@
             </div>
             <hr />
             <div id="shapeLegend">
-                <h3  id="shapesLegendTitle">Shapes</h3>
-                <div>
+                <h3 id="shapesLegendTitle">Shapes</h3>
+                <div><!--
                     <input type="checkbox" id="applyShapes" name="displayStyle" value="applyShapes" checked>
                     <label for="applyShapes">Apply Shapes</label>
+                -->
                 </div>
                 <svg id="shapesLegend">
 
@@ -117,9 +132,10 @@
             <hr />
             <div id="colorLegend">
                 <h3 id="colorLegendTitle">Colors</h3>
-                <div>
+                <div> <!--
                     <input type="checkbox" id="applyColors" name="displayStyle" value="applyColors" checked>
                     <label for="applyColors">Apply Colors</label>
+                -->
                 </div>
                 <svg id="colorsLegend">
 
@@ -127,17 +143,17 @@
             </div>
 
             <br />
-        <hr />
-        <div id="dataManagement">
-            <h3 id="dataManagementTitle">Data Management</h3>
-            <div>
-                <input type="button" id="download" name="download" value="Download">
-                <input type="button" id="upload" name="upload" value="Upload">
-                <input type="file" id="fileElem" multiple accept="application/json,text/*" style="display:none">
+            <hr />
+            <div id="dataManagement">
+                <h3 id="dataManagementTitle">Radar Data Management</h3>
+                <div>
+                    <input type="button" id="download" name="download" value="Download">
+                    <input type="button" id="upload" name="upload" value="Upload">
+                    <input type="file" id="fileElem" multiple accept="application/json,text/*" style="display:none">
+                </div>
             </div>
         </div>
-        </div>
-        
+
 
 
     </div>

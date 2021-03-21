@@ -17,7 +17,17 @@
 - derive property to sector map from meta-model (instead of hard coded in radarBlips.drawRadarBlip - category, ambition, offering, experience, magnitude)
 - prepare prototype as Azure Static Webapp - sample data loaded
 - honor 'applyColors, applySizes, applyShapes' (either show specifically derived shapes/colors/sizes or use generic)
-- context menu to set color, size, shape  
+
+
+## March 21st
+- show tooltip for size options in context menu (tooltip can define HTML content, style defined in CSS style)
+- show heading for columns in context menu
+- set properties on blip derived from shape and color in context menu
+- synch display style settings (checkboxes) with blip display
+
+### Resources
+- Using Font Attributes with D3.js https://richardbrath.wordpress.com/2018/11/24/using-font-attributes-with-d3-js/
+- Omnibus Type for making a well-designed open-source font super-family in a variety of widths and weights freely available. 
 
 ## March 20th
 
@@ -32,6 +42,7 @@
 
 ### Resources
 - d3 V6 event handling: https://observablehq.com/@d3/d3v6-migration-guide#events
+- Adding a Context Menu to D3 Force Graph - https://gilfink.medium.com/adding-a-context-menu-to-d3-force-graph-def5f197f343 
 
 ## March 19th
 - show shape for blip (derived from object.offerType)

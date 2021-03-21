@@ -2,7 +2,7 @@
 import { cartesianFromPolar, polarFromCartesian, segmentFromCartesian } from './drawingUtilities.js'
 export { handleBlipDrag, populateBlipEditor }
 
-const populateSelect = (selectElementId, data, defaultValue=null) => { // data is array objects with two properties : label and value
+const populateSelect = (selectElementId, data, defaultValue = null) => { // data is array objects with two properties : label and value
     let dropdown = document.getElementById(selectElementId);
 
     dropdown.length = 0;
@@ -19,8 +19,8 @@ const populateSelect = (selectElementId, data, defaultValue=null) => { // data i
         option.text = data[i].label;
         option.value = data[i].data;
         dropdown.add(option);
-                if (defaultValue!=null && defaultValue==data[i].data) {
-            dropdown.selectedIndex = i+1 //option.inxdex 
+        if (defaultValue != null && defaultValue == data[i].data) {
+            dropdown.selectedIndex = i + 1 //option.inxdex 
         }
 
     }
@@ -28,27 +28,40 @@ const populateSelect = (selectElementId, data, defaultValue=null) => { // data i
 const populateBlipEditor = (blip, viewpoint, drawRadarBlips) => {
     console.log(`pop blip editor for ${JSON.stringify(blip)}`)
 
-    populateSelect("blipAmbitionSelect", [{ data: "assess", label: "Assess" },{ data: "hold", label: "Hold" },{ data: "trial", label: "Trial" },{ data: "adopt", label: "Adopt" },{ data: "spotted", label: "Spotted" }],blip.rating.ambition)
-    populateSelect("blipCategorySelect", [{ data: "database", label: "Database & Data Platform" },{ data: "language", label: "Languages & Frameworks" },{ data: "infrastructure", label: "Infrastructure" },{ data: "concepts", label: "Concepts & Methodology" }],blip.rating.object.category)
+    populateSelect("blipAmbitionSelect", [{ data: "assess", label: "Assess" }, { data: "hold", label: "Hold" }, { data: "trial", label: "Trial" }, { data: "adopt", label: "Adopt" }, { data: "spotted", label: "Spotted" }], blip.rating.ambition)
+    populateSelect("blipCategorySelect", [{ data: "database", label: "Database & Data Platform" }, { data: "language", label: "Languages & Frameworks" }, { data: "infrastructure", label: "Infrastructure" }, { data: "concepts", label: "Concepts & Methodology" }], blip.rating.object.category)
 
     document.getElementById("blipLabel").value = blip.rating.object.label
     document.getElementById("blipHomepage").value = blip.rating.object.homepage
+    document.getElementById("blipImageURL").value = blip.rating.object.image
+    document.getElementById("blipImageURL").addEventListener("change", (e) => { document.getElementById("blipImage").src = e.target.value })
+    document.getElementById("blipImage").src = blip.rating.object.image
 
+    document.getElementById("blipRemark").value = blip.rating.comment
+    document.getElementById("blipAuthor").value = blip.rating.author
+    document.getElementById("blipScope").value = blip.rating.scope
 
-    // sizeMap: { "tiny": 0, "medium": 1, "large": 2 } // the rating magnitude property drives the size; the values of magnitude are mapped to values for size
-    // , shapeMap: {"oss" : 1, "commercial" : 0 ,"other":3}            
-    // , colorMap: { "short": 0, "long":1,"intermediate":3, "other":2}
+    populateSelect("blipMagnitudeSelect", [{ data: "tiny", label: "Tiny" }, { data: "medium", label: "Medium" }, { data: "large", label: "Large" }], blip.rating.magnitude)
+    populateSelect("blipMaturitySelect", [{ data: "short", label: "Fresh" }, { data: "medium", label: "Intermediate" }, { data: "long", label: "Very Mature" }], blip.rating.experience)
 
-
-
+    initializeImagePaster((imageURL) => {
+        document.getElementById("blipImageURL").value = imageURL
+        document.getElementById("blipImage").src = imageURL
+    })
 
 
 
     document.getElementById("saveBlipEdits").addEventListener("click", () => {
-        
+
         blip.rating.object.label = document.getElementById("blipLabel").value
         blip.rating.object.homepage = document.getElementById("blipHomepage").value
+        blip.rating.object.image = document.getElementById("blipImageURL").value
+        blip.rating.comment = document.getElementById("blipRemark").value
+        blip.rating.scope = document.getElementById("blipScope").value
+        blip.rating.author = document.getElementById("blipAuthor").value
 
+        blip.rating.experience = document.getElementById("blipMaturitySelect").value
+        blip.rating.magnitude = document.getElementById("blipMagnitudeSelect").value
         let resetXY = false
         if (blip.rating.ambition != document.getElementById("blipAmbitionSelect").value) {
             blip.rating.ambition = document.getElementById("blipAmbitionSelect").value
@@ -72,9 +85,36 @@ const populateBlipEditor = (blip, viewpoint, drawRadarBlips) => {
 
 }
 
+
+
+const initializeImagePaster = (handleImagePaste) => {
+    document.getElementById('pasteArea').onpaste = function (event) {
+        // use event.originalEvent.clipboard for newer chrome versions
+        const items = (event.clipboardData || event.originalEvent.clipboardData).items;
+        //  console.log(JSON.stringify(items)); // will give you the mime types
+        // find pasted image among pasted items
+        let blob = null;
+        for (var i = 0; i < items.length; i++) {
+            if (items[i].type.indexOf("image") === 0) {
+                blob = items[i].getAsFile();
+            }
+        }
+        // load image content and assign to background image for currently selected object (sector or ring)
+        if (blob !== null) {
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                if (handleImagePaste) handleImagePaste(event.target.result)
+            };
+            reader.readAsDataURL(blob);
+        }
+    }
+
+}
+
+
 const handleBlipDrag = function (blipDragEvent, viewpoint) {
     // TODO not all elements are supported for dragging (yet) 
-   // console.log(`dragged element ${blipDragEvent.blipId}`)
+    // console.log(`dragged element ${blipDragEvent.blipId}`)
 
     const dropSegment = segmentFromCartesian({ x: blipDragEvent.newX, y: blipDragEvent.newY }, viewpoint)
 

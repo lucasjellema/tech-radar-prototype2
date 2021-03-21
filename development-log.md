@@ -31,6 +31,8 @@
 - double click on blip brings up blip property window
 - edit button opens blip property edit window (this window can be closed and changes can be saved back to blip; radar is synchronized)
 - save data to and load data from local storage
+- edit properties author,scope, ..
+- support paste images into blip editor
 
 ### Resources
 - Using Font Attributes with D3.js https://richardbrath.wordpress.com/2018/11/24/using-font-attributes-with-d3-js/

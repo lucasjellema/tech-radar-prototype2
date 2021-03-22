@@ -24,6 +24,12 @@
 - shows tags in blip viewer - no []
 - edit tags in blip editor
 
+- ringlabels closer to their upper ring edge
+
+- better distribute blip labels over two lines
+- new sample data set (for emerging tech gartner style radar)
+- filter on tags (simple style)
+
 ## March 21st
 - show tooltip for size options in context menu (tooltip can define HTML content, style defined in CSS style)
 - show heading for columns in context menu

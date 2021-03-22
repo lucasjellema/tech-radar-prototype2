@@ -86,7 +86,8 @@ const viewpoints = [
             , shapeMap: {"oss" : 1, "commercial" : 0 ,"other":3}
             , colorMap: { "short": 0, "long":1,"intermediate":3, "other":2}
         },
-        blipDisplaySettings: {showImages: false, showShapes: true, showLabels:true}
+        blipDisplaySettings: {showImages: false, showShapes: true, showLabels:true
+            , applyShapes:true, applySizes:true, applyColors:true}
         //for example: property category in objectType technology is mapped to sector in radar
         // the specific value mapping: maps technology.category values to sectors in the selected radar template
         // one of the sectors can be used to assign "others" - any value not already explicity mapped

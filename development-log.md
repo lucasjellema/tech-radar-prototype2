@@ -16,7 +16,10 @@
 - 
 - derive property to sector map from meta-model (instead of hard coded in radarBlips.drawRadarBlip - category, ambition, offering, experience, magnitude)
 - prepare prototype as Azure Static Webapp - sample data loaded
+
+## March 22nd
 - honor 'applyColors, applySizes, applyShapes' (either show specifically derived shapes/colors/sizes or use generic)
+
 
 
 ## March 21st

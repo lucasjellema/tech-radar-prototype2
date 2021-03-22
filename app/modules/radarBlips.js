@@ -13,6 +13,10 @@ const drawRadarBlips = function (viewpoint) {
     document.getElementById('showLabels').checked = currentViewpoint.blipDisplaySettings.showLabels
 
     document.getElementById('showShapes').checked = currentViewpoint.blipDisplaySettings.showShapes
+
+    document.getElementById('applyShapes').checked = currentViewpoint.blipDisplaySettings.applyShapes
+    document.getElementById('applySizes').checked = currentViewpoint.blipDisplaySettings.applySizes
+    document.getElementById('applyColors').checked = currentViewpoint.blipDisplaySettings.applyColors
     let blipsLayer
     blipsLayer = d3.select(`#${blipsLayerElementId}`)
     if (blipsLayer.empty()) {
@@ -74,16 +78,25 @@ const drawRadarBlip = (blip, d, viewpoint) => {
     const blipRing = viewpoint.propertyVisualMaps.ringMap[d.rating.ambition]
     const blipShapeId = viewpoint.propertyVisualMaps.shapeMap[d.rating.object?.offering]
         ?? viewpoint.propertyVisualMaps.shapeMap["other"]
-    const blipShape = viewpoint.template.shapesConfiguration.shapes[blipShapeId].shape
+    let blipShape = viewpoint.template.shapesConfiguration.shapes[blipShapeId].shape
 
     const blipColorId = viewpoint.propertyVisualMaps.colorMap[d.rating?.experience]
         ?? viewpoint.propertyVisualMaps.colorMap["other"]
-    const blipColor = viewpoint.template.colorsConfiguration.colors[blipColorId].color
+    let blipColor = viewpoint.template.colorsConfiguration.colors[blipColorId].color
 
     const blipSizeId = viewpoint.propertyVisualMaps.sizeMap[d.rating.magnitude]
         ?? viewpoint.propertyVisualMaps.sizeMap["other"]
-    const blipSize = viewpoint.template.sizesConfiguration.sizes[blipSizeId].size
+    let blipSize = viewpoint.template.sizesConfiguration.sizes[blipSizeId].size
 
+        if (!viewpoint.blipDisplaySettings.applyShapes) {
+        blipShape = "circle" // TODO replace with configurable default shape
+    }
+    if (!viewpoint.blipDisplaySettings.applyColors) {
+        blipColor = "blue" // TODO replace with configurable default color
+    }
+    if (!viewpoint.blipDisplaySettings.applySizes) {
+        blipSize = 1  // TODO replace with configurable default size
+    }
     let xy
 
     if (d.x != null && d.y != null && blipInSegment(d, viewpoint, { sector: blipSector, ring: blipRing }) != null) { // TODO and x,y is located within ring/.sector segment
@@ -119,6 +132,7 @@ const drawRadarBlip = (blip, d, viewpoint) => {
     // the user determines which elements should be displayed for a blip 
     // perhaps the user can also indicate whether colors, shapes and sizes should be visualized (or set to default values instead)
     // and if text font size should decrease/increase with size?
+    // TODO: label consisting of two lines 
     if (viewpoint.blipDisplaySettings.showLabels || (viewpoint.blipDisplaySettings.showImages && d.rating.object.image == null)) {
         const label = d.rating.object.label
         blip.append("text")
@@ -136,7 +150,7 @@ const drawRadarBlip = (blip, d, viewpoint) => {
     if (viewpoint.blipDisplaySettings.showShapes) {
         let shape
 
-        if (blipShape == "circle") {
+        if ( blipShape == "circle") {
             shape = blip.append("circle")
                 .attr("r", 15)
         }
@@ -186,6 +200,21 @@ const handleShowLabelsChange = (event) => {
 }
 const handleShowShapesChange = (event) => {
     currentViewpoint.blipDisplaySettings.showShapes = event.target.checked
+    drawRadarBlips(currentViewpoint)
+}
+
+
+const handleApplyColorsChange = (event) => {
+    currentViewpoint.blipDisplaySettings.applyColors = event.target.checked
+    drawRadarBlips(currentViewpoint)
+}
+
+const handleApplySizesChange = (event) => {
+    currentViewpoint.blipDisplaySettings.applySizes = event.target.checked
+    drawRadarBlips(currentViewpoint)
+}
+const handleApplyShapesChange = (event) => {
+    currentViewpoint.blipDisplaySettings.applyShapes = event.target.checked
     drawRadarBlips(currentViewpoint)
 }
 
@@ -394,6 +423,10 @@ const getKeyForValue = function (object, value) {
 document.getElementById('showImages').addEventListener("change", handleShowImagesChange);
 document.getElementById('showLabels').addEventListener("change", handleShowLabelsChange);
 document.getElementById('showShapes').addEventListener("change", handleShowShapesChange);
+document.getElementById('applyColors').addEventListener("change", handleApplyColorsChange);
+document.getElementById('applySizes').addEventListener("change", handleApplySizesChange);
+document.getElementById('applyShapes').addEventListener("change", handleApplyShapesChange);
+
 
 const addProperty = (label, value, parent) => {
     if (value != null && value.length > 0) {

@@ -8,21 +8,21 @@
 
 - themes: filter with selection of positive tags and negative tags 
 
-- hover/popup for blips
-  - a short quick popup with just a label
-  - a popup that appears after 1 second? with more details for the rating, including scope, timestamp, author and comment
 - drag & drop of blips
   - to derive property values on rating and object from  sector and ring based on meta-data - instead of hardcoded as in blipEditing.handleBlipDrag)
 - 
 - derive property to sector map from meta-model (instead of hard coded in radarBlips.drawRadarBlip - category, ambition, offering, experience, magnitude)
-- prepare prototype as Azure Static Webapp - sample data loaded
+
 
 ## March 22nd
 - honor 'applyColors, applySizes, applyShapes' (either show specifically derived shapes/colors/sizes or use generic)
 - hide legends for colors, sizes and shapes depending on toggle setting to apply or not
 - support for object.description in blip window and blip editor
+- little more leeway for blips in ring -1 
+- prepare prototype as Azure Static Webapp - sample data loaded : https://happy-coast-043323e03.azurestaticapps.net/; Git Repo: https://github.com/lucasjellema/technology-radar-v2-prototype
 
-
+- shows tags in blip viewer - no []
+- edit tags in blip editor
 
 ## March 21st
 - show tooltip for size options in context menu (tooltip can define HTML content, style defined in CSS style)

@@ -62,7 +62,7 @@ const sectorRingToPosition = (sector, ring, config) => { // return randomized X,
     if (ring && ring > -1)
         r = config.maxRingRadius * (1 - priorRingsWidthPercentageSum(ring, config) - (0.1 + Math.random() * 0.8) * config.ringConfiguration.rings[ring].width) // 0.1 to not position the on the outer edge of the segment
     else
-        r = config.maxRingRadius * 1.1
+        r = config.maxRingRadius *   (1.01 + Math.random() * 0.33)  // 0.33 range of how far outer ring blips can stray NOTE depends on sector angle - for the sectors between 0.4 and 0.6 and 0.9 and 0.1 there is more leeway  
     return cartesianFromPolar({ r: r, phi: 2 * (1 - phi) * Math.PI })
 }
 
@@ -471,8 +471,9 @@ function blipWindow(blip, viewpoint) {
     }
 
     addProperty("Category", blip.rating.object.category, body)
-    addProperty("Tags", JSON.stringify(blip.rating.object.tags), body)
-
+    if (blip.rating.object.tags?.length >0) {
+      addProperty("Tags", blip.rating.object.tags.slice(1).reduce((tags, tag) => `${tags}, ${tag}` , blip.rating.object.tags[0]), body)
+    }
     addProperty("Type Offering", blip.rating.object.offering, body)
 
     if (blip.rating.object.homepage != null && blip.rating.object.homepage.length > 1) {

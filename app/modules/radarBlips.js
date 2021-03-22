@@ -206,15 +206,19 @@ const handleShowShapesChange = (event) => {
 
 const handleApplyColorsChange = (event) => {
     currentViewpoint.blipDisplaySettings.applyColors = event.target.checked
+    document.getElementById("colorsLegend").setAttribute("style",`display:${event.target.checked?"block":"none"}`)
     drawRadarBlips(currentViewpoint)
 }
 
 const handleApplySizesChange = (event) => {
     currentViewpoint.blipDisplaySettings.applySizes = event.target.checked
+    document.getElementById("sizesLegend").setAttribute("style",`display:${event.target.checked?"block":"none"}`)
     drawRadarBlips(currentViewpoint)
 }
 const handleApplyShapesChange = (event) => {
     currentViewpoint.blipDisplaySettings.applyShapes = event.target.checked
+    document.getElementById("shapesLegend").setAttribute("style",`display:${event.target.checked?"block":"none"}`)
+
     drawRadarBlips(currentViewpoint)
 }
 

@@ -482,7 +482,7 @@ function blipWindow(blip, viewpoint) {
         homepageLink.node().target = "_new"
         homepageLink.node().addEventListener("click", (e) => { window.open(blip.rating.object.homepage); })
     }
-
+    addProperty("Description", blip.rating.object.description, body)
 
     const ratingDiv = body.append("div")
         .attr("id", "ratingDiv")

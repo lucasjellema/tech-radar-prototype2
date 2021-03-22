@@ -44,7 +44,7 @@ const populateBlipEditor = (blip, viewpoint, drawRadarBlips) => {
     document.getElementById("blipImageURL").value = blip.rating.object.image
     document.getElementById("blipImageURL").addEventListener("change", (e) => { document.getElementById("blipImage").src = e.target.value })
     document.getElementById("blipImage").src = blip.rating.object.image
-
+    document.getElementById("blipDescription").value = blip.rating.object.description
     document.getElementById("blipRemark").value = blip.rating.comment
     document.getElementById("blipAuthor").value = blip.rating.author
     document.getElementById("blipScope").value = blip.rating.scope
@@ -68,6 +68,7 @@ const saveBlipEdit = () => {
     blip.rating.object.label = document.getElementById("blipLabel").value
     blip.rating.object.homepage = document.getElementById("blipHomepage").value
     blip.rating.object.image = document.getElementById("blipImageURL").value
+    blip.rating.object.description = document.getElementById("blipDescription").value
     blip.rating.comment = document.getElementById("blipRemark").value
     blip.rating.scope = document.getElementById("blipScope").value
     blip.rating.author = document.getElementById("blipAuthor").value

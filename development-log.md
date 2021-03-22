@@ -20,6 +20,7 @@
 ## March 22nd
 - honor 'applyColors, applySizes, applyShapes' (either show specifically derived shapes/colors/sizes or use generic)
 - hide legends for colors, sizes and shapes depending on toggle setting to apply or not
+- support for object.description in blip window and blip editor
 
 
 

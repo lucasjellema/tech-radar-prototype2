@@ -135,7 +135,7 @@ const drawRadarBlip = (blip, d, viewpoint) => {
                         let content = `<div>     
                     ${viewpoint.blipDisplaySettings.showLabels ? "" : d.rating.object.label}
                     `
-                        if (!viewpoint.blipDisplaySettings.showImages) {
+                        if (!viewpoint.blipDisplaySettings.showImages && d.rating.object.image!=null) {
                             content = `${content}<img src="${d.rating.object.image}" width="100px"></img>`
                         }
                         return `${content}</div>`

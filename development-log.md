@@ -18,6 +18,7 @@
 - template/radar configuration editing for templates or viewpoint configurations ; "template" selector is now populated with both tenmplates and viewpoints
 - define meta-model in sampleData.js (start for object type technology and ratingtype technologyAdoption)
 - populate dropdown select lists in blip editor from meta-model data
+- derive display value in blip property viewer using meta model allowable values (where available)
 
 
 ## March 22nd

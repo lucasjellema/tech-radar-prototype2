@@ -53,8 +53,8 @@ const model =
                 "category": {
                     label: "Category",
                     type: "string", allowableValues: [{ value: "database", label: "Data Platform" }
-                        , { data: "language", label: "Languages & Frameworks" }, { data: "infrastructure", label: "Infrastructure" }, { data: "concepts", label: "Concepts & Methodology" }
-                    ]
+                        , { value: "language", label: "Languages & Frameworks" }, { value: "infrastructure", label: "Infrastructure" }, { value: "concepts", label: "Concepts & Methodology" }
+                    ] //
                 }
             }
         },
@@ -78,7 +78,7 @@ model.ratingTypes =
             },
             experience: {
                 description: "The relative time this technology has been around (for us)", defaultValue: "medium"
-                , allowableValues: [{ data: "short", label: "Fresh" }, { data: "medium", label: "Intermediate" }, { data: "long", label: "Very Mature" }]
+                , allowableValues: [{ value: "short", label: "Fresh" }, { value: "medium", label: "Intermediate" }, { value: "long", label: "Very Mature" }]
             }
 
         }
@@ -130,7 +130,7 @@ const generateBlips = () => {
         const object = technologies[i]
         const rating = {
             // ambition: Math.random() < 0.3 ? "spotted" : (Math.random() < 0.5 ? "assess" : "adopt")
-            magnitude:   Math.random() < 0.3 ? "medium" : (Math.random() < 0.5 ? "tiny" : "large")
+            magnitude: Math.random() < 0.3 ? "medium" : (Math.random() < 0.5 ? "tiny" : "large")
             //             magnitude: viewpoints[0].model.ratingType.properties.magnitude.allowableValues[Math.round(Math.random()* viewpoints[0].model.ratingType.properties.magnitude.allowableValues.length)].value
 
             , experience: Math.random() < 0.3 ? "short" : (Math.random() < 0.5 ? "long" : "medium")

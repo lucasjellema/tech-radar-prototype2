@@ -47,7 +47,7 @@ function drawRadar(viewpoint, elementDecorator = null) {
     .attr("id", "title")
         .attr("transform", `translate(${config.title.x != null ? config.title.x : -500}, ${config.title.y != null ? config.title.y : -400})`)
         .text(title)
-        .attr("class", "draggable")
+        .attr("class", getState().editMode?"draggable":"")
         .on('contextmenu', (e, d) => {
             createRadarContextMenu(e, d, this, viewpoint);
         })
@@ -230,11 +230,11 @@ const drawRingLabels = function (radar, config, elementDecorator) {
         const ringlabel = radar.append("text")
             .attr("id", `ringLabel${i}`)
             .text(ring.label)
-            .attr("y", -currentRadius + 35) // 35 under the ring edge
+            .attr("y", ring.y != null? ring.y : -currentRadius + 35) // 35 under the ring edge
+            .attr("x", ring.x != null? ring.x : 0) // 35 under the ring edge
             .attr("text-anchor", "middle")
-
-            //            .style("pointer-events", "none")
             .style("user-select", "none")
+            .attr("class", getState().editMode?"draggable":"")
             .call(elementDecorator ? elementDecorator : () => { }, [`svg#${config.svg_id}`, ring.label, `ringLabel${i}`]);
         styleText(ringlabel, ring, config, config.ringConfiguration)
 

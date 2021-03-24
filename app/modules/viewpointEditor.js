@@ -73,6 +73,10 @@ const switchboard = {
         if (element.id.startsWith("title")) {
             handleDragTitle(element.id, newCoordinates)
         }
+        if (element.id.startsWith("ringLabel")) {
+            handleDragRingLabel(element.id.substring(9), newCoordinates)
+        }
+
         const isRingDrag = (element.id != null && element.id.startsWith("ringKnob"))
         if (isRingDrag) {
             newCoordinates.deltaY = 0
@@ -454,6 +458,10 @@ const handleDragTitle = function (titleId, newCoordinates) {
     config.title.y = newCoordinates.y - config.height / 2 
 }
 
+const handleDragRingLabel = function (ringId, newCoordinates) {
+    config.ringConfiguration.rings[ringId].x = newCoordinates.x - config.width / 2
+    config.ringConfiguration.rings[ringId].y = newCoordinates.y - config.height / 2 
+}
 
 
 let currentColorsBoxColor

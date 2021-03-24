@@ -70,6 +70,9 @@ const switchboard = {
         if (element.id.startsWith("sectorBackgroundImage")) {
             handleDragSectorBackgroundImage(element.id.substring(21), newCoordinates)
         }
+        if (element.id.startsWith("title")) {
+            handleDragTitle(element.id, newCoordinates)
+        }
         const isRingDrag = (element.id != null && element.id.startsWith("ringKnob"))
         if (isRingDrag) {
             newCoordinates.deltaY = 0
@@ -445,6 +448,14 @@ const handleDragSectorBackgroundImage = function (sectorId, newCoordinates) {
     selectedObject.backgroundImage.y = newCoordinates.y - config.height / 2
     //  console.log(`image for ${JSON.stringify(selectedObject)}`)
 }
+
+const handleDragTitle = function (titleId, newCoordinates) {
+    config.title.x = newCoordinates.x - config.width / 2
+    config.title.y = newCoordinates.y - config.height / 2 
+}
+
+
+
 let currentColorsBoxColor
 let colorsBoxColorPicker
 const initializeColorsConfigurator = () => {

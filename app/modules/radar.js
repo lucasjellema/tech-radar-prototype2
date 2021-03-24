@@ -44,9 +44,10 @@ function drawRadar(viewpoint, elementDecorator = null) {
     drawRingLabels(radar, config, elementDecorator)
     const title = config.title.text
     const titleElement = radar.append("text")
+    .attr("id", "title")
         .attr("transform", `translate(${config.title.x != null ? config.title.x : -500}, ${config.title.y != null ? config.title.y : -400})`)
         .text(title)
-        // .attr("class", "draggable")
+        .attr("class", "draggable")
         .on('contextmenu', (e, d) => {
             createRadarContextMenu(e, d, this, viewpoint);
         })

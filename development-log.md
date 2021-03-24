@@ -13,6 +13,9 @@
 - 
 - derive property to sector map from meta-model (instead of hard coded in radarBlips.drawRadarBlip - category, ambition, offering, experience, magnitude)
 
+## March 24th
+- rename index.html to radarConfigurationEditor.html, rename viewpointEditor.html to index.html;
+- template/radar configuration editing for templates or viewpoint configurations ; "template" selector is now populated with both tenmplates and viewpoints 
 
 ## March 22nd
 - honor 'applyColors, applySizes, applyShapes' (either show specifically derived shapes/colors/sizes or use generic)

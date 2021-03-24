@@ -143,7 +143,7 @@ snapshot = viewpoint frozen in time
 const sample = {
     "viewpoints": [
         {
-            "name": "Conclusion Technology Radar",
+            "name": "Conclusion Technology Radar 2021",
             "template": {
                 "svg_id": "radarSVGContainer",
                 "width": 1450,
@@ -163,7 +163,7 @@ const sample = {
                     "fontWeight": "bold"
                 },
                 "title": {
-                    "text": "Conclusion Technology Radar",
+                    "text": "Conclusion Technology Radar Prototype",
                     "x": -700,
                     "y": -520,
                     "font": {
@@ -192,7 +192,7 @@ const sample = {
                     },
                     "rings": [
                         {
-                            "label": "Hold",
+                            "label": "Do not touch",
                             "width": 0.13
                         },
                         {

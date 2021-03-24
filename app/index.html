@@ -9,14 +9,61 @@
     <script src="https://unpkg.com/d3-simple-slider"></script>
     <script src="https://cdn.jsdelivr.net/npm/@jaames/iro@5"></script>
     <style>
+        /* The Modal (background) */
+        .modal {
+            display: none;
+            /* Hidden by default */
+            position: fixed;
+            /* Stay in place */
+            z-index: 1;
+            /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 90%;
+            height: 90%;
+            overflow: auto;
+            /* Enable scroll if needed */
+            background-color: rgb(0, 0, 0);
+            /* Fallback color */
+            background-color: rgba(0, 0, 0, 0.4);
+            /* Black w/ opacity */
+        }
+
+        /* Modal Content/Box */
+        .modal-content {
+            background-color: #f8f1f1;
+            opacity: 0.9;
+            margin: 15% auto;
+            /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            /* Could be more or less, depending on screen size */
+        }
+
+        /* The Close Button */
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
         .column {
             float: left;
-            width: 70%;
+            width: 80%;
         }
 
         .column2 {
             float: left;
-            width: 30%;
+            width: 20%;
         }
 
         .column1_2 {
@@ -30,6 +77,9 @@
             height: 800px;
         }
 
+        .outlinedImage {
+            filter: drop-shadow(0px 0px 1px red);
+        }
 
         /* Clear floats after the columns */
         .row:after {
@@ -62,138 +112,259 @@
             border: none;
             border-bottom: 1px solid #ccc
         }
+
+
+        div.tooltip {
+            position: absolute;
+            text-align: center;
+            width: 130px;
+            padding: 10px;
+            font: 12px sans-serif;
+            background: lightsteelblue;
+            border: 0;
+            border-radius: 8px;
+            pointer-events: none;
+        }
+
+        div.blipWindow {
+            position: absolute;
+            text-align: center;
+            width: 1030px;
+            padding: 10px;
+            font: 12px sans-serif;
+            background: rgb(237, 240, 243);
+            border: 0;
+            border-radius: 8px;
+            pointer-events: none;
+        }
+
+
+        .button {
+            background-color: #49694a;
+            border: none;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 12px;
+            margin: 4px 2px;
+        }
+
+        .button1 {
+            border-radius: 8px;
+        }
     </style>
 
 </head>
 
 <body>
+
+
+    <!-- The Modal -->
+    <div id="modalBlipEditor" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3 id="blipEditorTitle">Editing Blip</h3>
+            <img id="blipImage" width="150px" style="float:right" />
+            <label for="blipLabel">Technoloy</label>
+            <input id="blipLabel" type="text"></input>
+            <label for="blipCategorySelect">Category</label>
+            <select name="blipCategory" id="blipCategorySelect"></select>
+            <label for="blipHomepage">Homepage</label>
+            <input id="blipHomepage" type="text"></input>
+            <label for="blipImageURL">Logo/Image URL</label>
+            <input id="blipImageURL" type="text"></input>
+            <textarea id="pasteArea" placeholder="Paste Image Here"></textarea>
+            <br />
+            <hr />
+            <label for="blipDescription">Description</label>
+            <textarea name="blipDescription" id="blipDescription" rows="2" cols="100"></textarea>
+            <label for="blipTags">Tags</label>
+            <textarea id="blipTags" type="text" rows="2" cols="40"></textarea>
+            <br />
+            <hr />
+            <label for="blipAmbitionSelect">Ambition</label>
+            <select name="blipAmbition" id="blipAmbitionSelect"></select>
+            <label for="blipMagnitudeSelect">Magnitude</label>
+            <select name="blipMagnitude" id="blipMagnitudeSelect"></select>
+            <label for="blipMaturitySelect">Maturity</label>
+            <select name="blipMaturity" id="blipMaturitySelect"></select>
+            <br />
+            <hr />
+            <label for="blipScope">Scope</label>
+            <input id="blipScope"
+                title="to which individual, team, department, company, industry does this rating apply"
+                type="text"></input>
+            <label for="blipAuthor">Author</label>
+            <input id="blipAuthor" type="text"></input>
+            <br />
+            <hr />
+            <label for="blipRemark">Comment</label>
+            <textarea name="blipRemark" id="blipRemark" rows="2" cols="100"></textarea>
+
+            <div id="blipEditorButtonBar" style="position: absolute; bottom: 25;right: 100;">
+                <input id="saveBlipEdits" type="button" value="Save Changes"></input>
+            </div>
+
+        </div>
+        <script>
+            var modal = document.getElementById("modalBlipEditor");
+            // Get the <span> element that closes the modal
+            var span = document.getElementsByClassName("close")[0];
+            // When the user clicks on <span> (x), close the modal
+            span.onclick = function () {
+                modal.style.display = "none";
+            }
+            // When the user clicks anywhere outside of the modal, close it
+            window.onclick = function (event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            }
+        </script>
+    </div>
+
     <div class="row">
+
         <div class="column">
             <svg id="radarSVGContainer">
             </svg>
         </div>
 
         <div class="column2">
-            <p id="value"></p>
-            <div id="rotationSlider">
-                <p>Rotation</p>
-            </div>
-            <div id="layering">
-                <p>Select top layer</p>
+            <div id="displayStyle">
+                <h3>Compose Display Style</h3>
                 <div>
-                    <input type="radio" id="sectors" name="layering" value="sectors" checked>
-                    <label for=" sectors">Sectors</label>
+                    <input type="checkbox" id="showImages" name="displayStyle" value="images" checked>
+                    <label for=" showImages">Show Images</label>
                 </div>
                 <div>
-                    <input type="radio" id="rings" name="layering" value="rings">
-                    <label for="rings">Rings</label>
+                    <input type="checkbox" id="showShapes" name="displayStyle" value="shapes">
+                    <label for="showShapes">Show Shapes</label>
                 </div>
-            </div>
-            <hr />
-            <h3 id="selectedRingSector">Selected Sector/Ring </h3>
-            <div>
-                <p>Background Image</p>
-                <label for="backgroundImageURL">URL for Image</label>
-                <input id="backgroundImageURL" style="width: 250px;"
-                    title="Specify the URL for the background image"></input>
-                <textarea id="pasteArea" placeholder="Paste Image Here"></textarea>
-                <label for="imageScaleFactor">Scale Factor</label>
-                <input id="imageScaleFactor" style="width: 50px;"
-                    title="Specify the image scalefactor - between 0 and 100"></input>
-                <img id="pastedImage" width="200px"></img>
-            </div>
-            <div>
-                <div class="column1_2">
-                    <h4>Background Color (inside rings)</h4>
-                    <div id="insideRingsColorPicker"></div>
-                </div>
-                <div class="column1_2">
-                    <h4>Background Color (outside rings)</h4>
-                    <div id="outerRingBackgroundColorPicker"></div>
-                </div>
-            </div>
-            <div id="opacitySlider">
-                <p>Opacity</p>
-            </div>
-            <div>
-                <a href="#" id="newRingOrSector">New</a>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <a href="#" id="removeRingOrSector">Remove</a>
-                <br />
-                <a href="#" id="decreaseRingOrSector">&lt;</a>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <a href="#" id="increaseRingOrSector">&gt;</a>
-            </div>
-            <hr />
-            <div id="layering">
-                <p>Extended Sector Boundaries?</p>
                 <div>
-                    <input type="radio" id="extendedSectorBoundaries" name="sectorBoundaries"
-                        value="extendedSectorBoundaries" checked>
-                    <label for=" sectors">Extended</label>
+                    <input type="checkbox" id="showLabels" name="displayStyle" value="labels">
+                    <label for="showLabels">Show Labels</label>
+                </div>
+                <div id="filter">
+                    <label for="tagFilter">Filter on Tags</label>
+                    <br/>
+                    <textarea id="tagFilter" name="tagFilter" rows="2" cols="45"></textarea>
+
                 </div>
 
-                <div>
-                    <input type="radio" id="noExtendedSectorBoundaries" name="sectorBoundaries"
-                        value="noExtendedSectorBoundaries">
-                    <label for="rings">Not Extended</label>
-                </div>
             </div>
             <hr />
-            <div>
-                <h3>Template management</h3>
+            <div id="sizeLegend">
+                <h3 id="sizesLegendTitle">Sizes</h3>
                 <div>
-                    <input type="button" id="save" name="save" value="Save to Local Storage">
-                    <input type="button" id="load" name="load" value="Load (from local storage)">
+                    <input type="checkbox" id="applySizes" name="displayStyle" value="applySizes" checked>
+                    <label for="applySizes">Apply Sizes</label>
+                
                 </div>
+                <svg id="sizesLegend">
+
+                </svg>
+            </div>
+            <hr />
+            <div id="shapeLegend">
+                <h3 id="shapesLegendTitle">Shapes</h3>
+                <div>
+                    
+                    <input type="checkbox" id="applyShapes" name="displayStyle" value="applyShapes" checked>
+                    <label for="applyShapes">Apply Shapes</label>
+                
+                </div>
+                <svg id="shapesLegend">
+
+                </svg>
+            </div>
+            <hr />
+            <div id="colorLegend">
+                <h3 id="colorLegendTitle">Colors</h3>
+                <div>
+                    
+                    <input type="checkbox" id="applyColors" name="displayStyle" value="applyColors" checked>
+                    <label for="applyColors">Apply Colors</label>
+                
+                </div>
+                <svg id="colorsLegend">
+
+                </svg>
+            </div>
+
+            <br />
+            <hr />
+            <div id="dataManagement">
+                <h3 id="dataManagementTitle">Radar Data Management</h3>
                 <div>
                     <input type="button" id="download" name="download" value="Download">
                     <input type="button" id="upload" name="upload" value="Upload">
                     <input type="file" id="fileElem" multiple accept="application/json,text/*" style="display:none">
                 </div>
+                <br />
+                <hr />
                 <div>
-                    <input type="button" id="newTemplate" name="newTemplate" value="Create New Template">
-                    <input type="button" id="cloneTemplate" name="clone" value="Clone Template">
-                    <input type="button" id="resetTemplate" name="reset" value="Reset Current Template">
-                </div>
-                <div>
-                    <select id="templateSelector" class="templates-select" name="option">
-                        <option value="" disabled selected>Select Radar Template</option>
-                    </select>
+                    <input type="button" id="save" name="save" value="Save to Local Storage">
+                    <input type="button" id="load" name="load" value="Load (from local storage)">
                 </div>
             </div>
         </div>
-    </div>
-    <br />
-    <hr />
-    <div id="sizes" class="column1_3">
-        <h3>Define Sizes in Template</h3>
-        <svg id="sizesBox">
 
-        </svg>
+
 
     </div>
-
-    <div id="colors" class="column1_3">
-        <h3>Define Colors in Template</h3>
-        <svg id="colorsBox">
-
-        </svg>
-        <div id="colorsBoxColorPicker"></div>
-
-    </div>
-    <div id="shapes" class="column1_3">
-        <h3>Define Shapes in Template</h3>
-        <svg id="shapesBox">
-
-        </svg>
-    </div>
-
     <script type="module">
-        import { viewpointEditor } from './modules/viewpointEditor.js';
-        import { getConfiguration } from './modules/data.js';
-        viewpointEditor(getConfiguration())
+        import { drawRadar, subscribeToRadarEvents } from './modules/radar.js';
+        import { drawRadarBlips } from './modules/radarBlips.js';
+        import { getConfiguration, getViewpoint, createBlip, getState, subscribeToRadarRefresh } from './modules/data.js';
+        import { makeDraggable } from './modules/blipDrag.js'
+        import { handleBlipDrag, populateBlipEditor } from './modules/blipEditing.js'
+
+        const viewpoint = getConfiguration()
+        viewpoint.editMode = false
+        drawRadar(getViewpoint())
+        drawRadarBlips(getViewpoint())
+
+        const svg = d3.select(`svg#${viewpoint.svg_id}`)
+        makeDraggable(svg.node(), (dragEvent) => { handleBlipDrag(dragEvent, getViewpoint()) })
+
+        subscribeToRadarRefresh(() => {
+            console.log(`refresh`)
+            const viewpoint = getConfiguration()
+            viewpoint.editMode = false
+            drawRadar(getViewpoint())
+            drawRadarBlips(getViewpoint())
+        })
+        subscribeToRadarEvents((event) => {
+            if (event.type == "blipCreation") {
+                console.log(`radar event ${JSON.stringify(event)}`)
+                const blip = createBlip()
+                populateBlipEditor(blip, getViewpoint(), drawRadarBlips)
+            }
+        })
 
     </script>
 
+
+
+    <div style="display:none">
+        <div>
+            <h3>Template management</h3>
+
+            <div>
+                <input type="button" id="newTemplate" name="newTemplate" value="Create New Template">
+                <input type="button" id="cloneTemplate" name="clone" value="Clone Template">
+                <input type="button" id="resetTemplate" name="reset" value="Reset Current Template">
+            </div>
+            <div>
+                <select id="templateSelector" class="templates-select" name="option">
+                    <option value="" disabled selected>Select Radar Template</option>
+                </select>
+            </div>
+        </div>
+    </div>
 </body>

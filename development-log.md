@@ -13,6 +13,12 @@
 - 
 - derive property to sector map from meta-model (instead of hard coded in radarBlips.drawRadarBlip - category, ambition, offering, experience, magnitude)
 
+## March 25th
+- show raw JSON for elements of radar configuration and viewpoint definition; allow saving manipulated JSON (until proper UI controls are available)
+
+### Resources
+Pretty Print JSON - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify
+
 ## March 24th
 - rename index.html to radarConfigurationEditor.html, rename viewpointEditor.html to index.html;
 - template/radar configuration editing for templates or viewpoint configurations ; "template" selector is now populated with both tenmplates and viewpoints

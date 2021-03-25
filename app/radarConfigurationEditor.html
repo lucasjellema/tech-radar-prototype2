@@ -188,6 +188,26 @@
 
         </svg>
     </div>
+    <br />
+    <hr />
+    <br />
+    <hr />
+    <h2>Advanced! Take Care!</h2>
+    <div id="propertyVisualMapsContainer" class="column1_3">
+        <h3>Property Visual Maps</h3>
+        <textarea id="propertyVisualMaps" rows="20" cols="75" title="These objects map the values of properties to the sequence number of visual elements such as rings, sectors, colors and shapes. And sizes."></textarea>
+
+    </div>
+
+    <div id="ringConfigurationContainer" class="column1_3">
+        <h3>Ring Configuration</h3>
+            <textarea id="ringConfiguration" rows="20" cols="75" title="These objects define the rings and the configuration of the ring labels"></textarea>
+    </div>
+    <div id="sectorConfigurationContainer" class="column1_3">
+        <h3>Sector Configuration</h3>
+            <textarea id="sectorConfiguration" rows="20" cols="75" title="These objects define the sectors and the configuration of the sector labels"></textarea>
+    </div>
+    <input type="button" id="saveJSONToConfig" name="saveJSON" value="Save JSON definition"/>
 
     <script type="module">
         import { viewpointEditor } from './modules/viewpointEditor.js';

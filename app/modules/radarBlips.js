@@ -8,7 +8,7 @@ const blipsLayerElementId = "blipsLayer"
 let currentViewpoint
 
 const filterBlip = (blip, viewpoint) => {
-    console.log(`filter blip ${blip.rating.object.label} with tagfilter ${viewpoint.blipDisplaySettings.tagFilter}`)
+   // console.log(`filter blip ${blip.rating.object.label} with tagfilter ${viewpoint.blipDisplaySettings.tagFilter}`)
     // determine all tags in the tag filter  - for now as individual strings, no + or - support TODO
     let blipOK = true
     if (viewpoint.blipDisplaySettings.tagFilter?.length ?? 0 > 0) {

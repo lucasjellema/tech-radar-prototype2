@@ -13,11 +13,25 @@
 - 
 - derive property to sector map from meta-model (instead of hard coded in radarBlips.drawRadarBlip - category, ambition, offering, experience, magnitude)
 
+## March 26th
+- offering property in blip editor (with combobox)
+- discern edge sector label and regular sector label
+- drag sector label
+- switch between viewpoints in main radar UI
+- create viewpoint from template
+- clone viewpoint
+
 ## March 25th
 - show raw JSON for elements of radar configuration and viewpoint definition; allow saving manipulated JSON (until proper UI controls are available)
+- use "combobox" for scope property in blip editor
+- Clone Viewpoint ; create viewpoint as a clone of the currently selected viewpoint
 
 ### Resources
 Pretty Print JSON - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify
+Parse JSON - and convert/filter properties while doing so - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse (reviver)
+Combobox - input text with suggested (but not limiting) values and with code completion - https://developer.mozilla.org/en-US/docs/Web/HTML/Element/datalist
+Generate uuid in JavaScript in  browser - https://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid 
+
 
 ## March 24th
 - rename index.html to radarConfigurationEditor.html, rename viewpointEditor.html to index.html;

@@ -14,8 +14,10 @@ const filterBlip = (blip, viewpoint) => {
     if (viewpoint.blipDisplaySettings.tagFilter?.length ?? 0 > 0) {
         const filters = viewpoint.blipDisplaySettings.tagFilter.split(" ").map((filter) => filter.trim())
         for (let i = 0; i < filters.length; i++) {
+            try {
             blipOK = filters[i].length == 0 || JSON.stringify(blip.rating.object.tags).indexOf(filters[i]) > -1
             if (!blipOK) break;
+            } catch (e) {console.log(`${e} exception filter for ${JSON.stringify(blip)}`)}
         }
     }
 
@@ -521,7 +523,9 @@ function blipWindow(blip, viewpoint) {
     if (blip.rating.object.tags?.length > 0) {
         addProperty("Tags", blip.rating.object.tags.slice(1).reduce((tags, tag) => `${tags}, ${tag}`, blip.rating.object.tags[0]), body)
     }
-    addProperty("Type Offering", blip.rating.object.offering, body)
+    const offeringLabel = getLabelForAllowableValue(blip.rating.object.offering, viewpoint.ratingType.objectType.properties.offering.allowableValues)
+    
+    addProperty("Type Offering", offeringLabel, body)
 
     if (blip.rating.object.homepage != null && blip.rating.object.homepage.length > 1) {
         let homepageLink = body.append("xlink:a")

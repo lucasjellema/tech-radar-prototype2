@@ -1,5 +1,10 @@
 # Design of the Technology Radar 
 
+Topics:
+* Data Model
+* UI structure
+* Technology
+
 ## Data Model
 The following diagram introduces the data model for the radar. A quick introduction:
 
@@ -23,3 +28,26 @@ A viewpoint is used to plot ratings of a specific rating type (and is therefore 
 A viewpoint has a number of display settings. These include the filter that specifies which blips for which ratings and objects should be visible, the choice between labels, shapes and/or images to be plotted for the blips, and the choice of which of the visual dimensions shapes, color and sizes should be applied (for example to toggle between just circles for all blips or shapes derived from a property value of the rating and object underpinning the blip).
 
 Each object can be rated multiple times (at different moments in time, in different scopes, by different authors). Each rating can be visualized by a blip on a viewpoint. The same rating can be blipped in several viewpoints but not more than once per viewpoint. An object can be presented multiple times in a viewpoint but a rating only once. 
+
+## UI Structure
+
+The Radar application consists of a number of sections:
+* the radar - the main UI that presents a viewpoint with blips (for ratings of objects) on a radar configuration; the radar can allow editing of blips
+* the radar configuration (or template) editor - for editing the visual design of the radar templates (including the sectors, rings, shapes, colors and sizes - how many, which label, what do they each look like)
+* the data model manager - a tool for editing the data model that consists of the definitions of object types, rating types and properties of both including the allowable values for the properties *(not yet implemented)*
+* the viewpoint wizard - a tool for creating (and refining) a viewpoint as a combination of a radar template, a rating type and a property-visual map to project object and rating properties (and specific allowable values) on visual dimensions (and specific elements in each visual dimension) *(not yet implemented)*
+
+## Technology
+The Radar is implemented as a client side only web application. It is loaded from a static web server into a browser and then runs completely in the browser. 
+
+The Radar implementation currently uses vanilla HTML5 technologies, supported by any modern browser:
+* HTML
+* CSS
+* JavaScript
+* SVG
+
+It also uses the *d3* library, primarily for manipulating SVG.
+
+At present, it can upload data from a file provided by the user and load data from the local browser storage. The full dataset can be downloaded (exported) to a local file from the browser and it can be saved to local browser storage.
+
+Currently, the application does not use a backend (API). It does not retrieve data from external URLs (except for images).

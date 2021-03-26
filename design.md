@@ -3,7 +3,13 @@
 ## Data Model
 The following diagram introduces the data model for the radar. A quick introduction:
 
-The radar shows blips. Blips are the visual representation of an evaluation (or rating) of an object. An object is for example of type Technology (such as Java or Kubernetes). Objects of type Technology have specific properties - such as name, vendor, logo, homepage and category plus tags. The evaluation or rating of the object is for example of type technologyEvaluation; this rating has properties like ambition, importance, experience and scope, timestamp and author. Each property is of a specific data type (string, number, URL, image, time), it has a label and description and it can have a default value. A property may also have a limiting set of allowable values associated with it.
+The radar shows blips. Blips are the visual representation of an evaluation (or rating) of an object. 
+
+### Object and Rating
+
+An object is for example of type *technology* (such as Java or Kubernetes). Objects of type *technology* have specific properties - such as name, vendor, logo, homepage and category plus tags. The evaluation or rating of the object type *technology* is for example of rating type *technologyEvaluation*; this rating type has properties like ambition, importance, experience and scope, timestamp and author. Each property is of a specific data type (string, number, URL, image, time), it has a label and description and it can have a default value. A property may also have a limiting set of allowable values associated with it.
+
+### Viewpoint
 
 A radar is called a viewpoint. Each viewpoint is a mapping of ratings as blips onto a template. The template defines sectors and rings (how many, what color and label, what size, in which order) as well as additional visual dimensions (shape, size, color): which shapes, which sizes and which colors are used in the template and is the label for each of them. (for example: a template can use three sizes, four shapes and two colors; each size, shape and color has an associated label to describe its meaning)
 
@@ -11,6 +17,8 @@ A viewpoint is used to plot ratings of a specific rating type (and is therefore 
 
 
 ![](images/radar-datamodel.png)
+
+### Display Settings
 
 A viewpoint has a number of display settings. These include the filter that specifies which blips for which ratings and objects should be visible, the choice between labels, shapes and/or images to be plotted for the blips, and the choice of which of the visual dimensions shapes, color and sizes should be applied (for example to toggle between just circles for all blips or shapes derived from a property value of the rating and object underpinning the blip).
 

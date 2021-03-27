@@ -13,6 +13,9 @@
 - 
 - derive property to sector map from meta-model (instead of hard coded in radarBlips.drawRadarBlip - category, ambition, offering, experience, magnitude)
 
+## March 27th
+
+
 ## March 26th
 - offering property in blip editor (with combobox)
 - discern edge sector label and regular sector label

@@ -94,18 +94,18 @@ const blipInSegment = (cartesian, viewpoint, segment) => {
 }
 
 const drawRadarBlip = (blip, d, viewpoint) => {
-    const blipSector = viewpoint.propertyVisualMaps.sectorMap[d.rating.object.category]
-    const blipRing = viewpoint.propertyVisualMaps.ringMap[d.rating.ambition]
-    const blipShapeId = viewpoint.propertyVisualMaps.shapeMap[d.rating.object?.offering]
-        ?? viewpoint.propertyVisualMaps.shapeMap["other"]
+    const blipSector = viewpoint.propertyVisualMaps.sector.valueMap[d.rating.object.category]
+    const blipRing = viewpoint.propertyVisualMaps.ring.valueMap[d.rating.ambition]
+    const blipShapeId = viewpoint.propertyVisualMaps.shape.valueMap[d.rating.object?.offering]
+        ?? viewpoint.propertyVisualMaps.shape.valueMap["other"]
     let blipShape = viewpoint.template.shapesConfiguration.shapes[blipShapeId].shape
 
-    const blipColorId = viewpoint.propertyVisualMaps.colorMap[d.rating?.experience]
-        ?? viewpoint.propertyVisualMaps.colorMap["other"]
+    const blipColorId = viewpoint.propertyVisualMaps.color.valueMap[d.rating?.experience]
+        ?? viewpoint.propertyVisualMaps.color.valueMap["other"]
     let blipColor = viewpoint.template.colorsConfiguration.colors[blipColorId].color
 
-    const blipSizeId = viewpoint.propertyVisualMaps.sizeMap[d.rating.magnitude]
-        ?? viewpoint.propertyVisualMaps.sizeMap["other"]
+    const blipSizeId = viewpoint.propertyVisualMaps.size.valueMap[d.rating.magnitude]
+        ?? viewpoint.propertyVisualMaps.size.valueMap["other"]
     let blipSize = viewpoint.template.sizesConfiguration.sizes[blipSizeId].size
 
     if (!viewpoint.blipDisplaySettings.applyShapes) {
@@ -284,7 +284,7 @@ const menu = (x, y, d, blip, viewpoint) => {
         });
 
     const entryHeight = 42 // number vertical pixel per context menu entry
-    let height = 25 + Math.max(Object.keys(viewpoint.propertyVisualMaps.sizeMap).length, Object.keys(viewpoint.propertyVisualMaps.shapeMap).length, Object.keys(viewpoint.propertyVisualMaps.colorMap).length) * entryHeight // derive from maximum number of entries in each category
+    let height = 25 + Math.max(Object.keys(viewpoint.propertyVisualMaps.size.valueMap).length, Object.keys(viewpoint.propertyVisualMaps.shape.valueMap).length, Object.keys(viewpoint.propertyVisualMaps.color.valueMap).length) * entryHeight // derive from maximum number of entries in each category
     const circleRadius = 12
     const initialColumnIndent = 30
     const columnWidth = 70
@@ -322,10 +322,10 @@ const menu = (x, y, d, blip, viewpoint) => {
         .style("font-weight", "normal")
         .attr("transform", "scale(0.7,1)")
 
-    for (let i = 0; i < Object.keys(viewpoint.propertyVisualMaps.sizeMap).length; i++) {
-        const key = Object.keys(viewpoint.propertyVisualMaps.sizeMap)[i]
-        const scaleFactor = config.sizesConfiguration.sizes[viewpoint.propertyVisualMaps.sizeMap[key]].size
-        const label = config.sizesConfiguration.sizes[viewpoint.propertyVisualMaps.sizeMap[key]].label
+    for (let i = 0; i < Object.keys(viewpoint.propertyVisualMaps.size.valueMap).length; i++) {
+        const key = Object.keys(viewpoint.propertyVisualMaps.size.valueMap)[i]
+        const scaleFactor = config.sizesConfiguration.sizes[viewpoint.propertyVisualMaps.size.valueMap[key]].size
+        const label = config.sizesConfiguration.sizes[viewpoint.propertyVisualMaps.size.valueMap[key]].label
         const sizeEntry = sizesBox.append('g')
             .attr("transform", `translate(0, ${30 + i * entryHeight})`)
             .append('circle')
@@ -349,10 +349,10 @@ const menu = (x, y, d, blip, viewpoint) => {
         .attr("transform", "scale(0.7,1)")
 
 
-    for (let i = 0; i < Object.keys(viewpoint.propertyVisualMaps.shapeMap).length; i++) {
-        const key = Object.keys(viewpoint.propertyVisualMaps.shapeMap)[i]
-        const shapeToDraw = config.shapesConfiguration.shapes[viewpoint.propertyVisualMaps.shapeMap[key]].shape
-        const label = config.shapesConfiguration.shapes[viewpoint.propertyVisualMaps.shapeMap[key]].label
+    for (let i = 0; i < Object.keys(viewpoint.propertyVisualMaps.shape.valueMap).length; i++) {
+        const key = Object.keys(viewpoint.propertyVisualMaps.shape.valueMap)[i]
+        const shapeToDraw = config.shapesConfiguration.shapes[viewpoint.propertyVisualMaps.shape.valueMap[key]].shape
+        const label = config.shapesConfiguration.shapes[viewpoint.propertyVisualMaps.shape.valueMap[key]].label
         const shapeEntry = shapesBox.append('g')
             .attr("transform", `translate(0, ${30 + i * entryHeight})`)
         let shape
@@ -387,10 +387,10 @@ const menu = (x, y, d, blip, viewpoint) => {
         .style("font-size", "12px")
         .style("font-weight", "normal")
         .attr("transform", "scale(0.7,1)")
-    for (let i = 0; i < Object.keys(viewpoint.propertyVisualMaps.colorMap).length; i++) {
-        const key = Object.keys(viewpoint.propertyVisualMaps.colorMap)[i]
-        const colorToFill = config.colorsConfiguration.colors[viewpoint.propertyVisualMaps.colorMap[key]].color
-        const label = config.colorsConfiguration.colors[viewpoint.propertyVisualMaps.colorMap[key]].label
+    for (let i = 0; i < Object.keys(viewpoint.propertyVisualMaps.color.valueMap).length; i++) {
+        const key = Object.keys(viewpoint.propertyVisualMaps.color.valueMap)[i]
+        const colorToFill = config.colorsConfiguration.colors[viewpoint.propertyVisualMaps.color.valueMap[key]].color
+        const label = config.colorsConfiguration.colors[viewpoint.propertyVisualMaps.color.valueMap[key]].label
         const colorEntry = colorsBox.append('g')
             .attr("transform", `translate(0, ${30 + i * entryHeight})`)
             .append('circle')
@@ -407,17 +407,17 @@ function decorateContextMenuEntry(menuEntry, dimension, value, blip, viewpoint, 
         .on("click", () => {
             if (dimension == "size") {
                 // translate dimensionSequence 
-                blip["rating"]["magnitude"] = value // getKeyForValue(viewpoint.propertyVisualMaps.sizeMap, dimensionSequence)
+                blip["rating"]["magnitude"] = value // getKeyForValue(viewpoint.propertyVisualMaps.size.valueMap, dimensionSequence)
                 drawRadarBlips(viewpoint)
             }
             if (dimension == "shape") {
                 console.log(`clicked ${label}   for ${dimension} for blip: ${blip.rating.object.label}; new value = ${value}`);
-                blip["rating"]["object"]["offering"] = value // getKeyForValue(viewpoint.propertyVisualMaps.shapeMap, dimensionSequence)
+                blip["rating"]["object"]["offering"] = value // getKeyForValue(viewpoint.propertyVisualMaps.shape.valueMap, dimensionSequence)
                 drawRadarBlips(viewpoint)
             }
             if (dimension == "color") {
                 console.log(`clicked ${label}   for ${dimension} for blip: ${blip.rating.experience}; new value = ${value}`);
-                blip["rating"]["experience"] = value // getKeyForValue(viewpoint.propertyVisualMaps.shapeMap, dimensionSequence)
+                blip["rating"]["experience"] = value // getKeyForValue(viewpoint.propertyVisualMaps.shape.valueMap, dimensionSequence)
                 drawRadarBlips(viewpoint)
             }
         })

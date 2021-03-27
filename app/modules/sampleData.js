@@ -36,12 +36,12 @@ const technologies = [
 ]
 
 // these genericRatingProperties are applied to every ratingType
-const genericRatingProperties = [{ name: "scope", description: "The scope or context to which the rating applies" }
-    , { name: "author", description: "The name of the person who made the judgement" }
-    , { name: "timestamp", description: "When was this rating defined" }
-    , { name: "tags", description: "Which tags are associated with this rating (tags are for example used for thematic filtering of ratings)" }
-    , { name: "comment", description: "Additional remark regarding this rating" }
-]
+const genericRatingProperties = {
+    scope: { label: "Scope", description: "The scope or context to which the rating applies" }
+    , author: { label: "Author/Evaluator", description: "The name of the person who made the judgement" }
+    , timestamp: { label: "Time of Evaluation", description: "When was this rating defined" }
+    , comment: { label: "Comment/Rationale", description: "Additional remark regarding this rating" }
+}
 
 const model =
 {
@@ -51,18 +51,27 @@ const model =
             name: "technology",
             properties:
             {
-                "label": {
+                label: {
                     label: "Label",
                     type: "string"
                     , defaultValue: "Some Technology"
-                }, "homepage": {
-                    label: "Homepage",
+                }, description: {
+                    label: "Description",
                     type: "string"
-                }, "vendor": {
+                }, homepage: {
+                    label: "Homepage",
+                    type: "url"
+                }, image: {
+                    label: "Logo",
+                    type: "image"
+                }, vendor: {
                     label: "Vendor",
                     type: "string",
                     discrete: true
-                }, "offering": {
+                }, tags: {
+                    label: "Tags",
+                    type: "tags",                    
+                }, offering: {
                     label: "Offering",
                     type: "string", allowableValues: [{ value: "oss", label: "Open Source Software" }
                         , { value: "commercial", label: "Commercial Software" }, { value: "other", label: "Other type of offering" }
@@ -87,22 +96,26 @@ model.ratingTypes =
 {
     technologyAdoption: {
         objectType: model.objectTypes.technology, properties:
-        {
-            ambition: {
-                description: "The current outlook or intent regarding this technology", defaultValue: "identified"
-                , allowableValues: [{ value: "identified", label: "Identified" }, { value: "hold", label: "Hold" }, { value: "assess", label: "Assess" }, { value: "adopt", label: "Adopt" }]
-                , defaultValue: "identified"
-            },
-            magnitude: {
-                description: "The relative size of the technology (in terms of investment, people involved, percentage of revenue)", defaultValue: "medium"
-                , allowableValues: [{ value: "tiny", label: "Tiny or Niche" }, { value: "medium", label: "Medium" }, { value: "large", label: "Large" }]
-            },
-            experience: {
-                description: "The relative time this technology has been around (for us)", defaultValue: "medium"
-                , allowableValues: [{ value: "short", label: "Fresh" }, { value: "medium", label: "Intermediate" }, { value: "long", label: "Very Mature" }]
-            }
+            Object.assign(
+                {
+                    ambition: {
+                        label: "Ambition",
+                        description: "The current outlook or intent regarding this technology", defaultValue: "identified"
+                        , allowableValues: [{ value: "identified", label: "Identified" }, { value: "hold", label: "Hold" }, { value: "assess", label: "Assess" }, { value: "adopt", label: "Adopt" }]
+                        , defaultValue: "identified"
+                    },
+                    magnitude: {
+                        label: "Magnitude/Relevance",
+                        description: "The relative size of the technology (in terms of investment, people involved, percentage of revenue)", defaultValue: "medium"
+                        , allowableValues: [{ value: "tiny", label: "Tiny or Niche" }, { value: "medium", label: "Medium" }, { value: "large", label: "Large" }]
+                    },
+                    experience: {
+                        label: "Experience/Maturity",
+                        description: "The relative time this technology has been around (for us)", defaultValue: "medium"
+                        , allowableValues: [{ value: "short", label: "Fresh" }, { value: "medium", label: "Intermediate" }, { value: "long", label: "Very Mature" }]
+                    }
 
-        }
+                }, genericRatingProperties)
     }
     , cvRating: { objectType: "technology", properties: [] }
     , allocationPipeline: { objectType: "consultant", properties: [] }
@@ -415,7 +428,7 @@ const sample = {
                     property: "object.category", valueMap: { "database": 0, "language": 3, "infrastructure": 2, "concepts": 4, "libraries": 1 } // the object category property drives the sector; the values of category are mapped to values for sector
                 }
 
-                ,ring: {
+                , ring: {
                     property: "ambition", valueMap: { "hold": 1, "assess": 2, "adopt": 4, "spotted": 0, "trial": 3 } // the rating ambition property drives the ring; the values of ambition are mapped to values for ring
                 }
                 , shape: {
@@ -430,7 +443,7 @@ const sample = {
                 "applyShapes": false,
                 "applySizes": true,
                 "applyColors": false,
-                "tagFilter": [{type:"plus", tag:"data"},{type:"plus", tag:"sql"},{type:"minus", tag:"nosql"}]
+                "tagFilter": [{ type: "plus", tag: "data" }, { type: "plus", tag: "sql" }, { type: "minus", tag: "nosql" }]
             },
             "blips": [
                 {

@@ -552,6 +552,15 @@ const addProperty = (label, value, parent) => {
     }
 }
 
+const addTags = (label, tags, parent) => {
+    let innerHTML = `<b>${label}</b> `
+    for (let i = 0; i < tags.length; i++) {
+        innerHTML = innerHTML + `<span class="extra tagfilter">${tags[i]}</span>`
+    }
+    parent.append("div").html(innerHTML)
+}
+
+
 // copied from http://bl.ocks.org/GerHobbelt/2653660
 function blipWindow(blip, viewpoint) {
 
@@ -577,42 +586,47 @@ function blipWindow(blip, viewpoint) {
 
     body.append("h2").text(`Properties for ${blip.rating.object.label}`)
 
-    if (blip.rating.object.image != null && blip.rating.object.image.length > 0) {
-        let img = body.append("img")
-            .attr("src", blip.rating.object.image)
-            .attr("style", "width: 350px;float:right;padding:15px")
-    }
-    const categoryLabel = getLabelForAllowableValue(blip.rating.object.category, viewpoint.ratingType.objectType.properties.category.allowableValues)
-    addProperty("Category", categoryLabel, body)
-    if (blip.rating.object.tags?.length > 0) {
-        addProperty("Tags", blip.rating.object.tags.slice(1).reduce((tags, tag) => `${tags}, ${tag}`, blip.rating.object.tags[0]), body)
-    }
-    const offeringLabel = getLabelForAllowableValue(blip.rating.object.offering, viewpoint.ratingType.objectType.properties.offering.allowableValues)
+    const ratingType = viewpoint.ratingType
+    for (let propertyName in ratingType.objectType.properties) {
+        const property = ratingType.objectType.properties[propertyName]
+        let value = blip.rating.object[propertyName]
+        if (property.allowableValues != null && property.allowableValues.length > 0) {
+            value = getLabelForAllowableValue(value, property.allowableValues)
+        }
+        if (property.type == "url" && value.length > 1) {
+            let newLink = body.append("xlink:a")
+                .attr("src", value)
+                .text(`${property.label}: ${value}`)
+            newLink.node().target = "_new"
+            newLink.node().addEventListener("click", (e) => { window.open(value); })
+        } else if (property.type == "image" && value != null && value.length > 0) {
+            let img = body.append("img")
+                .attr("src", value)
+                .attr("style", "width: 350px;float:right;padding:15px")
+        } else if (property.type == "tags" && value.length > 0) {
+            addTags("Tags", value, body)
+        }
 
-    addProperty("Type Offering", offeringLabel, body)
-
-    if (blip.rating.object.homepage != null && blip.rating.object.homepage.length > 1) {
-        let homepageLink = body.append("xlink:a")
-            .attr("src", blip.rating.object.homepage)
-            .text(`Homepage: ${blip.rating.object.homepage}`)
-        homepageLink.node().target = "_new"
-        homepageLink.node().addEventListener("click", (e) => { window.open(blip.rating.object.homepage); })
+        else {
+            addProperty(property.label, value, body)
+        }
     }
-    addProperty("Description", blip.rating.object.description, body)
+
 
     const ratingDiv = body.append("div")
         .attr("id", "ratingDiv")
-    const ambitionLabel = getLabelForAllowableValue(blip.rating.ambition, viewpoint.ratingType.properties.ambition.allowableValues)
-    addProperty("Ambition", ambitionLabel, ratingDiv)
-    const magnitudeLabel = getLabelForAllowableValue(blip.rating.magnitude, viewpoint.ratingType.properties.magnitude.allowableValues)
-    addProperty("Magnitude", magnitudeLabel, ratingDiv)
-    const experienceLabel = getLabelForAllowableValue(blip.rating.experience, viewpoint.ratingType.properties.experience.allowableValues)
-    addProperty("Maturity", experienceLabel, ratingDiv)
 
-    addProperty("Comment", blip.rating.comment, ratingDiv)
-    addProperty("Scope", blip.rating.scope, ratingDiv)
-    addProperty("Author", blip.rating.author, ratingDiv)
-    addProperty("Timestamp", blip.rating.timestamp, ratingDiv)
+
+
+    for (let propertyName in ratingType.properties) {
+        const property = ratingType.properties[propertyName]
+        let value = blip.rating[propertyName]
+        if (property.allowableValues != null && property.allowableValues.length > 0) {
+            value = getLabelForAllowableValue(value, property.allowableValues)
+        }
+        addProperty(property.label, value, ratingDiv)
+    }
+
 
 
 

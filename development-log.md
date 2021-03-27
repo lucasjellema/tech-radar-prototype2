@@ -21,6 +21,7 @@
 - define filter tags through a combobox that suggests all tags assigned to any blip object
 - improve property-visual map definition - now including the blip property that is mapped to the visual dimension
 - better tag editing for blips (show tags as labels, allow removal of tags from hover menu, add tags from combobox)
+- blip window: derive all fields from meta-data - and extend meta-data for technology adoption to provide a complete blip window
 
 ## March 26th
 - offering property in blip editor (with combobox)

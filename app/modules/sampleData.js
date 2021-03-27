@@ -430,7 +430,7 @@ const sample = {
                 "applyShapes": false,
                 "applySizes": true,
                 "applyColors": false,
-                "tagFilter": "data"
+                "tagFilter": [{type:"plus", tag:"data"},{type:"plus", tag:"sql"},{type:"minus", tag:"nosql"}]
             },
             "blips": [
                 {

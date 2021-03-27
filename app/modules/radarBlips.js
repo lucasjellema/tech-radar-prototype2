@@ -1,27 +1,70 @@
 import { cartesianFromPolar, polarFromCartesian, segmentFromCartesian } from './drawingUtilities.js'
 import { populateBlipEditor } from './blipEditing.js'
+import { getViewpoint } from './data.js'
 export { drawRadarBlips }
 
-const color_white = "#FFF"
+
 const radarCanvasElementId = "radarCanvas"
 const blipsLayerElementId = "blipsLayer"
 let currentViewpoint
 
 const filterBlip = (blip, viewpoint) => {
-   // console.log(`filter blip ${blip.rating.object.label} with tagfilter ${viewpoint.blipDisplaySettings.tagFilter}`)
+    // console.log(`filter blip ${blip.rating.object.label} with tagfilter ${viewpoint.blipDisplaySettings.tagFilter}`)
     // determine all tags in the tag filter  - for now as individual strings, no + or - support TODO
-    let blipOK = true
+    let blipOK = viewpoint.blipDisplaySettings.tagFilter?.length == 0 // no filter - then blip is ok 
     if (viewpoint.blipDisplaySettings.tagFilter?.length ?? 0 > 0) {
-        const filters = viewpoint.blipDisplaySettings.tagFilter.split(" ").map((filter) => filter.trim())
-        for (let i = 0; i < filters.length; i++) {
+        try {
+        for (let i = 0; i < viewpoint.blipDisplaySettings.tagFilter.length; i++) {
+            const filter = viewpoint.blipDisplaySettings.tagFilter[i]
             try {
-            blipOK = filters[i].length == 0 || JSON.stringify(blip.rating.object.tags).indexOf(filters[i]) > -1
-            if (!blipOK) break;
+               const blipHasFilter = JSON.stringify(blip.rating.object.tags).indexOf(filter.tag) > -1
+               // minus filter: if tag is in rating.object.tags then blip is not ok  
+               if (blipHasFilter && filter.type=="minus") {
+                blipOK=false; break;  
+               }
+               // must filter: if the tag is not in rating.object.tags then the blip cannot be ok
+               if (!blipHasFilter && filter.type=="must") {
+                blipOK=false; break;  
+               }
+               if (blipHasFilter && filter.type=="plus") {
+                blipOK=true  
+               }
+
             } catch (e) {console.log(`${e} exception filter for ${JSON.stringify(blip)}`)}
         }
+    } catch (e){console.log(`exception in filter blip ${JSON.stringify(e)} ${e}`)}
     }
 
     return blipOK
+}
+
+const initializeTagsFilter = () => {
+    const filteringTagsContainer = document.getElementById('filteringTagsContainer')
+    filteringTagsContainer.innerHTML=null
+    // loop over existing filtering tags and for each add to container 
+
+    for (let i = 0; i < currentViewpoint.blipDisplaySettings.tagFilter.length; i++) {
+        const innerHTML = `<div class="dropup">
+     <span id="tag0" class="${currentViewpoint.blipDisplaySettings.tagFilter[i].type} tagfilter dropbtn">${currentViewpoint.blipDisplaySettings.tagFilter[i].tag}</span>
+     <div class="dropup-content">
+     <a href="#" id="mustTag${i}">Must</a>
+     <a href="#" id="plusTag${i}">Plus</a>
+     <a href="#" id="minusTag${i}">Minus</a>
+         <a href="#" id="removeTag${i}">Remove</a>
+     </div>`
+        const div = document.createElement('div');
+        div.className = "dropup"
+        div.innerHTML = innerHTML
+        filteringTagsContainer.appendChild(div)
+        document.getElementById(`mustTag${i}`).addEventListener("click", () => {currentViewpoint.blipDisplaySettings.tagFilter[i].type="must";drawRadarBlips(currentViewpoint)})
+        document.getElementById(`plusTag${i}`).addEventListener("click", () => {currentViewpoint.blipDisplaySettings.tagFilter[i].type="plus";drawRadarBlips(currentViewpoint)})
+        document.getElementById(`minusTag${i}`).addEventListener("click", () => {currentViewpoint.blipDisplaySettings.tagFilter[i].type="minus";drawRadarBlips(currentViewpoint)})
+        document.getElementById(`removeTag${i}`).addEventListener("click", () => {currentViewpoint.blipDisplaySettings.tagFilter.splice(i,1); drawRadarBlips(currentViewpoint)})
+    }
+
+    // populate datalist with all unique tag values in all blips
+    populateDatalistWithTags()
+
 }
 
 const drawRadarBlips = function (viewpoint) {
@@ -32,7 +75,7 @@ const drawRadarBlips = function (viewpoint) {
 
     document.getElementById('showShapes').checked = currentViewpoint.blipDisplaySettings.showShapes
 
-    document.getElementById('tagFilter').value = currentViewpoint.blipDisplaySettings.tagFilter
+    initializeTagsFilter()
 
     document.getElementById('applyShapes').checked = currentViewpoint.blipDisplaySettings.applyShapes
     document.getElementById('applySizes').checked = currentViewpoint.blipDisplaySettings.applySizes
@@ -247,8 +290,8 @@ const handleShowShapesChange = (event) => {
     drawRadarBlips(currentViewpoint)
 }
 const handleTagFilterChange = (event) => {
-    currentViewpoint.blipDisplaySettings.tagFilter = event.target.value
-    console.log(`new tagfilter value${currentViewpoint.blipDisplaySettings.tagFilter}`)
+    const filterTagValue = document.getElementById("filterTagSelector").value
+    currentViewpoint.blipDisplaySettings.tagFilter.push({type:"plus", tag:filterTagValue})
     drawRadarBlips(currentViewpoint)
 }
 
@@ -402,6 +445,26 @@ const menu = (x, y, d, blip, viewpoint) => {
     }
 }
 
+function populateDatalistWithTags() {
+    const listOfDistinctTagValues = new Set()
+    for (let i = 0; i < getViewpoint().blips.length; i++) {
+        const blip = getViewpoint().blips[i]
+        for (let j = 0; j < blip.rating.object?.tags.length; j++) {
+            listOfDistinctTagValues.add(blip.rating.object.tags[j].trim())
+        }
+    }
+    const tagsList = document.getElementById('tagsList')
+    //remove current contents
+    tagsList.length = 0
+    tagsList.innerHTML = null
+    let option
+    for (let tagvalue of listOfDistinctTagValues) {
+        option = document.createElement('option')
+        option.value = tagvalue
+        tagsList.appendChild(option)
+    }
+}
+
 function decorateContextMenuEntry(menuEntry, dimension, value, blip, viewpoint, label) { // dimension = shape, size, color
     menuEntry.attr("class", "clickableProperty")
         .on("click", () => {
@@ -475,7 +538,8 @@ const getKeyForValue = function (object, value) {
 document.getElementById('showImages').addEventListener("change", handleShowImagesChange);
 document.getElementById('showLabels').addEventListener("change", handleShowLabelsChange);
 document.getElementById('showShapes').addEventListener("change", handleShowShapesChange);
-document.getElementById('tagFilter').addEventListener("change", handleTagFilterChange);
+document.getElementById('addTagToFilter').addEventListener("click", handleTagFilterChange);
+
 document.getElementById('applyColors').addEventListener("change", handleApplyColorsChange);
 document.getElementById('applySizes').addEventListener("change", handleApplySizesChange);
 document.getElementById('applyShapes').addEventListener("change", handleApplyShapesChange);
@@ -524,7 +588,7 @@ function blipWindow(blip, viewpoint) {
         addProperty("Tags", blip.rating.object.tags.slice(1).reduce((tags, tag) => `${tags}, ${tag}`, blip.rating.object.tags[0]), body)
     }
     const offeringLabel = getLabelForAllowableValue(blip.rating.object.offering, viewpoint.ratingType.objectType.properties.offering.allowableValues)
-    
+
     addProperty("Type Offering", offeringLabel, body)
 
     if (blip.rating.object.homepage != null && blip.rating.object.homepage.length > 1) {
@@ -577,9 +641,9 @@ function blipWindow(blip, viewpoint) {
 
 
 const getLabelForAllowableValue = (value, allowableValues) => {
-  let label=""
-    for(let i = 0;i<allowableValues.length; i++) {
+    let label = ""
+    for (let i = 0; i < allowableValues.length; i++) {
         if (allowableValues[i].value == value) { label = allowableValues[i].label; break }
     }
-return label
+    return label
 }

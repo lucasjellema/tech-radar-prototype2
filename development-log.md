@@ -20,6 +20,7 @@
 - filter on tags: discern must, plus and minus filters (one or more of the plus filters makes a blip qualify, even one of the minus filters causes a disqualify and a each must filter tag needs to be present in a tag)
 - define filter tags through a combobox that suggests all tags assigned to any blip object
 - improve property-visual map definition - now including the blip property that is mapped to the visual dimension
+- better tag editing for blips (show tags as labels, allow removal of tags from hover menu, add tags from combobox)
 
 ## March 26th
 - offering property in blip editor (with combobox)

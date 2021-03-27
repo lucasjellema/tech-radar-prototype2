@@ -32,8 +32,9 @@ Each object can be rated multiple times (at different moments in time, in differ
 ## UI Structure
 
 The Radar application consists of a number of sections:
-* the radar - the main UI that presents a viewpoint with blips (for ratings of objects) on a radar configuration; the radar can allow editing of blips
+* the radar - the main UI that presents a viewpoint with blips (for ratings of objects) on a radar configuration; the radar can allow editing of blips ![](images/mainradar.png)
 * the radar configuration (or template) editor - for editing the visual design of the radar templates (including the sectors, rings, shapes, colors and sizes - how many, which label, what do they each look like)
+![](images/templateEditor.png)
 * the data model manager - a tool for editing the data model that consists of the definitions of object types, rating types and properties of both including the allowable values for the properties *(not yet implemented)*
 * the viewpoint wizard - a tool for creating (and refining) a viewpoint as a combination of a radar template, a rating type and a property-visual map to project object and rating properties (and specific allowable values) on visual dimensions (and specific elements in each visual dimension) *(not yet implemented)*
 

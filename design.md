@@ -12,7 +12,7 @@ The radar shows blips. Blips are the visual representation of an evaluation (or 
 
 ### Object and Rating
 
-An object is for example of type *technology* (such as Java or Kubernetes). Objects of type *technology* have specific properties - such as name, vendor, logo, homepage and category plus tags. The evaluation or rating of the object type *technology* is for example of rating type *technologyEvaluation*; this rating type has properties like ambition, importance, experience and scope, timestamp and author. Each property is of a specific data type (string, number, URL, image, time), it has a label and description and it can have a default value. A property may also have a limiting set of allowable values associated with it.
+An object is for example of type *technology* (such as Java or Kubernetes). Objects of type *technology* have specific properties - such as name, vendor, logo, homepage and category plus tags. The evaluation or rating of the object type *technology* is for example of rating type *technologyEvaluation*; this rating type has properties like ambition, importance, experience and scope, timestamp and author. Each property is of a specific data type (string, number, URL, image, time, boolean), it has a label and description and it can have a default value. A property may also have a limiting set of allowable values associated with it. A property can be designated as *discrete*; this means that it is expected to have a limited number of different values and therefore should be displayed in the blip editor with a "combobox" (a selection item that includes all existing values and also allows a new value to be defined; in HTML terms: a datalist component)
 
 ### Viewpoint
 
@@ -33,10 +33,16 @@ Each object can be rated multiple times (at different moments in time, in differ
 
 The Radar application consists of a number of sections:
 * the radar - the main UI that presents a viewpoint with blips (for ratings of objects) on a radar configuration; the radar can allow editing of blips ![](images/mainradar.png)
+  * the radar provides a modal popup with details for the drilled down upon blip
+  ![](images/blipPopup.png)
+  * a blip editor can be opened for the blip from the detail popup 
+  ![](images/blipEditor.png)
 * the radar configuration (or template) editor - for editing the visual design of the radar templates (including the sectors, rings, shapes, colors and sizes - how many, which label, what do they each look like)
 ![](images/templateEditor.png)
 * the data model manager - a tool for editing the data model that consists of the definitions of object types, rating types and properties of both including the allowable values for the properties *(not yet implemented)*
 * the viewpoint wizard - a tool for creating (and refining) a viewpoint as a combination of a radar template, a rating type and a property-visual map to project object and rating properties (and specific allowable values) on visual dimensions (and specific elements in each visual dimension) *(not yet implemented)*
+
+![](images/mainradara2.png)
 
 ## Technology
 The Radar is implemented as a client side only web application. It is loaded from a static web server into a browser and then runs completely in the browser. 

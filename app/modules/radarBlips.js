@@ -593,7 +593,7 @@ function blipWindow(blip, viewpoint) {
         if (property.allowableValues != null && property.allowableValues.length > 0) {
             value = getLabelForAllowableValue(value, property.allowableValues)
         }
-        if (property.type == "url" && value.length > 1) {
+        if (property.type == "url" && value != null && value.length > 1) {
             let newLink = body.append("xlink:a")
                 .attr("src", value)
                 .text(`${property.label}: ${value}`)

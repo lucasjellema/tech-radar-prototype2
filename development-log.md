@@ -6,16 +6,22 @@
 - extend (foreign object) text editor for different types of input (select, combo, radio)
 - context menu on sector to bring up form to edit background color, opacity, image (& scalefactor) 
 
-- themes: filter with selection of positive tags and negative tags 
+- defines themes: filters with selection of positive tags and negative tags 
+- sectors composed from mini-sectors - drill down on one sector to expose its mini-sectors; for example: 
+  - drill down on infrastructure and get radar using vendors as sectors
+  - drill down on infrastructure and get sectors for ci/cd, storage, container management, networking, security and other child-categories
+  - define drill down/aggregation paths - category => vendor; category => selected tag value;  category => offering type
 
- - derive property to sector map from meta-model (instead of hard coded in radarBlips.drawRadarBlip - category, ambition, offering, experience, magnitude)
 - add values for discrete properties to combobox for filter tags - and filter on these values (for example support filtering on category, vendor, offering)
+  
 - zoom in on a single sector
 - zoom in on a single ring 
 
 ## March 28th
 -  derive property values on rating and object from sector and ring based on meta-data - instead of hardcoded as in blipEditing.handleBlipDrag)
 -  drawBlip fully meta-data driven
+-  support additional types of shapes - rectangle horizontal, vertical, triangle, plus, star
+-  correct positioning of tooltip
 
 ## March 27th
 - filter on tags: discern must, plus and minus filters (one or more of the plus filters makes a blip qualify, even one of the minus filters causes a disqualify and a each must filter tag needs to be present in a tag)

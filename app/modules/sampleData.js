@@ -382,7 +382,7 @@ const sample = {
                             "shape": "diamond"
                         },
                         {
-                            "label": "Label",
+                            "label": "PaaS",
                             "shape": "rectangleHorizontal",
                             "enabled": false
                         },
@@ -397,7 +397,7 @@ const sample = {
                             "enabled": false
                         },
                         {
-                            "label": "Label",
+                            "label": "SaaS",
                             "shape": "rectangleVertical",
                             "enabled": false
                         },
@@ -432,7 +432,7 @@ const sample = {
                     property: "ambition", valueMap: { "hold": 0, "assess": 1, "adopt": 3, "trial": 2 } // the rating ambition property drives the ring; the values of ambition are mapped to values for ring
                 }
                 , shape: {
-                    property: "object.offering", valueMap: { "oss": 1, "commercial": 0, "other": 3 }
+                    property: "object.offering", valueMap: { "oss": 4, "commercial": 6, "other": 5 }
                 }
                 , color: { property: "experience", valueMap: { "short": 0, "long": 1, "intermediate": 3, "other": 2 } }
             },

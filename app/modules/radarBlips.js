@@ -258,8 +258,31 @@ const drawRadarBlip = (blip, d, viewpoint) => {
             shape = blip.append('path').attr("d", square)
         }
 
-
-
+        if (blipShape == "star") {
+            const star = d3.symbol().type(d3.symbolStar).size(720);
+            shape = blip.append('path').attr("d", star)
+        }
+        if (blipShape == "plus") {
+            const plus = d3.symbol().type(d3.symbolCross).size(720);
+            shape = blip.append('path').attr("d", plus)
+        }
+        if (blipShape == "triangle") {
+            const triangle = d3.symbol().type(d3.symbolTriangle).size(720);
+            shape = blip.append('path').attr("d", triangle)
+        }
+        if (blipShape == "rectangleHorizontal") {
+            shape = blip.append('rect').attr('width', 38)
+                .attr('height', 10)
+                .attr('x', -20)
+                .attr('y', -4)
+        }
+        if (blipShape == "rectangleVertical") {
+            shape = blip.append('rect')
+            .attr('width', 10)
+            .attr('height', 38)
+            .attr('x', -5)
+            .attr('y', -15)
+        }
         shape.attr("fill", blipColor);
         shape.attr("opacity", "0.4");
     }
@@ -420,6 +443,33 @@ const menu = (x, y, d, blip, viewpoint) => {
             const square = d3.symbol().type(d3.symbolSquare).size(420);
             shape = shapeEntry.append('path').attr("d", square)
         }
+        if (shapeToDraw == "star") {
+            const star = d3.symbol().type(d3.symbolStar).size(420);
+            shape = shapeEntry.append('path').attr("d", star)
+        }
+        if (shapeToDraw == "plus") {
+            const plus = d3.symbol().type(d3.symbolCross).size(420);
+            shape = shapeEntry.append('path').attr("d", plus)
+        }
+        if (shapeToDraw == "triangle") {
+            const triangle = d3.symbol().type(d3.symbolTriangle).size(420);
+            shape = shapeEntry.append('path').attr("d", triangle)
+        }
+        if (shapeToDraw == "rectangleHorizontal") {
+            shape = shapeEntry.append('rect').attr('width', 38)
+                .attr('height', 10)
+                .attr('x', -20)
+                .attr('y', -4)
+        }
+
+        if (shapeToDraw == "rectangleVertical") {
+            shape = shapeEntry.append('rect')
+            .attr('width', 10)
+            .attr('height', 38)
+            .attr('x', -5)
+            .attr('y', -15)
+        }
+
         shape
             .attr("id", `templateSizes${i}`)
             .attr("fill", "black")
@@ -521,11 +571,11 @@ const addTooltip = (hoverTooltip, d, x, y) => { // hoverToolTip is a function th
     div
         .transition()
         .duration(200)
-        .style("opacity", 0.9);
+        .style("opacity", 0.8);
     div
         .html(hoverTooltip(d))
-        .style("left", `${x + 10}px`)
-        .style("top", `${y - 58}px`);
+        .style("left", `${x + 5}px`)
+        .style("top", `${y - 28}px`);
 };
 
 const removeTooltip = () => {

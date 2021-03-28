@@ -1,6 +1,7 @@
 import { cartesianFromPolar, polarFromCartesian, segmentFromCartesian } from './drawingUtilities.js'
 import { populateBlipEditor } from './blipEditing.js'
 import { getViewpoint } from './data.js'
+import { getNestedPropertyValueFromObject } from './utils.js'
 export { drawRadarBlips }
 
 
@@ -137,17 +138,24 @@ const blipInSegment = (cartesian, viewpoint, segment) => {
 }
 
 const drawRadarBlip = (blip, d, viewpoint) => {
-    const blipSector = viewpoint.propertyVisualMaps.sector.valueMap[d.rating.object.category]
-    const blipRing = viewpoint.propertyVisualMaps.ring.valueMap[d.rating.ambition]
-    const blipShapeId = viewpoint.propertyVisualMaps.shape.valueMap[d.rating.object?.offering]
+    const propertyMappedToSector = viewpoint.propertyVisualMaps.sector.property
+    const blipSector = viewpoint.propertyVisualMaps.sector.valueMap[getNestedPropertyValueFromObject(d.rating, propertyMappedToSector)]
+
+    const propertyMappedToRing = viewpoint.propertyVisualMaps.ring.property
+    const blipRing = viewpoint.propertyVisualMaps.ring.valueMap[getNestedPropertyValueFromObject(d.rating, propertyMappedToRing)]
+
+    const propertyMappedToShape = viewpoint.propertyVisualMaps.shape.property
+    const blipShapeId = viewpoint.propertyVisualMaps.shape.valueMap[getNestedPropertyValueFromObject(d.rating, propertyMappedToShape)]
         ?? viewpoint.propertyVisualMaps.shape.valueMap["other"]
     let blipShape = viewpoint.template.shapesConfiguration.shapes[blipShapeId].shape
 
-    const blipColorId = viewpoint.propertyVisualMaps.color.valueMap[d.rating?.experience]
+    const propertyMappedToColor = viewpoint.propertyVisualMaps.color.property
+    const blipColorId = viewpoint.propertyVisualMaps.color.valueMap[getNestedPropertyValueFromObject(d.rating, propertyMappedToColor)]
         ?? viewpoint.propertyVisualMaps.color.valueMap["other"]
     let blipColor = viewpoint.template.colorsConfiguration.colors[blipColorId].color
 
-    const blipSizeId = viewpoint.propertyVisualMaps.size.valueMap[d.rating.magnitude]
+    const propertyMappedToSize = viewpoint.propertyVisualMaps.size.property
+    const blipSizeId = viewpoint.propertyVisualMaps.size.valueMap[getNestedPropertyValueFromObject(d.rating, propertyMappedToSize)]
         ?? viewpoint.propertyVisualMaps.size.valueMap["other"]
     let blipSize = viewpoint.template.sizesConfiguration.sizes[blipSizeId].size
 

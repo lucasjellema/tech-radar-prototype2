@@ -136,7 +136,7 @@ const viewpoints = [
             // which property value maps to which of visual elements (indicated by their sequence number in th template) 
             // note: the order of elements in these maps drives the order in which color/size/shape elements are shown in legend and context menu
             size: {
-                property: "size", valueMap: { "tiny": 0, "medium": 1, "large": 2 } // the rating magnitude property drives the size; the values of magnitude are mapped to values for size
+                property: "magnitude", defaultValue:"medium", valueMap: { "tiny": 0, "medium": 1, "large": 2 } // the rating magnitude property drives the size; the values of magnitude are mapped to values for size
             }
             , sector: {
                 property: "object.category", valueMap: { "database": 0, "language": 3, "infrastructure": 2, "concepts": 4, "libraries": 1 } // the object category property drives the sector; the values of category are mapped to values for sector
@@ -145,9 +145,9 @@ const viewpoints = [
                 property: "ambition", valueMap: {  "spotted": 0, "hold": 1, "assess": 2,  "trial": 3, "adopt": 4 } // the rating ambition property drives the ring; the values of ambition are mapped to values for ring
             }
             , shape: {
-                property: "object.offering", valueMap: { "oss": 1, "commercial": 0, "other": 3 }
+                property: "object.offering", defaultValue:"other",valueMap: { "oss": 1, "commercial": 0, "other": 3 }
             }
-            , color: { property: "experience", valueMap: { "short": 0, "long": 1, "intermediate": 3, "other": 2 } }
+            , color: { property: "experience", defaultValue:"other", valueMap: { "short": 0, "long": 1, "intermediate": 3, "other": 2 } }
         },
         blipDisplaySettings: {
             showImages: false, showShapes: true, showLabels: true
@@ -350,9 +350,9 @@ const sample = {
                             "enabled": true
                         },
                         {
-                            "label": "Medium    ",
+                            "label": "Medium",
                             "size": 0.8,
-                            "enabled": false
+                            "enabled": true
                         },
                         {
                             "label": "Very relevant",
@@ -360,12 +360,12 @@ const sample = {
                             "enabled": true
                         },
                         {
-                            "label": "Regular",
-                            "size": 4
+                            "label": "Crucial",
+                            "size": 1.3
                         },
                         {
                             "label": "Regular",
-                            "size": 5,
+                            "size": 1.8,
                             "enabled": false
                         }
                     ]
@@ -422,7 +422,7 @@ const sample = {
             "ratingType": "technologyAdaption",
             "propertyVisualMaps": {
                 size: {
-                    property: "size", valueMap: { "tiny": 0, "medium": 1, "large": 2 } // the rating magnitude property drives the size; the values of magnitude are mapped to values for size
+                    property: "magnitude", valueMap: { "tiny": 0, "medium": 1, "large": 2 } // the rating magnitude property drives the size; the values of magnitude are mapped to values for size
                 }
                 , sector: {
                     property: "object.category", valueMap: { "database": 0, "language": 3, "infrastructure": 2, "concepts": 4, "libraries": 1 } // the object category property drives the sector; the values of category are mapped to values for sector

@@ -1,5 +1,6 @@
 
 import { cartesianFromPolar, polarFromCartesian, segmentFromCartesian } from './drawingUtilities.js'
+import {setNestedPropertyValueFromObject} from './utils.js'
 export { handleBlipDrag, populateBlipEditor }
 
 const populateSelect = (selectElementId, data, defaultValue = null) => { // data is array objects with two properties : label and value
@@ -171,24 +172,7 @@ const initializeImagePaster = (handleImagePaste) => {
 
 }
 
-const getNestedPropertyValueFromObject = (object, propertyPath) => {
-    const propertyPathSegments = propertyPath.split('.')
-    let value = object
-    for (let i=0;i<propertyPathSegments.length;i++) {
-        value = value[propertyPathSegments[i]]
-    }
-    return value
-}
 
-const setNestedPropertyValueFromObject = (object, propertyPath , value) => {    
-    const propertyPathSegments = propertyPath.split('.')
-    let elementToSet = object
-    for (let i=0;i<propertyPathSegments.length-1;i++) {
-        elementToSet = elementToSet[propertyPathSegments[i]]
-    }
-    elementToSet[propertyPathSegments[propertyPathSegments.length-1]] = value
-    return object
-}
 
 const handleBlipDrag = function (blipDragEvent, viewpoint) {
     // TODO not all elements are supported for dragging (yet) 

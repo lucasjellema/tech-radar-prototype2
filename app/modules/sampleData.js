@@ -142,7 +142,7 @@ const viewpoints = [
                 property: "object.category", valueMap: { "database": 0, "language": 3, "infrastructure": 2, "concepts": 4, "libraries": 1 } // the object category property drives the sector; the values of category are mapped to values for sector
             }
             , ring: {
-                property: "ambition", valueMap: { "hold": 1, "assess": 2, "adopt": 4, "spotted": 0, "trial": 3 } // the rating ambition property drives the ring; the values of ambition are mapped to values for ring
+                property: "ambition", valueMap: {  "spotted": 0, "hold": 1, "assess": 2,  "trial": 3, "adopt": 4 } // the rating ambition property drives the ring; the values of ambition are mapped to values for ring
             }
             , shape: {
                 property: "object.offering", valueMap: { "oss": 1, "commercial": 0, "other": 3 }
@@ -256,7 +256,7 @@ const sample = {
                     },
                     "rings": [
                         {
-                            "label": "Do not touch",
+                            "label": "Hold",
                             "width": 0.13
                         },
                         {
@@ -429,7 +429,7 @@ const sample = {
                 }
 
                 , ring: {
-                    property: "ambition", valueMap: { "hold": 1, "assess": 2, "adopt": 4, "spotted": 0, "trial": 3 } // the rating ambition property drives the ring; the values of ambition are mapped to values for ring
+                    property: "ambition", valueMap: { "hold": 0, "assess": 1, "adopt": 3, "trial": 2 } // the rating ambition property drives the ring; the values of ambition are mapped to values for ring
                 }
                 , shape: {
                     property: "object.offering", valueMap: { "oss": 1, "commercial": 0, "other": 3 }

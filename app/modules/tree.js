@@ -47,7 +47,7 @@ class Treeview {
             <summary  id="${key}" ${Object.keys(data[key]).map((subkey) => { return subkey != 'children' ? `data-${subkey}="${data[key][subkey]}"` : ' ' }).join(' ')}>
                 <img class="icon" src="${me.imageBase}${data[key].icon ? data[key].icon : data[key].children ? 'Folder.png' : 'Item.png'}"> </img>
                 ${data[key].label}
-                <input type="checkbox" id="check${this.treeviewId}${data[key].id}" style="margin:8px;${(data[key]['selectable'] ?? false) ? '' : 'display:none'}"></input>
+                <input type="checkbox" checked id="check${this.treeviewId}${data[key].id}" style="margin:8px;${(data[key]['selectable'] ?? false) ? '' : 'display:none'}"></input>
             </summary>
              ${data[key].children ? me.walkData(data[key].children) : ""}
           </details>`);
@@ -174,13 +174,15 @@ const mapRadarDataToTreeModel = (radarData) => {
             }
 
             for (let i = 0; i < radarData.viewpoints.length; i++) { // viewpoints
-                const ratingType = radarData.viewpoints[i].ratingType
+                let ratingType = radarData.viewpoints[i].ratingType
+                if (typeof(ratingType)=="string") {
+                    ratingType = radarData.model?.ratingTypes[ratingType]
+                }
                 const objectTypeKey = ratingType.objectType.name
                 const displayPropertyPath = findDisplayProperty(ratingType.objectType.properties).key
                 for (let j = 0; j < radarData.viewpoints[i].blips.length; j++) {
                     const blip = radarData.viewpoints[i].blips[j]
-                    if (!objectSets[objectTypeKey].has(getNestedPropertyValueFromObject(blip.rating.object, displayPropertyPath))) 
-                    {
+                    if (!objectSets[objectTypeKey].has(getNestedPropertyValueFromObject(blip.rating.object, displayPropertyPath))) {
                         objectSets[objectTypeKey].add(getNestedPropertyValueFromObject(blip.rating.object, displayPropertyPath))
                     }
                 }
@@ -196,18 +198,18 @@ const mapRadarDataToTreeModel = (radarData) => {
             }
         }
     }
-    if (radarData.objects != null ) {
+    if (radarData.objects != null) {
         for (let i = 0; i < Object.keys(radarData.objects).length; i++) {
             const objectTypeKey = Object.keys(radarData.objects)[i]
             const objectType = radarData.model.objectTypes[objectTypeKey]
             const displayPropertyPath = findDisplayProperty(objectType.properties).key
 
-            data.data.children[objectTypeKey] = { label: objectType?.label??objectTypeKey, selectable: true, id: `dataobjects${objectTypeKey}`, children: {} }
+            data.data.children[objectTypeKey] = { label: objectType?.label ?? objectTypeKey, selectable: true, id: `dataobjects${objectTypeKey}`, children: {} }
             radarData.objects[objectTypeKey].forEach((object) => {
                 const objectLabel = getNestedPropertyValueFromObject(object, displayPropertyPath)
                 data.data.children[objectTypeKey].children[objectLabel] = { label: objectLabel }
             })
-        }            
+        }
     }
 
 
@@ -233,9 +235,12 @@ function isElementChecked(elementId) {
 }
 
 const downloadData = (treeElementId, radarData) => {
-    console.log(`download for ${treeElementId}`)
+    const data = getDataFromSelectedTreeElementsInRadarData(treeElementId, radarData)
+    download(`radar-data.json`, JSON.stringify(data))
+}
+
+const getDataFromSelectedTreeElementsInRadarData = (treeElementId, radarData) => {
     const data = {}
-    //  id="check${this.treeElementId}${id}"
     if (isElementChecked(`check${treeElementId}model`)) {
         data.model = {}
         if (isElementChecked(`check${treeElementId}objectTypes`)) {
@@ -262,27 +267,31 @@ const downloadData = (treeElementId, radarData) => {
         }
     }
     let i = 0
-    let firstTemplate = true
-    radarData.templates.forEach((template) => {
-        if (isElementChecked(`check${treeElementId}template${i++}`)) {
-            if (firstTemplate) { data.templates = []; firstTemplate = false }
-            data.templates.push(JSON.parse(JSON.stringify(template)))
-        }
-    })
-    i = 0
-    let firstViewpoint = true
-    radarData.viewpoints.forEach((viewpoint) => {
-        if (isElementChecked(`check${treeElementId}viewpoint${i++}`)) {
-            if (firstViewpoint) { data.viewpoints = []; firstViewpoint = false }
-            data.viewpoints.push(JSON.parse(JSON.stringify(viewpoint)))
-        }
-    })
+    if (radarData.templates && radarData.templates.length > 0) {
+        let firstTemplate = true
+        radarData.templates.forEach((template) => {
+            if (isElementChecked(`check${treeElementId}template${i++}`)) {
+                if (firstTemplate) { data.templates = []; firstTemplate = false }
+                data.templates.push(JSON.parse(JSON.stringify(template)))
+            }
+        })
+    }
+    if (radarData.viewpoints && radarData.viewpoints.length > 0) {
+        i = 0
+        let firstViewpoint = true
+        radarData.viewpoints.forEach((viewpoint) => {
+            if (isElementChecked(`check${treeElementId}viewpoint${i++}`)) {
+                if (firstViewpoint) { data.viewpoints = []; firstViewpoint = false }
+                data.viewpoints.push(JSON.parse(JSON.stringify(viewpoint)))
+            }
+        })
+    }
     if (isElementChecked(`check${treeElementId}dataobjects`)) {
         data.objects = {}
 
         if (radarData.viewpoints != null && radarData.viewpoints.length > 0) {
             if (radarData.model?.objectTypes != null) {
-                const objectSets = {}                
+                const objectSets = {}
                 const objectArrays = {}
 
                 for (let i = 0; i < Object.keys(radarData.model.objectTypes).length; i++) {
@@ -290,43 +299,44 @@ const downloadData = (treeElementId, radarData) => {
                     objectSets[objectTypeKey] = new Set()
                     objectArrays[objectTypeKey] = []
                 }
-    
+
                 for (let i = 0; i < radarData.viewpoints.length; i++) { // viewpoints
-                    const ratingType = radarData.viewpoints[i].ratingType
+                    let ratingType = radarData.viewpoints[i].ratingType
+                    if (typeof(ratingType)=="string") {
+                        ratingType = radarData.model?.ratingTypes[ratingType]
+
+                    }
                     const objectTypeKey = ratingType.objectType.name
-                    const displayPropertyPath =  findDisplayProperty(ratingType.objectType.properties).key
+                    const displayPropertyPath = findDisplayProperty(ratingType.objectType.properties).key
                     for (let j = 0; j < radarData.viewpoints[i].blips.length; j++) {
                         const blip = radarData.viewpoints[i].blips[j]
-                        if (!objectSets[objectTypeKey].has(getNestedPropertyValueFromObject(blip.rating.object,displayPropertyPath)  )) // TODO no hard coded reference to object property
+                        if (!objectSets[objectTypeKey].has(getNestedPropertyValueFromObject(blip.rating.object, displayPropertyPath))) // TODO no hard coded reference to object property
                         {
-                            objectSets[objectTypeKey].add(getNestedPropertyValueFromObject(blip.rating.object,displayPropertyPath))   
-                            objectArrays[objectTypeKey].push(blip.rating.object)                   
+                            objectSets[objectTypeKey].add(getNestedPropertyValueFromObject(blip.rating.object, displayPropertyPath))
+                            objectArrays[objectTypeKey].push(blip.rating.object)
                         }
                     }
                 }
-        //         // TODO ADD OBJECTS LOADED from FILE under property dataobjects.children
-    
                 for (let i = 0; i < Object.keys(radarData.model.objectTypes).length; i++) {
                     const objectTypeKey = Object.keys(radarData.model.objectTypes)[i]
-                    if (objectSets[objectTypeKey].size>0) {
+                    if (objectSets[objectTypeKey].size > 0 && (isElementChecked(`check${treeElementId}dataobjects${objectTypeKey}`))) {
                         data.objects[objectTypeKey] = objectArrays[objectTypeKey]
                     }
                 }
             }
         }
-   
-    
-
     }
-    download(`radar-data.json`, JSON.stringify(data))
-
+    return data
 }
 
-const processUploadedData = (treeElementId, radarData) => {
-    console.log(`process uploaded data`)
-}
+// const processUploadedData = (treeElementId, radarData) => {
+//     console.log(`process uploaded data`)
+//     const data = getDataFromSelectedTreeElementsInRadarData(treeElementId, radarData)
 
-const initializeTree = (treeElementId, radarData, treeDataProcessingType = null) => {
+//     console.log(`data`)
+// }
+
+const initializeTree = (treeElementId, radarData, treeDataProcessingType = null, dataProcessorFunction=null) => {
     var treeview = new Treeview(treeElementId, "https://s3-us-west-2.amazonaws.com/s.cdpn.io/620300/");
     treeview.on("select", (event) => {
         var node = event.target;
@@ -359,7 +369,7 @@ const initializeTree = (treeElementId, radarData, treeDataProcessingType = null)
         container.innerHTML = `${container.innerHTML}<input type="button" id="processSelectedUploadedData" name="processUploaded"
     value="Process Selected Elements from Uploaded Data"></input>`
         processUploadedDataButton = document.getElementById("processSelectedUploadedData")
-        processUploadedDataButton.addEventListener("click", (e) => { processUploadedData(treeElementId, radarData) })
+        processUploadedDataButton.addEventListener("click", (e) => { dataProcessorFunction(getDataFromSelectedTreeElementsInRadarData(treeElementId, radarData)) })
     }
 
 

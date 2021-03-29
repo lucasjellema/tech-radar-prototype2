@@ -2187,7 +2187,7 @@ const sample = {
             }
         }
     ],
-    "objects": []
+    "objects": {}
 }
 
 //sample.model = model

@@ -1,6 +1,7 @@
 
 import { cartesianFromPolar, polarFromCartesian, segmentFromCartesian } from './drawingUtilities.js'
 import { getNestedPropertyValueFromObject, setNestedPropertyValueFromObject } from './utils.js'
+import { getViewpoint, getData } from './data.js'
 export { handleBlipDrag, populateBlipEditor }
 
 const populateSelect = (selectElementId, data, defaultValue = null) => { // data is array objects with two properties : label and value
@@ -82,7 +83,11 @@ const populateBlipEditor = (blip, viewpoint, drawRadarBlips) => {
     const tbl = document.getElementById("blipEditorTable")
     // remove current content
     tbl.innerHTML = null
-    const ratingType = viewpoint.ratingType
+    let ratingType = viewpoint.ratingType
+    if (typeof(ratingType)=="string") {
+        ratingType = getData().model?.ratingTypes[ratingType]
+    }
+
 
     // TODO cater for IMAGE
     // TODO cater for tags

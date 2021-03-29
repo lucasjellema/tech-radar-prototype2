@@ -5,8 +5,9 @@ import { getSampleData } from './sampleData.js'
 const RADAR_INDEX_KEY = "RADAR-INDEX"
 
 let data = {
-    templates: []
-    , objects: []
+    model: {}
+    , templates: []
+    , objects: {}
     , viewpoints: []
 
 }
@@ -115,6 +116,7 @@ const getFreshTemplate = () => {
 }
 
 data = getSampleData()
+//data.templates.push(freshTemplate)
 let config = data.templates[0]
 let radarIndex = { templates: [{ title: encodeURI(config.title.text), description: "", lastupdate: "20210310T192400" }], objects: [] }
 
@@ -192,7 +194,22 @@ async function handleUploadedFiles() {
 
         const contents = await this.files[0].text()
         uploadedData = JSON.parse(contents)
-        initializeTree("filemodelTree", uploadedData,"upload") 
+        initializeTree("filemodelTree", uploadedData, "upload", (uploadedData) => {
+
+            console.log(`uploaded data has arrived ${JSON.stringify(uploadedData)}`)
+            data.model = Object.assign(data.model, uploadedData.model)
+            data.templates = data.templates.concat(uploadedData.templates)
+            data.viewpoints = data.viewpoints.concat(uploadedData.viewpoints)
+            if (uploadedData.objects != null && uploadedData.objects.length > 0) {
+                // merge the arrays of uploaded objects in with the existing objects per object type
+                for (let i = 0; i < Object.keys(uploadedData.objects).length; i++) {
+                    data.objects[Object.keys(uploadedData.objects)[i]] =
+                        uploadedData.objects[Object.keys(uploadedData.objects)[i]].concat(data.objects[Object.keys(uploadedData.objects)[i]])
+                }
+            }
+
+            publishRefreshRadar()
+        })
         publishRefreshRadar()
 
     }
@@ -315,16 +332,16 @@ const populateTemplateSelector = () => {
     for (var i = 0; i < selector.options.length + 3; i++) {
         selector.remove(1)
     }
-  //  if (getState().editType == "template") {
-        // add options based on data.templates[].title.text
-        for (var i = 0; i < data.templates.length; i++) {
-            var option = document.createElement("option");
+    //  if (getState().editType == "template") {
+    // add options based on data.templates[].title.text
+    for (var i = 0; i < data.templates.length; i++) {
+        var option = document.createElement("option");
 
-            option.value = i;
-            option.text = `Template: ${data.templates[i].title.text}`;
-            option.selected = i == state.currentTemplate && state.editType == "template"
-            selector.add(option, null);
-        }
+        option.value = i;
+        option.text = `Template: ${data.templates[i].title.text}`;
+        option.selected = i == state.currentTemplate && state.editType == "template"
+        selector.add(option, null);
+    }
     //}
     for (var i = 0; i < data.viewpoints.length; i++) {
         var option = document.createElement("option");

@@ -321,17 +321,17 @@ const sample = {
                             "enabled": true
                         },
                         {
-                            "label": "Been Around",
+                            "label": "Very Mature",
                             "color": "blue",
                             "enabled": true
                         },
                         {
-                            "label": "Very Mature",
+                            "label": "Other",
                             "color": "gray",
                             "enabled": true
                         },
                         {
-                            "label": "Intermediate",
+                            "label": "In Between",
                             "color": "pink",
                             "enabled": true
                         },

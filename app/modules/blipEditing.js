@@ -1,6 +1,6 @@
 
 import { cartesianFromPolar, polarFromCartesian, segmentFromCartesian } from './drawingUtilities.js'
-import {getNestedPropertyValueFromObject, setNestedPropertyValueFromObject } from './utils.js'
+import { getNestedPropertyValueFromObject, setNestedPropertyValueFromObject } from './utils.js'
 export { handleBlipDrag, populateBlipEditor }
 
 const populateSelect = (selectElementId, data, defaultValue = null) => { // data is array objects with two properties : label and value
@@ -51,12 +51,12 @@ const initializeTagsField = (blip) => {
 
 }
 
-const createAndPopulateDataList = (listId, propertyPath, blips ) =>{
+const createAndPopulateDataList = (listId, propertyPath, blips) => {
 
     const listOfDistinctValues = new Set()
     for (let i = 0; i < blips.length; i++) {
         const blip = blips[i]
-        listOfDistinctValues.add(  getNestedPropertyValueFromObject(blip.rating, propertyPath))
+        listOfDistinctValues.add(getNestedPropertyValueFromObject(blip.rating, propertyPath))
     }
     let listElement = document.getElementById(listId)
     if (listElement == null) {
@@ -81,54 +81,45 @@ const populateBlipEditor = (blip, viewpoint, drawRadarBlips) => {
     modal.style.display = "block";
     const tbl = document.getElementById("blipEditorTable")
     // remove current content
-    tbl.innerHTML=null
+    tbl.innerHTML = null
     const ratingType = viewpoint.ratingType
-    let i =0
-    for (let propertyName in ratingType.objectType.properties) {
-        const property = ratingType.objectType.properties[propertyName]
-        let value = blip.rating.object[propertyName]
-        if (value=="undefined") value=""
-        const inputElementId = `blipObject${propertyName}`
+
+    // TODO cater for IMAGE
+    // TODO cater for tags
+    let blipProperties = getBlipProperties(ratingType)
+
+    let html =''
+    for (let i = 0; i < blipProperties.length; i++) {
+        const blipProperty = blipProperties[i]
+        let value = getNestedPropertyValueFromObject(blip.rating, blipProperty.propertyPath)
+        if (value == "undefined") value = ""
+        const inputElementId = `blip${blipProperty.propertyPath}`
         let inputElement
-        if (property.allowableValues!= null && property.allowableValues.length>0) // select
-          inputElement = `<select id="${inputElementId}" ></select>`
-        else if (property.discrete!= null && property.discrete) {
-            createAndPopulateDataList(`${inputElementId}List`, `object.${propertyName}`, viewpoint.blips )
-            inputElement = `<input id="${inputElementId}" list="${inputElementId}List" value="${value}"></input>`   
-        }  
-        else 
-          inputElement = `<input id="${inputElementId}" type="text" value="${value}"></input>`
-
-        tbl.innerHTML = `${tbl.innerHTML}<tr><td><label for="${inputElementId}">${property.label}</label></td>
-                     <td>${inputElement}</td></tr>`
-        if (property.allowableValues!= null && property.allowableValues.length>0) {
-            populateSelect(inputElementId, property.allowableValues, value)
-
-        } else {
-//        document.getElementById(inputElementId).value = value
+        if (blipProperty.property.allowableValues != null && blipProperty.property.allowableValues.length > 0) // select
+            inputElement = `<select id="${inputElementId}" ></select>`
+        else if (blipProperty.property.discrete != null && blipProperty.property.discrete) {
+            createAndPopulateDataList(`${inputElementId}List`, `${blipProperty.propertyPath}`, viewpoint.blips)
+            inputElement = `<input id="${inputElementId}" list="${inputElementId}List" value="${value}"></input>`
         }
-        i++
-//        if (i>1) break
+        else
+            inputElement = `<input id="${inputElementId}" type="text" value="${value}"></input>`
+
+        html = `${html}${i % 2 == 0?"<tr>":""}<td><label for="${inputElementId}">${blipProperty.property.label}</label></td>
+                     <td>${inputElement}</td>${i % 2 == 1?"</tr>":""}`
+
     }
-    // tbl.innerHTML = `${tbl.innerHTML}<tr><td><label for="blipCategorySelect">Category</label></td>
-    // <td><select name="blipCategory" id="blipCategorySelect"></select>
-    // </td>`
+    tbl.innerHTML = `${tbl.innerHTML}${html}`
+    //  populate SELECTs after all HTML has been created
+    for (let i = 0; i < blipProperties.length; i++) {
+        const blipProperty = blipProperties[i]
+        if (blipProperty.property.allowableValues != null && blipProperty.property.allowableValues.length > 0) {
+            let value = getNestedPropertyValueFromObject(blip.rating, blipProperty.propertyPath)
+            const inputElementId = `blip${blipProperty.propertyPath}`
+            populateSelect(inputElementId, blipProperty.property.allowableValues, value)
+        }
+    }
 
-    //    const blipEditorTitle = document.getElementById("blipEditorTitle")
     blipEditorTitle.innerText = `Editing ${blip.rating.object.label} `
-    // , sectorMap: { "database": 0, "language": 3, "infrastructure": 2, "concepts": 4, "libraries": 1 } // the object category property drives the sector; the values of category are mapped to values for sector
-    // , ringMap: { "hold": 1, "assess": 2, "adopt": 4, "spotted": 0, "trial": 3 } 
-
-    // turn map & array into selectOptions: data = key in map, label = label for array element indicated by value in map
-
-    console.log(`rating type ${JSON.stringify(viewpoint.ratingType.objectType.properties.category.allowableValues)}`)
-
-
-   // populateSelect("blipCategorySelect", viewpoint.ratingType.objectType.properties.category.allowableValues, blip.rating.object.category)
-    populateSelect("blipAmbitionSelect", viewpoint.ratingType.properties.ambition.allowableValues, blip.rating.ambition)
-
-    // document.getElementById("blipLabel").value = blip.rating.object.label
-    // document.getElementById("blipHomepage").value = blip.rating.object.homepage
     document.getElementById("blipImageURL").value = blip.rating.object.image
     document.getElementById("blipImageURL").addEventListener("change", (e) => { document.getElementById("blipImage").src = e.target.value })
     document.getElementById("blipImage").src = blip.rating.object.image
@@ -140,16 +131,6 @@ const populateBlipEditor = (blip, viewpoint, drawRadarBlips) => {
             initializeTagsField(blip)
         })
 
-
-    // document.getElementById("blipTags").value = blipTags
-   // document.getElementById("blipDescription").value = blip.rating.object.description
-    document.getElementById("blipRemark").value = blip.rating.comment
-    document.getElementById("blipAuthor").value = blip.rating.author
-    document.getElementById("blipScope").value = blip.rating.scope
-
-    populateSelect("blipMagnitudeSelect", viewpoint.ratingType.properties.magnitude.allowableValues, blip.rating.magnitude)
-    populateSelect("blipMaturitySelect", viewpoint.ratingType.properties.experience.allowableValues, blip.rating.experience)
-  //  populateSelect("blipOffering", viewpoint.ratingType.objectType.properties.offering.allowableValues, blip.rating.object.offering)
 
 
     initializeImagePaster((imageURL) => {
@@ -165,31 +146,38 @@ const populateBlipEditor = (blip, viewpoint, drawRadarBlips) => {
 
 const saveBlipEdit = () => {
     const blip = blipEdited
-    blip.rating.object.label = document.getElementById("blipLabel").value
-    blip.rating.object.homepage = document.getElementById("blipHomepage").value
-    blip.rating.object.image = document.getElementById("blipImageURL").value
-    blip.rating.object.description = document.getElementById("blipDescription").value
-    blip.rating.comment = document.getElementById("blipRemark").value
-    blip.rating.scope = document.getElementById("blipScope").value
-    blip.rating.author = document.getElementById("blipAuthor").value
-    blip.rating.object.offering = document.getElementById("blipOffering").value
-
-    blip.rating.experience = document.getElementById("blipMaturitySelect").value
-    blip.rating.magnitude = document.getElementById("blipMagnitudeSelect").value
+    // check if the values have changed for the two properties mapped to sector and ring
+    // if they have, the current XY should be reset 
+    const sectorPropertyPath = viewpointToReuse.propertyVisualMaps.sector.property
+    const ringPropertyPath = viewpointToReuse.propertyVisualMaps.ring.property
     let resetXY = false
-    if (blip.rating.ambition != document.getElementById("blipAmbitionSelect").value) {
-        blip.rating.ambition = document.getElementById("blipAmbitionSelect").value
-        resetXY = true
-    }
-    if (blip.rating.object.category != document.getElementById("blipCategorySelect").value) {
-        blip.rating.object.category = document.getElementById("blipCategorySelect").value
-        resetXY = true
-    }
+
+    let originalValue = getNestedPropertyValueFromObject(blip.rating, sectorPropertyPath)
+    let currentValue = document.getElementById(`blip${sectorPropertyPath}`).value
+    if (originalValue != currentValue) { resetXY = true }
+
+    originalValue = getNestedPropertyValueFromObject(blip.rating, ringPropertyPath)
+    currentValue = document.getElementById(`blip${ringPropertyPath}`).value
+    if (originalValue != currentValue) { resetXY = true }
 
     if (resetXY) {
         blip.x = null
         blip.y = null
     }
+
+
+
+    let blipProperties = getBlipProperties(viewpointToReuse.ratingType)
+    for (let i = 0; i < blipProperties.length; i++) {
+        const blipProperty = blipProperties[i]
+        if (blipProperty.property.type == "tags") { } // TODO handle tags
+        else {
+        const inputElementId = `blip${blipProperty.propertyPath}`
+        let value = document.getElementById(inputElementId).value
+        setNestedPropertyValueFromObject(blip.rating, blipProperty.propertyPath, value)
+        }
+    }
+
 
     // close modal editor
     var modal = document.getElementById("modalBlipEditor");
@@ -260,4 +248,24 @@ const getKeyForValue = function (object, value) {
     return Object.keys(object).find(key => object[key] === value);
 }
 
+
+function getBlipProperties(ratingType) {
+    return Object.keys(ratingType.objectType.properties).map(
+        (propertyName) => {
+            return {
+                propertyPath: `object.${propertyName}`,
+                propertyScope: "object",
+                property: ratingType.objectType.properties[propertyName]
+            };
+        }).concat(
+            Object.keys(ratingType.properties).map(
+                (propertyName) => {
+                    return {
+                        propertyPath: `${propertyName}`,
+                        propertyScope: "rating",
+                        property: ratingType.properties[propertyName]
+                    };
+                })
+        );
+}
 

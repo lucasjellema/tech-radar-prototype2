@@ -138,6 +138,8 @@ const blipInSegment = (cartesian, viewpoint, segment) => {
 }
 
 const drawRadarBlip = (blip, d, viewpoint) => {
+
+    
     const propertyMappedToSector = viewpoint.propertyVisualMaps.sector.property
     const blipSector = viewpoint.propertyVisualMaps.sector.valueMap[getNestedPropertyValueFromObject(d.rating, propertyMappedToSector)]
 
@@ -186,10 +188,10 @@ const drawRadarBlip = (blip, d, viewpoint) => {
                 addTooltip(
                     (d) => {
                         let content = `<div>     
-                    ${viewpoint.blipDisplaySettings.showLabels ? "" : d.rating.object.label}
+                    ${viewpoint.blipDisplaySettings.showLabels ? "" : getNestedPropertyValueFromObject(d.rating, viewpoint.propertyVisualMaps.blip.label)}
                     `
-                        if (!viewpoint.blipDisplaySettings.showImages && d.rating.object.image != null) {
-                            content = `${content}<img src="${d.rating.object.image}" width="100px"></img>`
+                        if (!viewpoint.blipDisplaySettings.showImages && getNestedPropertyValueFromObject(d.rating, viewpoint.propertyVisualMaps.blip.image) != null) {
+                            content = `${content}<img src="${getNestedPropertyValueFromObject(d.rating, viewpoint.propertyVisualMaps.blip.image)}" width="100px"></img>`
                         }
                         return `${content}</div>`
                     }
@@ -209,8 +211,8 @@ const drawRadarBlip = (blip, d, viewpoint) => {
     // perhaps the user can also indicate whether colors, shapes and sizes should be visualized (or set to default values instead)
     // and if text font size should decrease/increase with size?
     // TODO: label consisting of two lines 
-    if (viewpoint.blipDisplaySettings.showLabels || (viewpoint.blipDisplaySettings.showImages && d.rating.object.image == null)) {
-        const label = d.rating.object.label.trim()
+    if (viewpoint.blipDisplaySettings.showLabels || (viewpoint.blipDisplaySettings.showImages && getNestedPropertyValueFromObject(d.rating, viewpoint.propertyVisualMaps.blip.image) == null)) {
+        const label = getNestedPropertyValueFromObject(d.rating, viewpoint.propertyVisualMaps.blip.label).trim()
         // TODO find smarter ways than breaking on spaces to distribute label over multiple lines
         let line = label
         let line0
@@ -287,9 +289,9 @@ const drawRadarBlip = (blip, d, viewpoint) => {
         shape.attr("opacity", "0.4");
     }
 
-    if (viewpoint.blipDisplaySettings.showImages && d.rating.object.image != null) {
+    if (viewpoint.blipDisplaySettings.showImages && getNestedPropertyValueFromObject(d.rating, viewpoint.propertyVisualMaps.blip.image) != null) {
         let image = blip.append('image')
-            .attr('xlink:href', d.rating.object.image)
+            .attr('xlink:href', getNestedPropertyValueFromObject(d.rating, viewpoint.propertyVisualMaps.blip.image))
             .attr('width', 80)
             .attr('height', 40)
             .attr("x", "-40") // if on left side, then move to the left, if on the right side then move to the right
@@ -532,7 +534,7 @@ function decorateContextMenuEntry(menuEntry, dimension, value, blip, viewpoint, 
                 drawRadarBlips(viewpoint)
             }
             if (dimension == "shape") {
-                console.log(`clicked ${label}   for ${dimension} for blip: ${blip.rating.object.label}; new value = ${value}`);
+                console.log(`clicked ${label}   for ${dimension} for blip: ${getNestedPropertyValueFromObject(d.rating, viewpoint.propertyVisualMaps.blip.label)}; new value = ${value}`);
                 blip["rating"]["object"]["offering"] = value // getKeyForValue(viewpoint.propertyVisualMaps.shape.valueMap, dimensionSequence)
                 drawRadarBlips(viewpoint)
             }
@@ -642,8 +644,8 @@ function blipWindow(blip, viewpoint) {
         .append("xhtml:body")
         .attr("style", "background-color:#fff4b8; padding:6px; opacity:0.9")
 
-    body.append("h2").text(`Properties for ${blip.rating.object.label}`)
-
+    body.append("h2").text(`Properties for ${getNestedPropertyValueFromObject(blip.rating, viewpoint.propertyVisualMaps.blip.label)}`)
+    
     const ratingType = viewpoint.ratingType
     for (let propertyName in ratingType.objectType.properties) {
         const property = ratingType.objectType.properties[propertyName]

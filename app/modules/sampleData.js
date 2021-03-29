@@ -135,6 +135,8 @@ const viewpoints = [
         , propertyVisualMaps: { // mapping between property values in rating and object on the one hand and the corresponding visual elements on the other sectors, rings, shapes, colors, sizes ;
             // which property value maps to which of visual elements (indicated by their sequence number in th template) 
             // note: the order of elements in these maps drives the order in which color/size/shape elements are shown in legend and context menu
+            blip:{label:"object.label", image:"object.image"},
+
             size: {
                 property: "magnitude", defaultValue:"medium", valueMap: { "tiny": 0, "medium": 1, "large": 2 } // the rating magnitude property drives the size; the values of magnitude are mapped to values for size
             }
@@ -421,6 +423,7 @@ const sample = {
             },
             "ratingType": "technologyAdaption",
             "propertyVisualMaps": {
+                blip:{label:"object.label", image:"object.image"},
                 size: {
                     property: "magnitude", valueMap: { "tiny": 0, "medium": 1, "large": 2 } // the rating magnitude property drives the size; the values of magnitude are mapped to values for size
                 }

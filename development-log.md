@@ -20,6 +20,7 @@
 ## March 29th
 
 - prettify blip editor (table layout) and meta-data driven (except tags and image)
+- handle image in a generic way (meta-data based)
 
 ## March 28th
 -  derive property values on rating and object from sector and ring based on meta-data - instead of hardcoded as in blipEditing.handleBlipDrag)

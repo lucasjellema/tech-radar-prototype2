@@ -21,6 +21,11 @@
 
 - prettify blip editor (table layout) and meta-data driven (except tags and image)
 - handle image in a generic way (meta-data based)
+- introducing: the data viewer - tree view of model, templates, viewpoints and objects
+- select elements in tree data view for download 
+
+### Resources
+- pure JavaScript Tree Control - https://medium.com/metaphorical-web/javascript-treeview-controls-devil-in-the-details-74c252e00ed8
 
 ## March 28th
 -  derive property values on rating and object from sector and ring based on meta-data - instead of hardcoded as in blipEditing.handleBlipDrag)

@@ -1,4 +1,5 @@
-export { getConfiguration, getViewpoint, createBlip, subscribeToRadarRefresh, getState, publishRefreshRadar }
+export { getConfiguration, getViewpoint, getData, createBlip, subscribeToRadarRefresh, getState, publishRefreshRadar }
+import { initializeTree } from './tree.js'
 import { getSampleData } from './sampleData.js'
 
 const RADAR_INDEX_KEY = "RADAR-INDEX"
@@ -19,6 +20,10 @@ let state = {
     editMode: true,
     editType: "viewpoint"  // template or viewpoint-configuration
 
+}
+
+const getData = () => {
+    return data
 }
 
 const getConfiguration = () => {
@@ -177,7 +182,7 @@ function initializeUpload() {
     }
 }
 
-
+let uploadedData
 //TODO support multiple filers, support add/merge instead of replace of files
 async function handleUploadedFiles() {
     if (!this.files.length) {
@@ -186,7 +191,8 @@ async function handleUploadedFiles() {
     } else {
 
         const contents = await this.files[0].text()
-        data = JSON.parse(contents)
+        uploadedData = JSON.parse(contents)
+        initializeTree("filemodelTree", uploadedData,"upload") 
         publishRefreshRadar()
 
     }
@@ -216,7 +222,7 @@ const createViewpointFromTemplate = () => {
 
         const newViewpoint = {}
         newViewpoint.template = JSON.parse(JSON.stringify(getConfiguration()))
-        newViewpoint.name = `Created from of ${getConfiguration().title.text}`
+        newViewpoint.name = `Created as clone of ${getConfiguration().title.text}`
         newViewpoint.blips = []
         newViewpoint.ratingType = {
             objectType: {
@@ -309,7 +315,7 @@ const populateTemplateSelector = () => {
     for (var i = 0; i < selector.options.length + 3; i++) {
         selector.remove(1)
     }
-    if (getState().editType == "template") {
+  //  if (getState().editType == "template") {
         // add options based on data.templates[].title.text
         for (var i = 0; i < data.templates.length; i++) {
             var option = document.createElement("option");
@@ -319,7 +325,7 @@ const populateTemplateSelector = () => {
             option.selected = i == state.currentTemplate && state.editType == "template"
             selector.add(option, null);
         }
-    }
+    //}
     for (var i = 0; i < data.viewpoints.length; i++) {
         var option = document.createElement("option");
 

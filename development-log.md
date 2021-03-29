@@ -17,6 +17,9 @@
 - zoom in on a single sector
 - zoom in on a single ring 
 
+- allow removal of viewpoint, template, object type, rating type, objects of a specific type
+
+
 ## March 29th
 
 - prettify blip editor (table layout) and meta-data driven (except tags and image)

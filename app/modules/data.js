@@ -55,6 +55,7 @@ const initializeFiltersTagsFromURL = () => {
     console.log(`tags ${tagParam}`)
     // default type = plus; if last character == ~ then type is minus, if *  then must
     if (tagParam != null && tagParam.length > 0) {
+        if (getViewpoint().blipDisplaySettings.tagFilter==null  || getViewpoint().blipDisplaySettings.tagFilter.length==0) {getViewpoint().blipDisplaySettings.tagFilter=[]}
         const tags = tagParam.split(',')
         for (let i = 0; i < tags.length; i++) {
             let tag = tags[i]

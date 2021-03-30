@@ -37,8 +37,8 @@ const technologies = [
 
 // these genericRatingProperties are applied to every ratingType
 const genericRatingProperties = {
-    scope: { label: "Scope", description: "The scope or context to which the rating applies" }
-    , author: { label: "Author/Evaluator", description: "The name of the person who made the judgement" }
+    scope: { label: "Scope", description: "The scope or context to which the rating applies" , defaultValue:"Conclusion"}
+    , author: { label: "Author/Evaluator", description: "The name of the person who made the judgement" , defaultValue:"System Generated"}
     , timestamp: { label: "Time of Evaluation", description: "When was this rating defined" }
     , comment: { label: "Comment/Rationale", description: "Additional remark regarding this rating" }
 }

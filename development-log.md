@@ -21,6 +21,9 @@
 
 ## March 30th
 - button to reset tags in filter
+- blip passes filter if all tags are minus and blip possesses none of them
+- filter blips on discrete properties (for now hard coded vendor, offering, ambition, category, scope, author)
+- show occurring values of discrete properties in filter combobox 
 
 
 ## March 29th

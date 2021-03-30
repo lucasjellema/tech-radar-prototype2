@@ -443,13 +443,13 @@ const sample = {
                 , color: { property: "experience", valueMap: { "short": 0, "long": 1, "intermediate": 3, "other": 2 } }
             },
             "blipDisplaySettings": {
-                "showImages": true,
-                "showShapes": false,
-                "showLabels": false,
+                "showImages": false,
+                "showShapes": true,
+                "showLabels": true,
                 "applyShapes": false,
-                "applySizes": true,
+                "applySizes": false,
                 "applyColors": false,
-                "tagFilter": [{ type: "plus", tag: "data" }, { type: "plus", tag: "sql" }, { type: "minus", tag: "nosql" }]
+                "tagFilter": []
             },
             "blips": [
                 {

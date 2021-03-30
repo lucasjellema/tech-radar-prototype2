@@ -63,6 +63,17 @@ const initializeTagsFilter = () => {
         document.getElementById(`removeTag${i}`).addEventListener("click", () => { currentViewpoint.blipDisplaySettings.tagFilter.splice(i, 1); drawRadarBlips(currentViewpoint) })
     }
 
+    let resetFilterButton = document.getElementById("resetFilterButton")
+    if (resetFilterButton) {
+        resetFilterButton.remove()
+    }
+
+    if (currentViewpoint.blipDisplaySettings.tagFilter.length>0) {
+        const container = document.getElementById("resetTagsFilterControlContainer")
+        container.innerHTML = `<input type="button" id="resetFilterButton" name="resetFilter" style="margin-top:10px" title="Remove All Tags" value="Reset Filter"></input>`
+        resetFilterButton = document.getElementById("resetFilterButton")
+        resetFilterButton.addEventListener("click", (e) => { currentViewpoint.blipDisplaySettings.tagFilter =[]; drawRadarBlips(currentViewpoint) })
+    }
     // populate datalist with all unique tag values in all blips
     populateDatalistWithTags()
 

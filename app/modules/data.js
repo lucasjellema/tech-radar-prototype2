@@ -185,7 +185,7 @@ function initializeUpload() {
 }
 
 let uploadedData
-//TODO support multiple filers, support add/merge instead of replace of files
+//TODO support multiple filers
 async function handleUploadedFiles() {
     if (!this.files.length) {
         console.log(`no files selected`)

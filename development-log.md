@@ -19,6 +19,9 @@
 
 - allow removal of viewpoint, template, object type, rating type, objects of a specific type
 
+## March 30th
+- button to reset tags in filter
+
 
 ## March 29th
 

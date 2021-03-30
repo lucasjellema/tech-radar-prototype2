@@ -324,6 +324,10 @@ const sample = {
                             "label": "Fresh",
                             "color": "green",
                             "enabled": true
+                        },                 {
+                            "label": "In Between",
+                            "color": "pink",
+                            "enabled": true
                         },
                         {
                             "label": "Very Mature",
@@ -335,11 +339,7 @@ const sample = {
                             "color": "gray",
                             "enabled": true
                         },
-                        {
-                            "label": "In Between",
-                            "color": "pink",
-                            "enabled": true
-                        },
+       
                         {
                             "label": "Unassigned",
                             "color": "white"
@@ -397,17 +397,17 @@ const sample = {
                             "enabled": false
                         },
                         {
-                            "label": "Label",
+                            "label": "Open Source Software",
                             "shape": "star",
                             "enabled": false
                         },
                         {
-                            "label": "SaaS",
+                            "label": "Other",
                             "shape": "rectangleVertical",
                             "enabled": false
                         },
                         {
-                            "label": "Label",
+                            "label": "Commercial",
                             "shape": "triangle",
                             "enabled": false
                         },
@@ -435,12 +435,12 @@ const sample = {
                 }
 
                 , ring: {
-                    property: "ambition", valueMap: { "hold": 0, "assess": 1, "adopt": 3, "trial": 2 } // the rating ambition property drives the ring; the values of ambition are mapped to values for ring
+                    property: "ambition", valueMap: {"identified":-1, "hold": 0, "assess": 1, "adopt": 3, "trial": 2 } // the rating ambition property drives the ring; the values of ambition are mapped to values for ring
                 }
                 , shape: {
                     property: "object.offering", valueMap: { "oss": 4, "commercial": 6, "other": 5 }
                 }
-                , color: { property: "experience", valueMap: { "short": 0, "long": 1, "intermediate": 3, "other": 2 } }
+                , color: { property: "experience", valueMap: { "short": 0, "intermediate": 1, "long": 2, "other": 3 } }
             },
             "blipDisplaySettings": {
                 "showImages": false,
@@ -519,7 +519,6 @@ const sample = {
                         "object": {
                             "label": "Python",
                             "category": "language",
-                            "vendor": "Microsoft",
                             "image": "data:image/png;base64,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",
                             "homepage": "",
                             "tags": [
@@ -1610,6 +1609,747 @@ const sample = {
                     },
                     "x": -337.94754028320307,
                     "y": -93.19953155517578
+                },
+                {
+                    "id": "44",
+                    "rating": {
+                        "ambition": "hold",
+                        "experience": "medium",
+                        "magnitude": "tiny",
+                        "timestamp": 1617095457371,
+                        "object": {
+                            "label": "Apache Struts",
+                            "category": "libraries",
+                            "offering": "oss",
+                            "vendor": "Apache Software Foundation",
+                            "tags": []
+                        },
+                        "scope": "Conclusion",
+                        "author": "System Generated"
+                    },
+                    "x": -114.78277587890625,
+                    "y": -400.05517578125
+                },
+                {
+                    "id": "45",
+                    "rating": {
+                        "ambition": "adopt",
+                        "experience": "medium",
+                        "magnitude": "medium",
+                        "timestamp": 1617095457371,
+                        "object": {
+                            "label": "Spring Boot",
+                            "category": "libraries",
+                            "offering": "oss",
+                            "tags": []
+                        },
+                        "scope": "Conclusion",
+                        "author": "System Generated"
+                    },
+                    "x": -3.655604362487793,
+                    "y": -155.58407592773438
+                },
+                {
+                    "id": "46",
+                    "rating": {
+                        "ambition": "adopt",
+                        "experience": "long",
+                        "magnitude": "medium",
+                        "timestamp": 1617095457372,
+                        "object": {
+                            "label": "Spring Framework",
+                            "category": "libraries",
+                            "offering": "oss",
+                            "tags": []
+                        },
+                        "scope": "Conclusion",
+                        "author": "System Generated"
+                    },
+                    "x": -48.59051513671875,
+                    "y": -200.78634643554688
+                },
+                {
+                    "id": "47",
+                    "rating": {
+                        "ambition": "assess",
+                        "experience": "short",
+                        "magnitude": "medium",
+                        "timestamp": 1617095457372,
+                        "object": {
+                            "label": "Quarkus",
+                            "category": "libraries",
+                            "offering": "oss",
+                            "vendor": "RedHat",
+                            "tags": []
+                        },
+                        "scope": "Conclusion",
+                        "author": "System Generated"
+                    },
+                    "x": -240.85293579101562,
+                    "y": -244.2025146484375
+                },
+                {
+                    "id": "48",
+                    "rating": {
+                        "experience": "short",
+                        "magnitude": "medium",
+                        "timestamp": 1617095457373,
+                        "object": {
+                            "label": "Micronaut",
+                            "category": "libraries",
+                            "offering": "oss",
+                            "tags": []
+                        },
+                        "scope": "Conclusion",
+                        "author": "System Generated"
+                    },
+                    "x": -267.60125732421875,
+                    "y": -459.31951904296875
+                },
+                {
+                    "id": "49",
+                    "rating": {
+                        "ambition": "adopt",
+                        "experience": "medium",
+                        "magnitude": "medium",
+                        "timestamp": 1617095457373,
+                        "object": {
+                            "label": "Angular",
+                            "category": "libraries",
+                            "offering": "oss",
+                            "tags": []
+                        },
+                        "scope": "Conclusion",
+                        "author": "System Generated"
+                    },
+                    "x": -61.96197509765625,
+                    "y": -86.98501586914062
+                },
+                {
+                    "id": "50",
+                    "rating": {
+                        "ambition": "adopt",
+                        "experience": "medium",
+                        "magnitude": "medium",
+                        "timestamp": 1617095457373,
+                        "object": {
+                            "label": "React",
+                            "category": "libraries",
+                            "offering": "oss",
+                            "tags": []
+                        },
+                        "scope": "Conclusion",
+                        "author": "System Generated"
+                    },
+                    "x": -70.47119140625,
+                    "y": -153.65228271484375
+                },
+                {
+                    "id": "51",
+                    "rating": {
+                        "ambition": "assess",
+                        "experience": "intermediate",
+                        "magnitude": "tiny",
+                        "timestamp": 1617095457374,
+                        "object": {
+                            "label": "Vue.js",
+                            "category": "libraries",
+                            "offering": "oss",
+                            "tags": []
+                        },
+                        "scope": "Conclusion",
+                        "author": "System Generated"
+                    },
+                    "x": -169.43710327148438,
+                    "y": -305.07232666015625
+                },
+                {
+                    "id": "52",
+                    "rating": {
+                        "experience": "medium",
+                        "magnitude": "medium",
+                        "timestamp": 1617095457374,
+                        "object": {
+                            "label": "Svelte",
+                            "category": "libraries",
+                            "offering": "oss",
+                            "tags": []
+                        },
+                        "scope": "Conclusion",
+                        "author": "System Generated"
+                    },
+                    "x": 73.79090881347656,
+                    "y": -487.6058654785156
+                },
+                {
+                    "id": "53",
+                    "rating": {
+                        "experience": "short",
+                        "magnitude": "tiny",
+                        "timestamp": 1617095457374,
+                        "object": {
+                            "label": "Emberjs",
+                            "category": "libraries",
+                            "offering": "oss",
+                            "tags": []
+                        },
+                        "scope": "Conclusion",
+                        "author": "System Generated"
+                    },
+                    "x": -423.9690856933594,
+                    "y": -466.55255126953125
+                },
+                {
+                    "id": "54",
+                    "rating": {
+                        "experience": "intermediate",
+                        "magnitude": "tiny",
+                        "timestamp": 1617095457375,
+                        "object": {
+                            "label": "Storybook",
+                            "category": "libraries",
+                            "offering": "oss",
+                            "tags": []
+                        },
+                        "scope": "Conclusion",
+                        "author": "System Generated"
+                    },
+                    "x": -410.60980224609375,
+                    "y": -416.4179992675781
+                },
+                {
+                    "id": "55",
+                    "rating": {
+                        "ambition": "adopt",
+                        "experience": "medium",
+                        "magnitude": "tiny",
+                        "timestamp": 1617095457375,
+                        "object": {
+                            "label": "Apache Commons",
+                            "category": "libraries",
+                            "offering": "oss",
+                            "vendor": " Apache Software Foundation",
+                            "tags": []
+                        },
+                        "scope": "Conclusion",
+                        "author": "System Generated"
+                    },
+                    "x": -132.5584716796875,
+                    "y": -147.97857666015625
+                },
+                {
+                    "id": "56",
+                    "rating": {
+                        "ambition": "trial",
+                        "experience": "short",
+                        "magnitude": "medium",
+                        "timestamp": 1617096341793,
+                        "object": {
+                            "label": "Azure Purview",
+                            "category": "database",
+                            "offering": "commercial",
+                            "vendor": "Microsoft",
+                            "tags": []
+                        },
+                        "scope": "Conclusion",
+                        "author": "System Generated"
+                    },
+                    "x": 150.37744140625,
+                    "y": -234.36520385742188
+                },
+                {
+                    "id": "57",
+                    "rating": {
+                        "ambition": "adopt",
+                        "experience": "long",
+                        "magnitude": "medium",
+                        "timestamp": 1617096341794,
+                        "object": {
+                            "label": "Azure Data Factory",
+                            "category": "database",
+                            "offering": "commercial",
+                            "vendor": "Microsoft",
+                            "tags": []
+                        },
+                        "scope": "Conclusion",
+                        "author": "System Generated"
+                    },
+                    "x": 110.2667236328125,
+                    "y": -122.44515991210938
+                },
+                {
+                    "id": "58",
+                    "rating": {
+                        "ambition": "adopt",
+                        "experience": "intermediate",
+                        "magnitude": "medium",
+                        "timestamp": 1617096341796,
+                        "object": {
+                            "label": "Azure Databricks",
+                            "category": "database",
+                            "offering": "commercial",
+                            "vendor": "Microsoft",
+                            "tags": []
+                        },
+                        "scope": "Conclusion",
+                        "author": "System Generated"
+                    },
+                    "x": 107.69549560546875,
+                    "y": -72.83163452148438
+                },
+                {
+                    "id": "59",
+                    "rating": {
+                        "ambition": "adopt",
+                        "experience": "long",
+                        "magnitude": "medium",
+                        "timestamp": 1617096341796,
+                        "object": {
+                            "label": "Azure Datalake",
+                            "category": "database",
+                            "offering": "commercial",
+                            "vendor": "Microsoft",
+                            "tags": []
+                        },
+                        "scope": "Conclusion",
+                        "author": "System Generated"
+                    },
+                    "x": 80.67214965820312,
+                    "y": -177.981689453125
+                },
+                {
+                    "id": "60",
+                    "rating": {
+                        "ambition": "assess",
+                        "experience": "short",
+                        "magnitude": "medium",
+                        "timestamp": 1617096341797,
+                        "object": {
+                            "label": "Azure Synapse",
+                            "category": "database",
+                            "offering": "commercial",
+                            "vendor": "Microsoft",
+                            "tags": []
+                        },
+                        "scope": "Conclusion",
+                        "author": "System Generated"
+                    },
+                    "x": 267.48321533203125,
+                    "y": -232.69546508789062
+                },
+                {
+                    "id": "61",
+                    "rating": {
+                        "ambition": "adopt",
+                        "experience": "long",
+                        "magnitude": "tiny",
+                        "timestamp": 1617096341797,
+                        "object": {
+                            "label": "Azure SQL Database",
+                            "category": "database",
+                            "offering": "commercial",
+                            "vendor": "Microsoft",
+                            "tags": []
+                        },
+                        "scope": "Conclusion",
+                        "author": "System Generated"
+                    },
+                    "x": 190.8155517578125,
+                    "y": -104.84425354003906
+                },
+                {
+                    "id": "62",
+                    "rating": {
+                        "ambition": "adopt",
+                        "experience": "intermediate",
+                        "magnitude": "medium",
+                        "timestamp": 1617096341797,
+                        "object": {
+                            "label": "Azure CosmosDB",
+                            "category": "database",
+                            "offering": "commercial",
+                            "vendor": "Azure",
+                            "tags": []
+                        },
+                        "scope": "Conclusion",
+                        "author": "System Generated"
+                    },
+                    "x": 107.34915161132812,
+                    "y": -184.63739013671875
+                },
+                {
+                    "id": "63",
+                    "rating": {
+                        "ambition": "adopt",
+                        "experience": "intermediate",
+                        "magnitude": "tiny",
+                        "timestamp": 1617096341797,
+                        "object": {
+                            "label": "Azure Cache for Redis",
+                            "category": "database",
+                            "offering": "commercial",
+                            "vendor": "Azure",
+                            "tags": []
+                        },
+                        "scope": "Conclusion",
+                        "author": "System Generated"
+                    },
+                    "x": 174.327392578125,
+                    "y": -143.51771545410156
+                },
+                {
+                    "id": "64",
+                    "rating": {
+                        "ambition": "adopt",
+                        "experience": "long",
+                        "magnitude": "tiny",
+                        "timestamp": 1617096341798,
+                        "object": {
+                            "label": "Azure PowerBI",
+                            "category": "database",
+                            "offering": "commercial",
+                            "vendor": "Azure",
+                            "tags": []
+                        },
+                        "scope": "Conclusion",
+                        "author": "System Generated"
+                    },
+                    "x": 134.89425659179688,
+                    "y": -152.50482177734375
+                },
+                {
+                    "id": "65",
+                    "rating": {
+                        "ambition": "trial",
+                        "experience": "intermediate",
+                        "magnitude": "medium",
+                        "timestamp": 1617096341798,
+                        "object": {
+                            "label": "Azure Data Share",
+                            "category": "database",
+                            "offering": "commercial",
+                            "vendor": "Microsoft",
+                            "tags": []
+                        },
+                        "scope": "Conclusion",
+                        "author": "System Generated"
+                    },
+                    "x": 279.201416015625,
+                    "y": -27.707977294921875
+                },
+                {
+                    "id": "66",
+                    "rating": {
+                        "ambition": "assess",
+                        "experience": "medium",
+                        "magnitude": "medium",
+                        "timestamp": 1617096341798,
+                        "object": {
+                            "label": "Azure DataXplorer",
+                            "category": "database",
+                            "offering": "commercial",
+                            "vendor": "Microsoft",
+                            "tags": []
+                        },
+                        "scope": "Conclusion",
+                        "author": "System Generated"
+                    },
+                    "x": 151.04730224609375,
+                    "y": -309.4794921875
+                },
+                {
+                    "id": "67",
+                    "rating": {
+                        "ambition": "trial",
+                        "experience": "long",
+                        "magnitude": "medium",
+                        "timestamp": 1617096341798,
+                        "object": {
+                            "label": "Azure SQL Datawarehouse",
+                            "category": "database",
+                            "offering": "commercial",
+                            "vendor": "Microsoft",
+                            "tags": []
+                        },
+                        "scope": "Conclusion",
+                        "author": "System Generated"
+                    },
+                    "x": 200.0340576171875,
+                    "y": -199.755126953125
+                },
+                {
+                    "id": "68",
+                    "rating": {
+                        "ambition": "identified",
+                        "experience": "medium",
+                        "magnitude": "tiny",
+                        "timestamp": 1617096341798,
+                        "object": {
+                            "label": "Azure HDInsight",
+                            "category": "database",
+                            "offering": "commercial",
+                            "vendor": "Microsoft",
+                            "tags": []
+                        },
+                        "scope": "Conclusion",
+                        "author": "System Generated"
+                    },
+                    "x": 527.4996948242188,
+                    "y": -66.37039184570312
+                },
+                {
+                    "id": "69",
+                    "rating": {
+                        "ambition": "identified",
+                        "experience": "medium",
+                        "magnitude": "tiny",
+                        "timestamp": 1617096341798,
+                        "object": {
+                            "label": "Azure Machine Learning Service",
+                            "category": "database",
+                            "offering": "commercial",
+                            "vendor": "Microsoft",
+                            "tags": []
+                        },
+                        "scope": "Conclusion",
+                        "author": "System Generated"
+                    },
+                    "x": 504.2257385253906,
+                    "y": -156.74551391601562
+                },
+                {
+                    "id": "70",
+                    "rating": {
+                        "ambition": "identified",
+                        "experience": "intermediate",
+                        "magnitude": "medium",
+                        "timestamp": 1617096341799,
+                        "object": {
+                            "label": "Azure Cognitive Services",
+                            "category": "database",
+                            "offering": "commercial",
+                            "vendor": "Microsoft",
+                            "tags": []
+                        },
+                        "scope": "Conclusion",
+                        "author": "System Generated"
+                    },
+                    "x": 492.853759765625,
+                    "y": -238.31826782226562
+                },
+                {
+                    "id": "71",
+                    "rating": {
+                        "ambition": "adopt",
+                        "experience": "long",
+                        "magnitude": "medium",
+                        "timestamp": 1617096341799,
+                        "object": {
+                            "label": "Azure Storage",
+                            "category": "database",
+                            "offering": "commercial",
+                            "vendor": "Microsoft",
+                            "tags": []
+                        },
+                        "scope": "Conclusion",
+                        "author": "System Generated"
+                    },
+                    "x": 192.09854125976562,
+                    "y": -57.337371826171875
+                },
+                {
+                    "id": "72",
+                    "rating": {
+                        "ambition": "identified",
+                        "experience": "medium",
+                        "magnitude": "medium",
+                        "timestamp": 1617096341799,
+                        "object": {
+                            "label": "Azure Container Service",
+                            "category": "infrastructure",
+                            "offering": "commercial",
+                            "vendor": "Microsoft",
+                            "tags": []
+                        },
+                        "scope": "Conclusion",
+                        "author": "System Generated"
+                    }
+                },
+                {
+                    "id": "73",
+                    "rating": {
+                        "ambition": "identified",
+                        "experience": "medium",
+                        "magnitude": "medium",
+                        "timestamp": 1617096341799,
+                        "object": {
+                            "label": "Azure ML Services",
+                            "category": "database",
+                            "offering": "commercial",
+                            "vendor": "Microsoft",
+                            "tags": []
+                        },
+                        "scope": "Conclusion",
+                        "author": "System Generated"
+                    },
+                    "x": 430.6731872558594,
+                    "y": -357.863525390625
+                },
+                {
+                    "id": "74",
+                    "rating": {
+                        "ambition": "identified",
+                        "experience": "medium",
+                        "magnitude": "tiny",
+                        "timestamp": 1617096341799,
+                        "object": {
+                            "label": "Azure Batch AI",
+                            "category": "database",
+                            "offering": "commercial",
+                            "vendor": "Microsoft",
+                            "tags": []
+                        },
+                        "scope": "Conclusion",
+                        "author": "System Generated"
+                    },
+                    "x": 492.60595703125,
+                    "y": -320.66595458984375
+                },
+                {
+                    "id": "75",
+                    "rating": {
+                        "ambition": "identified",
+                        "experience": "medium",
+                        "magnitude": "medium",
+                        "timestamp": 1617096341800,
+                        "object": {
+                            "label": "",
+                            "category": "infrastructure",
+                            "offering": "oss",
+                            "tags": []
+                        },
+                        "scope": "Conclusion",
+                        "author": "System Generated"
+                    }
+                },
+                {
+                    "id": "76",
+                    "rating": {
+                        "ambition": "identified",
+                        "experience": "medium",
+                        "magnitude": "medium",
+                        "timestamp": 1617096341800,
+                        "object": {
+                            "label": "",
+                            "category": "infrastructure",
+                            "offering": "oss",
+                            "tags": []
+                        },
+                        "scope": "Conclusion",
+                        "author": "System Generated"
+                    }
+                },
+                {
+                    "id": "77",
+                    "rating": {
+                        "ambition": "identified",
+                        "experience": "medium",
+                        "magnitude": "medium",
+                        "timestamp": 1617096341800,
+                        "object": {
+                            "label": "",
+                            "category": "infrastructure",
+                            "offering": "oss",
+                            "tags": []
+                        },
+                        "scope": "Conclusion",
+                        "author": "System Generated"
+                    }
+                },
+                {
+                    "id": "78",
+                    "rating": {
+                        "ambition": "identified",
+                        "experience": "medium",
+                        "magnitude": "medium",
+                        "timestamp": 1617096341800,
+                        "object": {
+                            "label": "",
+                            "category": "infrastructure",
+                            "offering": "oss",
+                            "tags": []
+                        },
+                        "scope": "Conclusion",
+                        "author": "System Generated"
+                    }
+                },
+                {
+                    "id": "79",
+                    "rating": {
+                        "ambition": "identified",
+                        "experience": "medium",
+                        "magnitude": "medium",
+                        "timestamp": 1617096341800,
+                        "object": {
+                            "label": "",
+                            "category": "infrastructure",
+                            "offering": "oss",
+                            "tags": []
+                        },
+                        "scope": "Conclusion",
+                        "author": "System Generated"
+                    }
+                },
+                {
+                    "id": "80",
+                    "rating": {
+                        "ambition": "identified",
+                        "experience": "medium",
+                        "magnitude": "medium",
+                        "timestamp": 1617096341801,
+                        "object": {
+                            "label": "",
+                            "category": "infrastructure",
+                            "offering": "oss",
+                            "tags": []
+                        },
+                        "scope": "Conclusion",
+                        "author": "System Generated"
+                    }
+                },
+                {
+                    "id": "81",
+                    "rating": {
+                        "ambition": "identified",
+                        "experience": "medium",
+                        "magnitude": "medium",
+                        "timestamp": 1617096341801,
+                        "object": {
+                            "label": "",
+                            "category": "infrastructure",
+                            "offering": "oss",
+                            "tags": []
+                        },
+                        "scope": "Conclusion",
+                        "author": "System Generated"
+                    }
+                },
+                {
+                    "id": "82",
+                    "rating": {
+                        "ambition": "identified",
+                        "experience": "medium",
+                        "magnitude": "medium",
+                        "timestamp": 1617096341801,
+                        "object": {
+                            "label": "",
+                            "category": "infrastructure",
+                            "offering": "oss",
+                            "tags": []
+                        },
+                        "scope": "Conclusion",
+                        "author": "System Generated"
+                    }
                 }
             ]
         }

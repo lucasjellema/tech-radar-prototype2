@@ -25,6 +25,8 @@
 - filter blips on discrete properties (for now hard coded vendor, offering, ambition, category, scope, author)
 - show occurring values of discrete properties in filter combobox 
 - define id values for viewpoints (to allow them to be identified through URLs) amis-tech-radar-2021 and "emerging-tech-trends"
+- select viewpoint based on query parameter viewpoint (http://localhost:3000/?viewpoint=amis-tech-radar-2021&tags=database,oracle~)
+- set initial filter based on query parameter tags ; comma separated values; use ~(minus) and * (must) qualifiers 
  
 
 ### Resources

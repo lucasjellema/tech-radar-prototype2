@@ -1,4 +1,4 @@
-export { getConfiguration, getViewpoint, getData, createBlip, subscribeToRadarRefresh, getState, publishRefreshRadar }
+export { initializeViewpointFromURL, getConfiguration, getViewpoint, getData, createBlip, subscribeToRadarRefresh, getState, publishRefreshRadar }
 import { initializeTree } from './tree.js'
 import { getSampleData } from './sampleData.js'
 
@@ -35,7 +35,22 @@ const getViewpoint = () => {
     return data.viewpoints[state.currentViewpoint]
 }
 
+const initializeViewpointFromURL = () => {
+    const params = new URLSearchParams(window.location.search)
+    console.log(`query parameters ${params.get('viewpoint')}`)
+    const viewpointId = params.get('viewpoint')
+    if (viewpointId!=null){
+        // find viewpoint with id and when found - set currentViewpoint and edittype
+        for (let i=0; i<data.viewpoints.length; i++) {
+            if (data.viewpoints[i].id == viewpointId) {
+                state.currentViewpoint=i
+                state.editType = "viewpoint"
+            }
+        }
 
+    }
+
+} 
 
 const getState = () => {
     return state

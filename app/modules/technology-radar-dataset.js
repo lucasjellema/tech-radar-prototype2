@@ -8,8 +8,8 @@ const getDataSet = () => {
 const genericRatingProperties = {
     scope: { label: "Scope", description: "The scope or context to which the rating applies" , defaultValue:"Conclusion"}
     , author: { label: "Author/Evaluator", description: "The name of the person who made the judgement" , defaultValue:"System Generated"}
-    , timestamp: { label: "Time of Evaluation", description: "When was this rating defined" }
-    , comment: { label: "Comment/Rationale", description: "Additional remark regarding this rating" }
+    , timestamp: { label: "Time of Evaluation", description: "When was this rating defined" , type:"time", readOnly:true}
+    , comment: { label: "Comment/Rationale", description: "Additional remark regarding this rating" , type:"text"}
 }
 
 const model =
@@ -57,9 +57,7 @@ const model =
                     , defaultValue: "infrastructure"
                 }
             }
-        },
-        "consultant": { name: "consultant", label: "Consultant" },
-        "workitem": { name: "workitem", label: "Work Item" }
+        }
 
     }
 }
@@ -89,16 +87,7 @@ model.ratingTypes =
 
                 }, genericRatingProperties)
     }
-    , cvRating: { label:"CV Rating", objectType: "technology", properties: [] }
-    , allocationPipeline: { objectType: "consultant", properties: [] }
-    , progressStatus: { objectType: "workitem", properties: [] }
 }
-
-
-// generate a viewpoint: select radar template, select rating type (and indirect object type), define filter - to restrict objects & ratings)
-//                       select viewpoint template - which defines mapping of properties to visual characteristics (sector, ring, shape, color, size, ..)
-//                       define viewpoint properties: title, description, visual overrides
-
 
 
 

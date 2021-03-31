@@ -1,8 +1,8 @@
 
 import { cartesianFromPolar, polarFromCartesian, segmentFromCartesian } from './drawingUtilities.js'
-import { getNestedPropertyValueFromObject, setNestedPropertyValueFromObject } from './utils.js'
+import { getNestedPropertyValueFromObject, setNestedPropertyValueOnObject,getRatingTypeProperties } from './utils.js'
 import { getViewpoint, getData } from './data.js'
-export { handleBlipDrag, populateBlipEditor }
+export { handleBlipDrag, launchBlipEditor }
 
 const populateSelect = (selectElementId, data, defaultValue = null) => { // data is array objects with two properties : label and value
     let dropdown = document.getElementById(selectElementId);
@@ -77,7 +77,7 @@ const createAndPopulateDataList = (listId, propertyPath, blips) => {
 }
 
 
-const populateBlipEditor = (blip, viewpoint, drawRadarBlips) => {
+const launchBlipEditor = (blip, viewpoint, drawRadarBlips) => {
     var modal = document.getElementById("modalBlipEditor");
     modal.style.display = "block";
     const tbl = document.getElementById("blipEditorTable")
@@ -90,13 +90,14 @@ const populateBlipEditor = (blip, viewpoint, drawRadarBlips) => {
 
 
     // TODO cater for tags
-    let blipProperties = getBlipProperties(ratingType)
+    let blipProperties = getRatingTypeProperties(ratingType,getData().model)
 
     let html = ''
     for (let i = 0; i < blipProperties.length; i++) {
         const blipProperty = blipProperties[i]
         let value = getNestedPropertyValueFromObject(blip.rating, blipProperty.propertyPath)
-        if (value == "undefined") value = ""
+        if (value==null) value=""
+
         const inputElementId = `blip${blipProperty.propertyPath}`
         let inputElement
         if (blipProperty.property.allowableValues != null && blipProperty.property.allowableValues.length > 0) // select
@@ -187,14 +188,14 @@ const saveBlipEdit = () => {
 
 
 
-    let blipProperties = getBlipProperties(viewpointToReuse.ratingType)
+    let blipProperties = getRatingTypeProperties(viewpointToReuse.ratingType,getData().model)
     for (let i = 0; i < blipProperties.length; i++) {
         const blipProperty = blipProperties[i]
-        if (blipProperty.property.type == "tags") { } // TODO handle tags
+        if (blipProperty.property.type == "tags") { } // TODO handle tags (currently tags are saved directly on the blip)
         else {
             const inputElementId = `blip${blipProperty.propertyPath}`
             let value = document.getElementById(inputElementId).value
-            setNestedPropertyValueFromObject(blip.rating, blipProperty.propertyPath, value)
+            setNestedPropertyValueOnObject(blip.rating, blipProperty.propertyPath, value)
         }
     }
 
@@ -262,11 +263,11 @@ const handleBlipDrag = function (blipDragEvent, viewpoint) {
 
     const propertyMappedToSector = viewpoint.propertyVisualMaps.sector.property
     const propertyValueDerivedFromSector = getKeyForValue(viewpoint.propertyVisualMaps.sector.valueMap, dropSegment.sector) // "find category value mapped to the sector value of dropSector" 
-    setNestedPropertyValueFromObject(blip.rating, propertyMappedToSector, propertyValueDerivedFromSector)
+    setNestedPropertyValueOnObject(blip.rating, propertyMappedToSector, propertyValueDerivedFromSector)
 
     const propertyMappedToRing = viewpoint.propertyVisualMaps.ring.property
     const propertyValueDerivedFromRing = getKeyForValue(viewpoint.propertyVisualMaps.ring.valueMap, dropSegment.ring) // "find category value mapped to the sector value of dropSector" 
-    setNestedPropertyValueFromObject(blip.rating, propertyMappedToRing, propertyValueDerivedFromRing)
+    setNestedPropertyValueOnObject(blip.rating, propertyMappedToRing, propertyValueDerivedFromRing)
 
 }
 
@@ -276,23 +277,5 @@ const getKeyForValue = function (object, value) {
 }
 
 
-function getBlipProperties(ratingType) {
-    return Object.keys(ratingType.objectType.properties).map(
-        (propertyName) => {
-            return {
-                propertyPath: `object.${propertyName}`,
-                propertyScope: "object",
-                property: ratingType.objectType.properties[propertyName]
-            };
-        }).concat(
-            Object.keys(ratingType.properties).map(
-                (propertyName) => {
-                    return {
-                        propertyPath: `${propertyName}`,
-                        propertyScope: "rating",
-                        property: ratingType.properties[propertyName]
-                    };
-                })
-        );
-}
+
 

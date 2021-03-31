@@ -38,6 +38,7 @@
 - edit emerging-technologies-dataset (incl properties)
 - edit technology-radar-dataset
 - support text as property type (with textarea in blip editor)
+- state supports defaultSettings - a rating & object with default values the user wants to have used for newly created ratings and objects; editing the default Settings is done from context menu on radar title (similar to create blip)
 
 ## March 30th
 - button to reset tags in filter

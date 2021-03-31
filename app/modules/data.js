@@ -1,8 +1,10 @@
-export { initializeViewpointFromURL, initializeFiltersTagsFromURL, getConfiguration, getViewpoint, getData, createBlip, subscribeToRadarRefresh, getState, publishRefreshRadar }
+export { initializeViewpointFromURL, initializeFiltersTagsFromURL, getDefaultSettingsBlip,setDefaultSettingsBlip, getConfiguration, getViewpoint, getData, createBlip, subscribeToRadarRefresh, getState, publishRefreshRadar }
 import { initializeTree } from './tree.js'
 import { getSampleData } from './sampleData.js'
 import { getDataSet as getEmergingDataSource} from './emerging-technologies-dataset.js'
 import { getDataSet as getTechnologyRadarDataSource} from './technology-radar-dataset.js'
+import { uuidv4, getNestedPropertyValueFromObject, setNestedPropertyValueOnObject,getRatingTypeProperties } from './utils.js'
+
 
 const RADAR_INDEX_KEY = "RADAR-INDEX"
 
@@ -24,6 +26,17 @@ let state = {
     editType: "viewpoint"  // template or viewpoint-configuration
 
 }
+
+const getDefaultSettingsBlip = () => {
+   if (state.defaultSettings == null) {
+    state.defaultSettings= { rating:{object:{label:"Default"}}}
+   }
+   return state.defaultSettings
+}
+const setDefaultSettingsBlip = (defaultBlip) => {
+    state.defaultSettings = defaultBlip
+ }
+ 
 
 const getData = () => {
     return data
@@ -169,22 +182,29 @@ initializeDatasetFromURL()
 //let radarIndex = { templates: [{ title: encodeURI(config.title.text), description: "", lastupdate: "20210310T192400" }], objects: [] }
 
 // TODO use default values for all properties as defined in the meta-model
+// create blip from meta-data and from default blip
 const createBlip = () => {
     let newRating = {
-        timestamp: Date.now()
-        , scope: "Conclusion"
-        , comment: "no comment yet"
-        , author: `system generated at ${Date.now()}`
-        , object: { label: `NEW${getViewpoint().blips.length} ${Date.now()}`, category: "infrastructure", homepage: null, image: null }
-        , magnitude: "medium"
-        , ambition: "trial"
+        id: uuidv4,
+        timestamp: Date.now()        
+        , object: { id: uuidv4}        
     }
+    let properties = getRatingTypeProperties(getViewpoint().ratingType,getData().model)
+
+    for (let i = 0; i < properties.length; i++) {
+        const property = properties[i]
+        let value = getNestedPropertyValueFromObject(getState().defaultSettings?.rating, property.propertyPath)
+        if (value==null) value=""
+        setNestedPropertyValueOnObject(newRating, property.propertyPath, value)
+    }
+    newRating.timestamp= Date.now()
+    newRating.object.label = "NEW"
     let blip = { id: `${getViewpoint().blips.length}`, rating: newRating }
     let blipCount = getViewpoint().blips.push(blip)
     console.log(`after creating the blip the count is now ${blipCount} == ${getViewpoint().blips.length}`)
     return blip
-
 }
+
 
 const saveDataToLocalStorage = () => {
     localStorage.setItem(RADAR_INDEX_KEY, JSON.stringify(data));

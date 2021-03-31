@@ -1,5 +1,5 @@
 import { cartesianFromPolar, polarFromCartesian, segmentFromCartesian } from './drawingUtilities.js'
-import { populateBlipEditor } from './blipEditing.js'
+import { launchBlipEditor } from './blipEditing.js'
 import { getViewpoint, getData } from './data.js'
 import { getNestedPropertyValueFromObject } from './utils.js'
 export { drawRadarBlips }
@@ -769,8 +769,7 @@ function blipWindow(blip, viewpoint) {
             .on("click", () => {
                 svg.select("foreignObject").remove();
 
-                // TODO invoke function that popupates the blip editor
-                populateBlipEditor(blip, viewpoint, drawRadarBlips)
+                launchBlipEditor(blip, viewpoint, drawRadarBlips)
             })
             .html("Edit Blip")
             buttonDiv.append("button")

@@ -392,6 +392,9 @@ td.propertyLabel {
                     <input type="file" id="fileElem" multiple accept="application/json,text/*" style="display:none">
                 </div>
                 <br></br>
+                <div>
+                    <input type="button" id="editDefaultBlip" name="editDefaultBlip" value="Edit Default Settings">
+                </div>
                 <hr>
                 </hr>
                 <div>
@@ -419,9 +422,9 @@ td.propertyLabel {
     <script type="module">
         import { drawRadar, subscribeToRadarEvents } from './modules/radar.js';
         import { drawRadarBlips } from './modules/radarBlips.js';
-        import { initializeViewpointFromURL,initializeFiltersTagsFromURL, getConfiguration, getViewpoint, createBlip, getState, subscribeToRadarRefresh } from './modules/data.js';
+        import { initializeViewpointFromURL,initializeFiltersTagsFromURL, getDefaultSettingsBlip, setDefaultSettingsBlip, getConfiguration, getViewpoint, createBlip, getState, subscribeToRadarRefresh } from './modules/data.js';
         import { makeDraggable } from './modules/blipDrag.js'
-        import { handleBlipDrag, populateBlipEditor } from './modules/blipEditing.js'
+        import { handleBlipDrag, launchBlipEditor } from './modules/blipEditing.js'
 
         initializeViewpointFromURL()
         initializeFiltersTagsFromURL()
@@ -445,9 +448,13 @@ td.propertyLabel {
         })
         subscribeToRadarEvents((event) => {
             if (event.type == "blipCreation") {
-                //console.log(`radar event ${JSON.stringify(event)}`)
                 const blip = createBlip()
-                populateBlipEditor(blip, getViewpoint(), drawRadarBlips)
+                launchBlipEditor(blip, getViewpoint(), drawRadarBlips)
+            }
+
+            if (event.type == "editBlipDefaults") {
+                const blip = getDefaultSettingsBlip()
+                launchBlipEditor(blip, getViewpoint(), (viewpoint) => {setDefaultSettingsBlip(blip)})
             }
         })
 

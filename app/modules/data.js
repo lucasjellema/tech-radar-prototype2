@@ -174,9 +174,10 @@ const initializeDatasetFromURL = () => {
         if (source=="emerging") { data = getEmergingDataSource()}
         if (source=="techradar") { data = getTechnologyRadarDataSource()}
     } else {
-        data = getSampleData()
-        
+        data = getSampleData()       
     }
+    // add uuid to objects and ratings - just to be sure
+    data.viewpoints.forEach((viewpoint) => addUUIDtoBlips(viewpoint.blips))    
 }
 initializeDatasetFromURL()
 //let radarIndex = { templates: [{ title: encodeURI(config.title.text), description: "", lastupdate: "20210310T192400" }], objects: [] }
@@ -185,9 +186,9 @@ initializeDatasetFromURL()
 // create blip from meta-data and from default blip
 const createBlip = () => {
     let newRating = {
-        id: uuidv4,
+        id: uuidv4(),
         timestamp: Date.now()        
-        , object: { id: uuidv4}        
+        , object: { id: uuidv4()}        
     }
     let properties = getRatingTypeProperties(getViewpoint().ratingType,getData().model)
 
@@ -274,11 +275,18 @@ async function handleUploadedFiles() {
             data.model = Object.assign(data.model, uploadedData.model)
             data.templates = data.templates.concat(uploadedData.templates)
             data.viewpoints = data.viewpoints.concat(uploadedData.viewpoints)
+            // set id values on all ratings and objects that currently do not have them
+            // probably temporary function until all data sets have id values
+                // add uuid to objects and ratings - just to be sure
+    data.viewpoints.forEach((viewpoint) => addUUIDtoBlips(viewpoint.blips))    
             if (uploadedData.objects != null && uploadedData.objects.length > 0) {
                 // merge the arrays of uploaded objects in with the existing objects per object type
                 for (let i = 0; i < Object.keys(uploadedData.objects).length; i++) {
                     data.objects[Object.keys(uploadedData.objects)[i]] =
-                        uploadedData.objects[Object.keys(uploadedData.objects)[i]].concat(data.objects[Object.keys(uploadedData.objects)[i]])
+                        uploadedData.objects[Object.keys(uploadedData.objects)[i]].
+                               concat(data.objects[Object.keys(uploadedData.objects)[i]])
+
+                     data.objects[Object.keys(uploadedData.objects)[i]].forEach((object) => {if (object.id == null) {object.id= uuidv4()}})           
                 }
             }
 
@@ -500,4 +508,11 @@ const publishRefreshRadar = () => { subscribers.forEach((subscriber) => { subscr
 initializeUpload()
 subscribeToRadarRefresh(populateTemplateSelector)
 populateTemplateSelector()
+
+function addUUIDtoBlips(blips) {
+    blips.forEach((blip) => {
+        if (blip.rating?.id == null) { blip.rating.id = uuidv4()} ;
+        if (blip.rating?.object.id == null) { blip.rating.object.id = uuidv4()} 
+    })
+}
 

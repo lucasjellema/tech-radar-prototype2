@@ -40,6 +40,7 @@
 - support text as property type (with textarea in blip editor)
 - state supports defaultSettings - a rating & object with default values the user wants to have used for newly created ratings and objects; editing the default Settings is done from context menu on radar title (similar to create blip)
 - shuffle-button: reset all blip-positions (and have new one rederived)
+- generate id (UUID) in new blips (object and rating), in initially loaded datasets and in uploaded files
 
 
 ## March 30th

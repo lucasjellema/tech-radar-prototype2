@@ -42,7 +42,8 @@
 - shuffle-button: reset all blip-positions (and have new one rederived)
 - generate id (UUID) in new blips (object and rating), in initially loaded datasets and in uploaded files
 - add delete blip option in context menu for blip (and perform the delete)
-
+- add clone blip option in context menu for blip (and perform the clone - currently a deep copy of blip, rating and object; it seems that perhaps the clone should create a new rating for the same object?!
+   
 
 ## March 30th
 - button to reset tags in filter

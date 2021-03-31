@@ -1,7 +1,7 @@
 import { cartesianFromPolar, polarFromCartesian, segmentFromCartesian } from './drawingUtilities.js'
 import { launchBlipEditor } from './blipEditing.js'
 import { getViewpoint, getData } from './data.js'
-import { getNestedPropertyValueFromObject } from './utils.js'
+import { getNestedPropertyValueFromObject,uuidv4 } from './utils.js'
 export { drawRadarBlips }
 
 
@@ -552,6 +552,7 @@ const menu = (x, y, d, blip, viewpoint) => {
         .style("font-weight", "normal")
         .attr("transform", "scale(0.7,1)")
 
+// TODO: does clone blip mean clone rating (but for the same existing object?) it probably does; current implementation is full copy - object and rating
     iconsBox.append("text")
         .text("Clone Blip")
         .attr("x", 0)
@@ -560,7 +561,16 @@ const menu = (x, y, d, blip, viewpoint) => {
         .style("font-size", "12px")
         .style("font-weight", "bold")
         .attr("transform", `translate(0, ${30 + 0 * entryHeight})`)
-    iconsBox.append("text")
+        .attr("class", "clickableProperty")
+        .on("click", () => {
+            const newBlip = JSON.parse(JSON.stringify(d))
+            viewpoint.blips.push(newBlip)
+            newBlip.x = newBlip.x!=null? newBlip.x + 15: null
+            newBlip.y = newBlip.y!=null? newBlip.y + 15: null
+            newBlip.id = uuidv4()            
+            drawRadarBlips(viewpoint)
+        })
+iconsBox.append("text")
         .text("Delete Blip")
         .attr("x", 0)
         .style("fill", "#000")

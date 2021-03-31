@@ -23,14 +23,14 @@
 - assign unique identifiers to objects and ratings (to allow merging)
 
 - update timestamp voor rating als blip is geëdit
-- default values in state voor author, scope 
 - have input field for entering color value (in addition to color picker) with datalist / combobox with common colors
 - ?? record blip coordinates as polar coordinates
 - define UUID for objects and ratings
 - define "start angle" for sectors (to get tilting/rotating effect)
-- shuffle-button: reset all blip-positions (and have new one rederived)
-- auto-map for radar: derive sectors from distinct property values (and angle from number of entries for each value), derive rings from distinct property values (and width from number of entries for each value); user can edit labels and sequence in radar editor
 
+- auto-map for radar: derive sectors from distinct property values (and angle from number of entries for each value), derive rings from distinct property values (and width from number of entries for each value); user can edit labels and sequence in radar editor
+- have defaults associated with viewpoint; currently, defaults are created for the current viewpoint and do not synchronize with a new viewpoint
+- store state (including defaults) in localstorage (to be reinstated in a later session)
 
 ## March 31st
 
@@ -39,6 +39,8 @@
 - edit technology-radar-dataset
 - support text as property type (with textarea in blip editor)
 - state supports defaultSettings - a rating & object with default values the user wants to have used for newly created ratings and objects; editing the default Settings is done from context menu on radar title (similar to create blip)
+- shuffle-button: reset all blip-positions (and have new one rederived)
+
 
 ## March 30th
 - button to reset tags in filter

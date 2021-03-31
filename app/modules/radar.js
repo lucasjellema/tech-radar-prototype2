@@ -523,5 +523,18 @@ const radarMenu = (x, y, d, blip, viewpoint) => {
             // create blip
             publishRadarEvent({ type: "editBlipDefaults" })
         })
+        menuOptions.append("text")
+        .text(`Shuffle Blips`)
+        .attr("transform", `translate(0, ${50})`)
+        .style("fill", "blue")
+        .style("font-family", "Arial, Helvetica")
+        .style("font-size", "15px")
+        .style("font-weight", "bold")
+        .on("click", (e) => {
+            console.log(`Shuffle Blips`)
+            d3.select('.radar-context-menu').remove();
+            // create blip
+            publishRadarEvent({ type: "shuffleBlips" })
+        })
 
     }

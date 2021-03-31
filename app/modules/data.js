@@ -1,4 +1,4 @@
-export { initializeViewpointFromURL, initializeFiltersTagsFromURL, getDefaultSettingsBlip,setDefaultSettingsBlip, getConfiguration, getViewpoint, getData, createBlip, subscribeToRadarRefresh, getState, publishRefreshRadar }
+export { initializeViewpointFromURL, initializeFiltersTagsFromURL, getDefaultSettingsBlip,setDefaultSettingsBlip,shuffleBlips , getConfiguration, getViewpoint, getData, createBlip, subscribeToRadarRefresh, getState, publishRefreshRadar }
 import { initializeTree } from './tree.js'
 import { getSampleData } from './sampleData.js'
 import { getDataSet as getEmergingDataSource} from './emerging-technologies-dataset.js'
@@ -205,6 +205,12 @@ const createBlip = () => {
     return blip
 }
 
+
+const shuffleBlips = () => {
+    console.log(`shuffleblips`)
+    getViewpoint().blips.forEach((blip) => {blip.x = null; blip.y=null})
+    publishRefreshRadar()
+}
 
 const saveDataToLocalStorage = () => {
     localStorage.setItem(RADAR_INDEX_KEY, JSON.stringify(data));

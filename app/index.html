@@ -422,7 +422,7 @@ td.propertyLabel {
     <script type="module">
         import { drawRadar, subscribeToRadarEvents } from './modules/radar.js';
         import { drawRadarBlips } from './modules/radarBlips.js';
-        import { initializeViewpointFromURL,initializeFiltersTagsFromURL, getDefaultSettingsBlip, setDefaultSettingsBlip, getConfiguration, getViewpoint, createBlip, getState, subscribeToRadarRefresh } from './modules/data.js';
+        import { initializeViewpointFromURL,initializeFiltersTagsFromURL, getDefaultSettingsBlip, setDefaultSettingsBlip, shuffleBlips , getConfiguration, getViewpoint, createBlip, getState, subscribeToRadarRefresh } from './modules/data.js';
         import { makeDraggable } from './modules/blipDrag.js'
         import { handleBlipDrag, launchBlipEditor } from './modules/blipEditing.js'
 
@@ -455,6 +455,10 @@ td.propertyLabel {
             if (event.type == "editBlipDefaults") {
                 const blip = getDefaultSettingsBlip()
                 launchBlipEditor(blip, getViewpoint(), (viewpoint) => {setDefaultSettingsBlip(blip)})
+            }
+
+            if (event.type == "shuffleBlips") {
+                shuffleBlips ()
             }
         })
 

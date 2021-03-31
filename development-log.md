@@ -43,6 +43,7 @@
 - generate id (UUID) in new blips (object and rating), in initially loaded datasets and in uploaded files
 - add delete blip option in context menu for blip (and perform the delete)
 - add clone blip option in context menu for blip (and perform the clone - currently a deep copy of blip, rating and object; it seems that perhaps the clone should create a new rating for the same object?!
+- position context menu shifted to the left or to the top when a blip near the edge is right mouse clicked; fix removing context menu when mouse leaves on the right side
    
 
 ## March 30th

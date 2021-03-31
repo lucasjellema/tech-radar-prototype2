@@ -11,13 +11,33 @@
   - drill down on infrastructure and get radar using vendors as sectors
   - drill down on infrastructure and get sectors for ci/cd, storage, container management, networking, security and other child-categories
   - define drill down/aggregation paths - category => vendor; category => selected tag value;  category => offering type
-
-- add values for discrete properties to combobox for filter tags - and filter on these values (for example support filtering on category, vendor, offering)
   
 - zoom in on a single sector
 - zoom in on a single ring 
 
+- allow remove blip
 - allow removal of viewpoint, template, object type, rating type, objects of a specific type
+
+- blip zoom "slider" - apply scaling factor to all the blips (not to any other element)
+- generate blips in Viewpoint for all objects | selected objects
+- assign unique identifiers to objects and ratings (to allow merging)
+
+- update timestamp voor rating als blip is geëdit
+- default values in state voor author, scope 
+- have input field for entering color value (in addition to color picker) with datalist / combobox with common colors
+- ?? record blip coordinates as polar coordinates
+- define UUID for objects and ratings
+- define "start angle" for sectors (to get tilting/rotating effect)
+- shuffle-button: reset all blip-positions (and have new one rederived)
+- auto-map for radar: derive sectors from distinct property values (and angle from number of entries for each value), derive rings from distinct property values (and width from number of entries for each value); user can edit labels and sequence in radar editor
+
+
+## March 31st
+
+- select preloaded dataset through URL query parameter source
+- edit emerging-technologies-dataset (incl properties)
+- edit technology-radar-dataset
+- support text as property type (with textarea in blip editor)
 
 ## March 30th
 - button to reset tags in filter
@@ -28,7 +48,6 @@
 - select viewpoint based on query parameter viewpoint (http://localhost:3000/?viewpoint=amis-tech-radar-2021&tags=database,oracle~)
 - set initial filter based on query parameter tags ; comma separated values; use ~(minus) and * (must) qualifiers 
  
-
 ### Resources
 - How to get query string values in JavaScript with URLSearchParams - https://flaviocopes.com/urlsearchparams/
 

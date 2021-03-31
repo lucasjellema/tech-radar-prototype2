@@ -1,6 +1,8 @@
 export { initializeViewpointFromURL, initializeFiltersTagsFromURL, getConfiguration, getViewpoint, getData, createBlip, subscribeToRadarRefresh, getState, publishRefreshRadar }
 import { initializeTree } from './tree.js'
 import { getSampleData } from './sampleData.js'
+import { getDataSet as getEmergingDataSource} from './emerging-technologies-dataset.js'
+import { getDataSet as getTechnologyRadarDataSource} from './technology-radar-dataset.js'
 
 const RADAR_INDEX_KEY = "RADAR-INDEX"
 
@@ -71,8 +73,9 @@ const initializeFiltersTagsFromURL = () => {
             getViewpoint().blipDisplaySettings.tagFilter.push({ type: type, tag: tag })
         }
     }
-
 }
+
+
 
 const getState = () => {
     return state
@@ -147,10 +150,23 @@ const getFreshTemplate = () => {
     return freshTemplate
 }
 
-data = getSampleData()
 //data.templates.push(freshTemplate)
-let config = data.templates[0]
-let radarIndex = { templates: [{ title: encodeURI(config.title.text), description: "", lastupdate: "20210310T192400" }], objects: [] }
+//let config = data.templates[0]
+
+const initializeDatasetFromURL = () => {
+    const params = new URLSearchParams(window.location.search)
+    const source = params.get('source')
+    console.log(`source ${source}`)
+    if (source != null && source.length > 0) {
+        if (source=="emerging") { data = getEmergingDataSource()}
+        if (source=="techradar") { data = getTechnologyRadarDataSource()}
+    } else {
+        data = getSampleData()
+        
+    }
+}
+initializeDatasetFromURL()
+//let radarIndex = { templates: [{ title: encodeURI(config.title.text), description: "", lastupdate: "20210310T192400" }], objects: [] }
 
 // TODO use default values for all properties as defined in the meta-model
 const createBlip = () => {

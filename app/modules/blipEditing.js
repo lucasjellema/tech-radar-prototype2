@@ -89,7 +89,6 @@ const populateBlipEditor = (blip, viewpoint, drawRadarBlips) => {
     }
 
 
-    // TODO cater for IMAGE
     // TODO cater for tags
     let blipProperties = getBlipProperties(ratingType)
 
@@ -106,6 +105,9 @@ const populateBlipEditor = (blip, viewpoint, drawRadarBlips) => {
             createAndPopulateDataList(`${inputElementId}List`, `${blipProperty.propertyPath}`, viewpoint.blips)
             inputElement = `<input id="${inputElementId}" list="${inputElementId}List" value="${value}"></input>`
         }
+        else if (blipProperty.property.type == "text") {
+            inputElement = `<textarea id="${inputElementId}" rows="2" columns="75" value="${value}"></textarea>`
+        }
         else {
             inputElement = `<input id="${inputElementId}" type="text" value="${value}"></input>`
         }
@@ -114,7 +116,7 @@ const populateBlipEditor = (blip, viewpoint, drawRadarBlips) => {
             <textarea id="${inputElementId}ImagePasteArea" placeholder="Paste Image" title="Paste Image for ${blipProperty.property.label} here" rows="1" cols="15"></textarea>`
 
         }
-
+        // distribute fields over two columns in the property table
         html = `${html}${i % 2 == 0 ? "<tr>" : ""}<td class="propertyLabel"><label for="${inputElementId}">${blipProperty.property.label}</label></td>
                      <td>${inputElement}</td>${i % 2 == 1 ? "</tr>" : ""}`
 
@@ -142,7 +144,10 @@ const populateBlipEditor = (blip, viewpoint, drawRadarBlips) => {
     blipEditorTitle.innerText = `Editing ${getNestedPropertyValueFromObject(blip.rating, viewpoint.propertyVisualMaps.blip.label)}`
 
     // set main image for blip 
-    document.getElementById("blipImage").src = getNestedPropertyValueFromObject(blip.rating, viewpoint.propertyVisualMaps.blip.image)
+    let imageSource = getNestedPropertyValueFromObject(blip.rating, viewpoint.propertyVisualMaps.blip.image)
+    if (imageSource!=null) {
+      document.getElementById("blipImage").src = imageSource
+    }
     initializeTagsField(blip)
     document.getElementById("addTagToBlip").addEventListener("click",
         (event) => {

@@ -1,149 +1,107 @@
-export { getSampleData }
-const getSampleData = () => {
-    return sample
+export { getDataSet }
+const getDataSet = () => {
+    return dataset
 }
 
-const technologies = [
-    
-    {label:"AR Cloud"},
-    {label:"Distributed Cloud"},
-    {label:"Tokenization"},
-    {label:"Smart Personalization"},
-    {label:"Application Ecosystems"},
-    {label:"Low-Code Application Platform"},
-    {label:"Distributed Ledgers"},
-    {label:"Productization of Data"},
-    {label:"Smart Contract"},
-    {label:"Packaged Business Capabilities"},
-    {label:"mmWave 5G"},
-    {label:"AI-Generated Composite Applications"},
-    
-    {label:"IoT Platforms"},
-    {label:"Advanced Virtual Assistants"},
-    {label:"Advanced Computer Vision"},
-    
-    {label:"Deep Learning"},
-    {label:"Composite AI"},
-    {label:"Digital Twin"},
-    
-    {label:"Quantum Computing"},
-    {label:"Edge AI"},
-    {label:"Transformer-Based Language Models"},
-    {label:"Cloud AI Developer Services"},
-    {label:"Model Compression"},
-    {label:""},
-    
-    
-]
 
 // these genericRatingProperties are applied to every ratingType
-const genericRatingProperties = [{ name: "scope", description: "The scope or context to which the rating applies" }
-    , { name: "author", description: "The name of the person who made the judgement" }
-    , { name: "timestamp", description: "When was this rating defined" }
-    , { name: "tags", description: "Which tags are associated with this rating (tags are for example used for thematic filtering of ratings)" }
-    , { name: "comment", description: "Additional remark regarding this rating" }
-]
+const genericRatingProperties = {
+    scope: { label: "Scope", description: "The scope or context to which the rating applies", defaultValue: "Conclusion" }
+    , author: { label: "Author/Evaluator", description: "The name of the person who made the judgement", defaultValue: "System Generated" }
+    , timestamp: { label: "Time of Evaluation", description: "When was this rating defined" }
+    , comment: { label: "Comment/Rationale", description: "Additional remark regarding this rating" , type:"text"}
+}
 
 const model =
 {
-    objectTypes: [
-        { name: "technology", properties: [] },
-        { name: "consultant" },
-        { name: "workitem" }
-    ]
-    , ratingType: [
-        {
-            name: "technologyAdoption", objectType: "technology", properties: [
-                {
-                    name: "ambition", description: "The current outlook or intent regarding this technology", defaultValue: "identified"
-                    , values: [{ value: "identified", label: "Identified" }, { value: "hold", label: "Hold" }, { value: "assess", label: "Assess" }, { value: "adopt", label: "Adopt" }]
-                },
-                {
-                    name: "magnitude", description: "The relative size of the technology (in terms of investment, people involved, percentage of revenue)", defaultValue: "medium"
-                    , values: [{ value: "tiny", label: "Tiny or Niche" }, { value: "medium", label: "Medium" }, { value: "large", label: "Large" }]
-                }
-
-            ]
-        }
-        , { name: "cvRating", objectType: "technology", properties: [] }
-        , { name: "allocationPipeline", objectType: "consultant", properties: [] }
-        , { name: "progressStatus", objectType: "workitem", properties: [] }
-    ]
-}
-
-// generate a viewpoint: select radar template, select rating type (and indirect object type), define filter - to restrict objects & ratings)
-//                       select viewpoint template - which defines mapping of properties to visual characteristics (sector, ring, shape, color, size, ..)
-//                       define viewpoint properties: title, description, visual overrides
-
-const viewpoints = [
+    objectTypes:
     {
-        name: "My Technology Radar - Integration"
-        , template: null
-        , ratingTypes: []  // which rating type(s) - for which objectTypes - are displayed
-        , propertyVisualMaps: { // mapping between property values in rating and object on the one hand and the corresponding visual elements on the other sectors, rings, shapes, colors, sizes ;
-                                // which property value maps to which of visual elements (indicated by their sequence number in th template) 
-            // note: the order of elements in these maps drives the order in which color/size/shape elements are shown in legend and context menu
-            sizeMap: { "low": 0, "medium":1,"high":2, "veryhigh":2 } // the rating magnitude property drives the size; the values of magnitude are mapped to values for size
-            , sectorMap: { "businessEnabler": 0, "interfaceExperience": 1, "productivityRevolution":2}
-            , ringMap: { "68yrs": 0, "36yrs": 1, "13yrs": 2,"now":3 } // the rating ambition property drives the ring; the values of ambition are mapped to values for ring
-            , shapeMap: {"other":0}
-            , colorMap: { "low": 0, "medium":1,"high":2, "veryhigh":3}
-        },
-        blipDisplaySettings: {showImages: false, showShapes: true, showLabels:true
-            , applyShapes:true, applySizes:true, applyColors:true, tagFilter:""}
-        //for example: property category in objectType technology is mapped to sector in radar
-        // the specific value mapping: maps technology.category values to sectors in the selected radar template
-        // one of the sectors can be used to assign "others" - any value not already explicity mapped
-        // when there is no "others" sector indicated or a technology.category is explicitly not mapped, then the corresponding blips are not visible
-        , blips: [ // derived 
-            { id: "1", rating: null, x: 300, y: 200, hidden: false },
-        ]
-    }
-]
+        technology: {
+            name: "technology",
+            label: "Technology",
+            properties:
+            {
+                label: {
+                    label: "Label",
+                    type: "string"
+                    , defaultValue: "Some Technology"
+                    , displayLabel: true // this property should be used to derive the label for this objectType
+                }, description: {
+                    label: "Description",
+                    type: "text"
+                }, reference: {
+                    label: "Internet Resource",
+                    type: "url"
+                }, image: {
+                    label: "Visualization",
+                    type: "image"
+                }, tags: {
+                    label: "Tags",
+                    type: "tags",
+                },
+                "category": {
+                    label: "Category",
 
-const generateBlips = () => {
-    // for all technologies
-    // create a rating
-    // and for each rating, create a blip
-    const blips = []
-    for (let i = 0; i < technologies.length; i++) {
-        const object = technologies[i]
-        const rating = {
-           ambition:"now",
-             magnitude: Math.random() < 0.01 ? "medium" : (Math.random() < 0.9 ? "high" : "low")
-            , experience: Math.random() < 0.01 ? "medium" : (Math.random() < 0.9 ? "high" : "low")
-            , timestamp : Date.now()
-            , scope: "Conclusion"
-            , comment : "no comment yet"
-            , author : "system generated"
-            , object: object
+                    type: "string", allowableValues: [{ value: "businessEnabler", label: "Business Enabler" }
+                        , { value: "interfaceExperience", label: "Interface Experience" }
+                        , { value: "productivityRevolution", label: "Productivity Revolution" }
+                        
+                    ] //
+                    , defaultValue: "businessEnabler"
+                }
+            }
         }
-        if (object.category==null) {object.category="businessEnabler"}
-        const blip = { id: `${i}`, rating: rating, }
-        blips.push(blip)
+
     }
-    return blips
 }
 
 
 
-/*
-rating : object - ratingType: property assignments (timestamp, scope, scorer, tags, notes)
 
-viewpoint (actual representation on template of ratings)
-- title/description
-- based on radar template
-- contains blips - visual mapping of ratings (x,y, color/shape/size, label )  
+model.ratingTypes =
+{
+    technologyAdoption: {
+        label: "Technology Adoption",
+        objectType: model.objectTypes.technology, properties:
+            Object.assign(
+                {
+                    ambition: {
+                        label: "Range",
+                        description: "Range estimates the distance (in years) that the technology or trend is from “crossing the chasm” from early-adopter to early majority adoption"
+                        , defaultValue: "68yrs"
+                        , allowableValues: [
+                            { value: "68yrs", label: "6-8 Years" },
+                            { value: "36yrs", label: "3-6 Years" },
+                            { value: "13yrs", label: "1-3 Years" },
+                            { value: "now", label: "Now (0-1 Years)" }
+]
+                        
+                    },
+                    magnitude: {
+                        label: "Mass",
+                        description: "This indicates how substantial an impact the technology or trend will have on existing products and markets."
+                        , defaultValue: "medium"
+                        , allowableValues: [
+                            { value: "low", label: "Low" }, { value: "medium", label: "Medium" }, { value: "high", label: "High" },{value:"veryhigh",label:"Very High"}]
+                    },
+                    experience: {
+                        label: "Experience/Maturity",
+                        description: "The relative time this technology has been around (for us)", defaultValue: "medium"
+                        , allowableValues: [{ value: "short", label: "Fresh" }, { value: "medium", label: "Intermediate" }, { value: "long", label: "Very Mature" }]
+                    }
 
-snapshot = viewpoint frozen in time
+                }, genericRatingProperties)
+    }
 
-*/
+}
 
-
-const sample = {
+const dataset = {
+    "model": model,
     "viewpoints": [
         {
             "name": "Emerging Technologies and Trends Impact Radar",
+            "id": "emerging-tech-trends",
+            "ratingType": "technologyAdoption",
             "template": {
                 "svg_id": "radarSVGContainer",
                 "width": 1450,
@@ -365,31 +323,42 @@ const sample = {
             },
             "ratingTypes": [],
             "propertyVisualMaps": {
-                "sizeMap": {
-                    "low": 0,
-                    "medium": 1,
-                    "high": 2,
-                    "veryhigh": 3
+                "blip": { "label": "object.label", "image": "object.image" },
+                "size": {
+                    "property": "magnitude", "valueMap": {
+                        "low": 0,
+                        "medium": 1,
+                        "high": 2,
+                        "veryhigh": 3
+                    }
                 },
-                "sectorMap": {
-                    "businessEnabler": 0,
-                    "interfaceExperience": 1,
-                    "productivityRevolution": 2
+                "sector": {
+                    "property": "object.category", "valueMap": {
+                        "businessEnabler": 0,
+                        "interfaceExperience": 1,
+                        "productivityRevolution": 2
+                    }
                 },
-                "ringMap": {
-                    "68yrs": 0,
-                    "36yrs": 1,
-                    "13yrs": 2,
-                    "now": 3
+                "ring": {
+                    "property": "ambition", "valueMap": {
+                        "68yrs": 0,
+                        "36yrs": 1,
+                        "13yrs": 2,
+                        "now": 3
+                    }
                 },
-                "shapeMap": {
-                    "other": 0
+                "shape": {
+                    "property": "object.offering", "valueMap": {
+                        "other": 0
+                    }
                 },
-                "colorMap": {
-                    "low": 0,
-                    "medium": 1,
-                    "high": 2,
-                    "veryhigh": 3
+                "color": {
+                    "property": "experience", "valueMap": {
+                        "low": 0,
+                        "medium": 1,
+                        "high": 2,
+                        "veryhigh": 3
+                    }
                 }
             },
             "blipDisplaySettings": {
@@ -397,7 +366,7 @@ const sample = {
                 "showShapes": true,
                 "showLabels": true,
                 "applyShapes": false,
-                "applySizes": false,
+                "applySizes": true,
                 "applyColors": true,
                 "tagFilter": ""
             },
@@ -435,8 +404,8 @@ const sample = {
                             "category": "businessEnabler"
                         }
                     },
-                    "x": 81.1558837890625,
-                    "y": -264.5555419921875
+                    "x": 91.1558837890625,
+                    "y": -270.5555419921875
                 },
                 {
                     "id": "2",
@@ -453,8 +422,8 @@ const sample = {
                             "category": "businessEnabler"
                         }
                     },
-                    "x": -85.02020263671875,
-                    "y": -262.0058898925781
+                    "x": -58.02020263671875,
+                    "y": -268.0058898925781
                 },
                 {
                     "id": "3",
@@ -478,8 +447,8 @@ const sample = {
                     "id": "4",
                     "rating": {
                         "ambition": "13yrs",
-                        "magnitude": "high",
-                        "experience": "high",
+                        "magnitude": "medium",
+                        "experience": "medium",
                         "timestamp": 1616445531644,
                         "scope": "Conclusion",
                         "comment": "no comment yet",
@@ -489,8 +458,8 @@ const sample = {
                             "category": "businessEnabler"
                         }
                     },
-                    "x": 76.7358169555664,
-                    "y": -181.89628982543945
+                    "x": 94.7358169555664,
+                    "y": -158.8962860107422
                 },
                 {
                     "id": "5",
@@ -532,7 +501,7 @@ const sample = {
                     "id": "7",
                     "rating": {
                         "ambition": "36yrs",
-                        "magnitude": "high",
+                        "magnitude": "medium",
                         "experience": "medium",
                         "timestamp": 1616445531644,
                         "scope": "Conclusion",
@@ -568,7 +537,7 @@ const sample = {
                     "id": "9",
                     "rating": {
                         "ambition": "36yrs",
-                        "magnitude": "high",
+                        "magnitude": "medium",
                         "experience": "medium",
                         "timestamp": 1616445531644,
                         "scope": "Conclusion",
@@ -622,7 +591,7 @@ const sample = {
                     "id": "12",
                     "rating": {
                         "ambition": "36yrs",
-                        "magnitude": "high",
+                        "magnitude": "veryhigh",
                         "experience": "veryhigh",
                         "timestamp": 1616445531644,
                         "scope": "Conclusion",
@@ -633,7 +602,7 @@ const sample = {
                             "category": "interfaceExperience"
                         }
                     },
-                    "x": -290.49783325195307,
+                    "x": -290.4978332519531,
                     "y": 17.463623046875
                 },
                 {
@@ -758,8 +727,8 @@ const sample = {
                             "category": "productivityRevolution"
                         }
                     },
-                    "x": -7.9639434814453125,
-                    "y": 112.60767364501953
+                    "x": -26.963943481445312,
+                    "y": 125.60767364501953
                 },
                 {
                     "id": "20",
@@ -783,7 +752,7 @@ const sample = {
                     "id": "21",
                     "rating": {
                         "ambition": "now",
-                        "magnitude": "high",
+                        "magnitude": "veryhigh",
                         "experience": "veryhigh",
                         "timestamp": 1616445531644,
                         "scope": "Conclusion",
@@ -834,232 +803,12 @@ const sample = {
                 }
             ]
         }
+
     ],
     "templates": [
-        {
-            "svg_id": "radarSVGContainer",
-            "width": 1450,
-            "height": 1100,
-            "topLayer": "rings",
-            "selectedRing": 0,
-            "selectedSector": 0,
-            "rotation": 0,
-            "maxRingRadius": 450,
-            "sectorBoundariesExtended": true,
-            "editMode": false,
-            "defaultFont": {
-                "color": "black",
-                "fontSize": "38px",
-                "fontFamily": "Arial, Helvetica",
-                "fontStyle": "italic",
-                "fontWeight": "bold"
-            },
-            "title": {
-                "text": "Emerging Technologies",
-                "x": -700,
-                "y": -520,
-                "font": {
-                    "fontSize": "34px",
-                    "fontFamily": "Courier"
-                }
-            },
-            "colors": {
-                "background": "#FFF",
-                "grid": "#bbb",
-                "inactive": "#ddd"
-            },
-            "ringConfiguration": {
-                "outsideRingsAllowed": true,
-                "font": {
-                    "color": "blacvk",
-                    "fontSize": "24px",
-                    "fontFamily": "Arial, Helvetica",
-                    "fontStyle": "normal",
-                    "fontWeight": "bold"
-                },
-                "stroke": {
-                    "strokeWidth": 6,
-                    "strokeColor": "white",
-                    "strokeArray": "100 1"
-                },
-                "rings": [
-                    {
-                        "label": "6-8 years",
-                        "width": 0.25,
-                        "backgroundImage": {},
-                        "backgroundColor": "#737071"
-                    },
-                    {
-                        "label": "3-6 years",
-                        "width": 0.2,
-                        "backgroundImage": {},
-                        "backgroundColor": "#bdb9ba"
-                    },
-                    {
-                        "label": "1-3 years",
-                        "width": 0.2,
-                        "backgroundImage": {},
-                        "backgroundColor": "#ebe6e7"
-                    },
-                    {
-                        "label": "Now (0-1 year)",
-                        "width": 0.35,
-                        "backgroundImage": {},
-                        "backgroundColor": "#ffdb26"
-                    }
-                ]
-            },
-            "sectorConfiguration": {
-                "outsideSectorsAllowed": true,
-                "font": {
-                    "color": "#000",
-                    "fontSize": "28px",
-                    "fontFamily": "Arial, Helvetica",
-                    "fontStyle": "normal",
-                    "fontWeight": "normal"
-                },
-                "stroke": {
-                    "strokeWidth": 6,
-                    "strokeColor": "white",
-                    "strokeArray": "100 1"
-                },
-                "sectors": [
-                    {
-                        "label": "Business Enablers",
-                        "angle": 0.3333333333333333,
-                        "backgroundImage": {},
-                        "backgroundColor": "white",
-                        "outerringBackgroundColor": "#FFF"
-                    },
-                    {
-                        "label": "Interfaces and Experiences",
-                        "angle": 0.3333333333333333,
-                        "backgroundImage": {},
-                        "backgroundColor": "white",
-                        "outerringBackgroundColor": "#FFF"
-                    },
-                    {
-                        "label": "Productivity Revolution",
-                        "angle": 0.3333333333333333,
-                        "backgroundImage": {},
-                        "backgroundColor": "white",
-                        "outerringBackgroundColor": "#FFF"
-                    }
-                ]
-            },
-            "colorsConfiguration": {
-                "label": "Mass",
-                "colors": [
-                    {
-                        "label": "Low",
-                        "color": "#4d94d1",
-                        "enabled": true
-                    },
-                    {
-                        "label": "Medium",
-                        "color": "#44d4eb",
-                        "enabled": true
-                    },
-                    {
-                        "label": "High",
-                        "color": "#3471a3",
-                        "enabled": true
-                    },
-                    {
-                        "label": "Very High",
-                        "color": "#0e0f52",
-                        "enabled": true
-                    },
-                    {
-                        "label": "Unassigned",
-                        "color": "white"
-                    }
-                ]
-            },
-            "sizesConfiguration": {
-                "label": "Mass",
-                "sizes": [
-                    {
-                        "label": "Low",
-                        "size": 0.55,
-                        "enabled": false
-                    },
-                    {
-                        "label": "Medium",
-                        "size": 0.8,
-                        "enabled": true
-                    },
-                    {
-                        "label": "High",
-                        "size": 1.05,
-                        "enabled": true
-                    },
-                    {
-                        "label": "Very High",
-                        "size": 1.4,
-                        "enabled": true
-                    },
-                    {
-                        "label": "Very High",
-                        "size": 5,
-                        "enabled": true
-                    }
-                ]
-            },
-        "shapesConfiguration": {
-                "label": "Offering",
-                "shapes": [
-                    {
-                        "label": "Commercial",
-                        "shape": "square"
-                    },
-                    {
-                        "label": "Open Source",
-                        "shape": "diamond"
-                    },
-                    {
-                        "label": "Label",
-                        "shape": "rectangleHorizontal",
-                        "enabled": false
-                    },
-                    {
-                        "label": "Other",
-                        "shape": "circle",
-                        "enabled": false
-                    },
-                    {
-                        "label": "Label",
-                        "shape": "star",
-                        "enabled": false
-                    },
-                    {
-                        "label": "Label",
-                        "shape": "rectangleVertical",
-                        "enabled": false
-                    },
-                    {
-                        "label": "Label",
-                        "shape": "triangle",
-                        "enabled": false
-                    },
-                    {
-                        "label": "Label",
-                        "shape": "ring",
-                        "enabled": false
-                    },
-                    {
-                        "label": "Label",
-                        "shape": "plus",
-                        "enabled": false
-                    }
-                ]
-            }
-        }
+
     ],
-    "objects": []
+    "objects": {}
 }
 
 
-sample.viewpoints[0].template = sample.templates[0]
-//sample.viewpoints[0].blips = generateBlips()
-//sample.viewpoints[0].blips = generateBlips()

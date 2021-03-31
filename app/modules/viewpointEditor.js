@@ -374,7 +374,7 @@ const processObjectsIntoBlips = () => {
                 const propertyNames = ["category", "vendor", "homepage", "offering", "description", "image"]
                 for (let j = 0; j < propertyNames.length; j++) {
                     const propertyName = propertyNames[j]
-                    const stateDefault = getState().defaultSettings.rating.object[propertyName]
+                    const stateDefault = getState()?.defaultSettings?.rating?.object[propertyName]
 
                     objects[i][propertyName] = objects[i][propertyName] != null && objects[i][propertyName].length > 0
                         ? objects[i][propertyName]
@@ -403,7 +403,7 @@ const processObjectsIntoBlips = () => {
                 let ratingPropertyNames = ["ambition", "experience", "magnitude", "scope", "author", "comment"]
                 for (let j = 0; j < ratingPropertyNames.length; j++) {
                     const propertyName = ratingPropertyNames[j]
-                    const stateDefault = getState().defaultSettings.rating[propertyName]
+                    const stateDefault = getState()?.defaultSettings?.rating[propertyName]
 
                     rating[propertyName] = rating[propertyName] != null && rating[propertyName].length > 0
                         ? rating[propertyName]

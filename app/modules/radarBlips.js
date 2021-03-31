@@ -133,7 +133,8 @@ const drawRadarBlips = function (viewpoint) {
         try {
             drawRadarBlip(blip, d, viewpoint);
         } catch (e) {
-            console.log(`failed to draw blip ${blip.rating.object.label} because of ${e}`)
+            console.log(`failed to draw blip ${d.rating?.object?.label} because of ${e}`)
+            console.log(`blip:  ${JSON.stringify(d)}`)
         }
 
     });

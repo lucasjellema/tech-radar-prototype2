@@ -3,6 +3,7 @@ import { initializeTree } from './tree.js'
 import { getSampleData } from './sampleData.js'
 import { getDataSet as getEmergingDataSource} from './emerging-technologies-dataset.js'
 import { getDataSet as getTechnologyRadarDataSource} from './technology-radar-dataset.js'
+import { getDataSet as getCABTechnologyRadarDataSource} from './cab-technology-radar-dataset.js'
 import { uuidv4, getNestedPropertyValueFromObject, setNestedPropertyValueOnObject,getRatingTypeProperties } from './utils.js'
 
 
@@ -173,6 +174,9 @@ const initializeDatasetFromURL = () => {
     if (source != null && source.length > 0) {
         if (source=="emerging") { data = getEmergingDataSource()}
         if (source=="techradar") { data = getTechnologyRadarDataSource()}
+        if (source=="cab") { data = getCABTechnologyRadarDataSource()}
+        
+        
     } else {
         data = getSampleData()       
     }

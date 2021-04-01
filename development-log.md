@@ -12,25 +12,28 @@
   - drill down on infrastructure and get sectors for ci/cd, storage, container management, networking, security and other child-categories
   - define drill down/aggregation paths - category => vendor; category => selected tag value;  category => offering type
   
-- zoom in on a single sector
-- zoom in on a single ring 
+- sectors defined with (combinations of) tags (or tagfilters); objects that satisfy the tagfilter condition of a sector are displayed in the sector; a viewpoint can contain various sector-configurations - that can be linked - drilling down on one sector to another configuration optionally inherits the master sector's tag-filter - and uses the sector-tagfilters on top of that in the new configuration 
 
-- allow remove blip
+- zoom in on a single (or a few?) sector - that sector fills up the (angle of the) radar - the other sectors are hidden and so are blips in those sectors (same as hiding some or all other sectors?); note: the user assigned x,y are useless in this case; polar could perhaps be converted: multiply phi with how much more angle the sector gets to fill up
+  
+- zoom in on a single ring - that ring fills up the entire (width of the) radar - the other rings are hidden and so are the blips those rings
+
 - allow removal of viewpoint, template, object type, rating type, objects of a specific type
 
 - blip zoom "slider" - apply scaling factor to all the blips (not to any other element)
 - generate blips in Viewpoint for all objects | selected objects
 - assign unique identifiers to objects and ratings (to allow merging)
 
-- update timestamp voor rating als blip is geëdit
+- update timestamp voor rating when blip has been edited
 - have input field for entering color value (in addition to color picker) with datalist / combobox with common colors
 - ?? record blip coordinates as polar coordinates
-- define UUID for objects and ratings
+
 - define "start angle" for sectors (to get tilting/rotating effect)
 
 - auto-map for radar: derive sectors from distinct property values (and angle from number of entries for each value), derive rings from distinct property values (and width from number of entries for each value); user can edit labels and sequence in radar editor
 - have defaults associated with viewpoint; currently, defaults are created for the current viewpoint and do not synchronize with a new viewpoint
 - store state (including defaults) in localstorage (to be reinstated in a later session)
+- CSV to (Data Model to) Radar wizard
 
 ## March 31st
 
@@ -45,6 +48,9 @@
 - add clone blip option in context menu for blip (and perform the clone - currently a deep copy of blip, rating and object; it seems that perhaps the clone should create a new rating for the same object?!
 - position context menu shifted to the left or to the top when a blip near the edge is right mouse clicked; fix removing context menu when mouse leaves on the right side
    
+## April 1st
+- Input Type Color - HTML5 color selector - https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/color for ring &* sector background
+- Input Type Color - for Colors Box
 
 ## March 30th
 - button to reset tags in filter

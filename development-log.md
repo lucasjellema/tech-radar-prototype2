@@ -33,7 +33,14 @@
 - auto-map for radar: derive sectors from distinct property values (and angle from number of entries for each value), derive rings from distinct property values (and width from number of entries for each value); user can edit labels and sequence in radar editor
 - have defaults associated with viewpoint; currently, defaults are created for the current viewpoint and do not synchronize with a new viewpoint
 - store state (including defaults) in localstorage (to be reinstated in a later session)
-- CSV to (Data Model to) Radar wizard
+- CSV to (Data Model to) Radar wizar
+
+
+   
+## April 1st
+- Input Type Color - HTML5 color selector - https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/color for ring &* sector background
+- Input Type Color - for Colors Box
+- reduce rings angle with sector 'deficiency' (if sectors add up to less than 1, reduce ring arc) 
 
 ## March 31st
 
@@ -47,10 +54,7 @@
 - add delete blip option in context menu for blip (and perform the delete)
 - add clone blip option in context menu for blip (and perform the clone - currently a deep copy of blip, rating and object; it seems that perhaps the clone should create a new rating for the same object?!
 - position context menu shifted to the left or to the top when a blip near the edge is right mouse clicked; fix removing context menu when mouse leaves on the right side
-   
-## April 1st
-- Input Type Color - HTML5 color selector - https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/color for ring &* sector background
-- Input Type Color - for Colors Box
+
 
 ## March 30th
 - button to reset tags in filter

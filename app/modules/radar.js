@@ -191,6 +191,8 @@ const drawSectors = function (radar, config, elementDecorator = null) {
 const drawRings = function (radar, config) {
     const ringCanvas = radar.append("g").attr("id", "ringCanvas")
     const totalRingPercentage = config.ringConfiguration.rings.reduce((sum, ring) => { return sum + ring.width }, 0)
+    const totalSectorPercentage = config.sectorConfiguration.sectors.reduce((sum, sector) => { return sum + sector.angle }, 0)
+    // 
     let currentRadiusPercentage = totalRingPercentage
     for (let i = 0; i < config.ringConfiguration.rings.length; i++) {
         let ring = config.ringConfiguration.rings[i]
@@ -199,8 +201,12 @@ const drawRings = function (radar, config) {
         const ringArc = d3.arc()
             .outerRadius(config.maxRingRadius * currentRadiusPercentage)
             .innerRadius(config.maxRingRadius * (currentRadiusPercentage - ring.width))
-            .startAngle(0)
-            .endAngle(359)
+            .startAngle( ((0.5 - 2* totalSectorPercentage) * Math.PI))
+	        .endAngle( 0.5 * Math.PI)
+    // start angle naar end angle met de klok mee; -0.5 PI is 9 uur, 0.5 PI = 3 uur
+    // TODO  check sum of sector angles
+
+
         ringCanvas.append("path")
             .attr("id", `ring${i}`)
             .attr("d", ringArc)
@@ -211,6 +217,7 @@ const drawRings = function (radar, config) {
             .style("stroke-width", ("rings" == config.topLayer && getState().selectedRing == i && getState().editMode) ? 6 : config.ringConfiguration?.stroke?.strokeWidth ?? 2)
             .style("stroke-dasharray", ("rings" == config.topLayer && getState().selectedRing == i && getState().editMode) ? "" : config.ringConfiguration?.stroke?.strokeArray ?? "9 1")
             .on('click', () => { const ring = i; publishRadarEvent({ type: "ringClick", ring: i }) })
+        
         if (ring.backgroundImage && ring.backgroundImage.image) {
             ringCanvas.append('image')
                 .attr("id", `ringBackgroundImage${i}`)

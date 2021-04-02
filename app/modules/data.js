@@ -1,102 +1,29 @@
 export { initializeViewpointFromURL, initializeFiltersTagsFromURL, getDefaultSettingsBlip,setDefaultSettingsBlip,shuffleBlips , getConfiguration, getViewpoint, getData, createBlip, subscribeToRadarRefresh, getState, publishRefreshRadar }
 import { initializeTree } from './tree.js'
-import { getSampleData } from './sampleData.js'
-import { getDataSet as getEmergingDataSource} from './emerging-technologies-dataset.js'
-import { getDataSet as getTechnologyRadarDataSource} from './technology-radar-dataset.js'
-import { getDataSet as getCABTechnologyRadarDataSource} from './cab-technology-radar-dataset.js'
+
 import { uuidv4, getNestedPropertyValueFromObject, setNestedPropertyValueOnObject,getRatingTypeProperties } from './utils.js'
+
+const datasetMap = {
+    emerging :  "./modules/emerging-technologies-dataset.json"
+    , techradar : "./modules/technology-radar-dataset.json"
+    , cab : "./modules/cab-technology-radar-dataset.json"
+    , sample : "./modules/sampleData.json"
+}
+
+// load data from local file - URLS for files in datasetMap - referring to local files, pure JSON content
+// as a next step: this data could also be loaded from URLs referring to external - internet resources that must be accessible from the user's browser
+const  loaddataset =  async (datasetKey) =>  {
+    const data = await fetch(datasetMap[datasetKey])
+    .then(response => {
+       return response.json();
+    })
+    return data
+}
 
 
 const RADAR_INDEX_KEY = "RADAR-INDEX"
 
-let data = {
-    model: {}
-    , templates: []
-    , objects: {}
-    , viewpoints: []
-
-}
-
-// describes the current state for the radar application - not intrinsic qualities of the template
-let state = {
-    currentTemplate: 0,
-    currentViewpoint: 0,
-    selectedRing: 1,
-    selectedSector: 2,
-    editMode: true,
-    editType: "viewpoint"  // template or viewpoint-configuration
-
-}
-
-const getDefaultSettingsBlip = () => {
-   if (state.defaultSettings == null) {
-    state.defaultSettings= { rating:{object:{label:"Default"}}}
-   }
-   return state.defaultSettings
-}
-const setDefaultSettingsBlip = (defaultBlip) => {
-    state.defaultSettings = defaultBlip
- }
- 
-
-const getData = () => {
-    return data
-}
-
-const getConfiguration = () => {
-    return state.editType == "template" ? data.templates[state.currentTemplate] : data.viewpoints[state.currentViewpoint].template
-}
-
-const getViewpoint = () => {
-    return data.viewpoints[state.currentViewpoint]
-}
-
-const initializeViewpointFromURL = () => {
-    const params = new URLSearchParams(window.location.search)
-    const viewpointId = params.get('viewpoint')
-    if (viewpointId != null) {
-        // find viewpoint with id and when found - set currentViewpoint and edittype
-        for (let i = 0; i < data.viewpoints.length; i++) {
-            if (data.viewpoints[i].id == viewpointId) {
-                state.currentViewpoint = i
-                state.editType = "viewpoint"
-            }
-        }
-    }
-}
-
-const initializeFiltersTagsFromURL = () => {
-    const params = new URLSearchParams(window.location.search)
-    const tagParam = params.get('tags')
-    console.log(`tags ${tagParam}`)
-    // default type = plus; if last character == ~ then type is minus, if *  then must
-    if (tagParam != null && tagParam.length > 0) {
-        if (getViewpoint().blipDisplaySettings.tagFilter==null  || getViewpoint().blipDisplaySettings.tagFilter.length==0) {getViewpoint().blipDisplaySettings.tagFilter=[]}
-        const tags = tagParam.split(',')
-        for (let i = 0; i < tags.length; i++) {
-            let tag = tags[i]
-            let type = "plus"
-            if (tag.endsWith("~")) {
-                tag = tag.slice(0, tag.length - 1)
-                type = "minus"
-            }
-            if (tag.endsWith("*")) {
-                tag = tag.slice(0, tag.length - 1)
-                type = "must"
-            }
-            getViewpoint().blipDisplaySettings.tagFilter.push({ type: type, tag: tag })
-        }
-    }
-}
-
-
-
-const getState = () => {
-    return state
-}
-
-
-const freshTemplate =
+let freshTemplate = 
 {
     svg_id: "radarSVGContainer",
     width: 1450,
@@ -158,6 +85,98 @@ const freshTemplate =
     }
 }
 
+;
+
+let data = {
+    model: {}
+    , templates: [freshTemplate]
+    , objects: {}
+    , viewpoints: []
+
+}
+
+data = await loaddataset("sample")
+
+// describes the current state for the radar application - not intrinsic qualities of the template
+let state = {
+    currentTemplate: 0,
+    currentViewpoint: 0,
+    selectedRing: null,
+    selectedSector: null,
+    editMode: true,
+    editType: "viewpoint"  // template or viewpoint-configuration
+
+}
+
+const getDefaultSettingsBlip = () => {
+   if (state.defaultSettings == null) {
+    state.defaultSettings= { rating:{object:{label:"Default"}}}
+   }
+   return state.defaultSettings
+}
+const setDefaultSettingsBlip = (defaultBlip) => {
+    state.defaultSettings = defaultBlip
+ }
+ 
+
+const getData = () => {
+    return data
+}
+
+const getConfiguration = () => {
+    return state.editType == "template" ? data.templates[state.currentTemplate] 
+                                        : data.viewpoints[state.currentViewpoint]?.template
+}
+
+const getViewpoint = () => {
+    return data.viewpoints[state.currentViewpoint]
+}
+
+const initializeViewpointFromURL = () => {
+    const params = new URLSearchParams(window.location.search)
+    const viewpointId = params.get('viewpoint')
+    if (viewpointId != null) {
+        // find viewpoint with id and when found - set currentViewpoint and edittype
+        for (let i = 0; i < data.viewpoints.length; i++) {
+            if (data.viewpoints[i].id == viewpointId) {
+                state.currentViewpoint = i
+                state.editType = "viewpoint"
+            }
+        }
+    }
+}
+
+const initializeFiltersTagsFromURL = () => {
+    const params = new URLSearchParams(window.location.search)
+    const tagParam = params.get('tags')
+    console.log(`tags ${tagParam}`)
+    // default type = plus; if last character == ~ then type is minus, if *  then must
+    if (tagParam != null && tagParam.length > 0) {
+        if (getViewpoint().blipDisplaySettings.tagFilter==null  || getViewpoint().blipDisplaySettings.tagFilter.length==0) {getViewpoint().blipDisplaySettings.tagFilter=[]}
+        const tags = tagParam.split(',')
+        for (let i = 0; i < tags.length; i++) {
+            let tag = tags[i]
+            let type = "plus"
+            if (tag.endsWith("~")) {
+                tag = tag.slice(0, tag.length - 1)
+                type = "minus"
+            }
+            if (tag.endsWith("*")) {
+                tag = tag.slice(0, tag.length - 1)
+                type = "must"
+            }
+            getViewpoint().blipDisplaySettings.tagFilter.push({ type: type, tag: tag })
+        }
+    }
+}
+
+
+
+const getState = () => {
+    return state
+}
+
+
 
 
 const getFreshTemplate = () => {
@@ -167,19 +186,15 @@ const getFreshTemplate = () => {
 //data.templates.push(freshTemplate)
 //let config = data.templates[0]
 
-const initializeDatasetFromURL = () => {
+const initializeDatasetFromURL = async () => {
     const params = new URLSearchParams(window.location.search)
-    const source = params.get('source')
+    const source = params.get('source') ?? "sample"
     console.log(`source ${source}`)
-    if (source != null && source.length > 0) {
-        if (source=="emerging") { data = getEmergingDataSource()}
-        if (source=="techradar") { data = getTechnologyRadarDataSource()}
-        if (source=="cab") { data = getCABTechnologyRadarDataSource()}
-        
-        
-    } else {
-        data = getSampleData()       
-    }
+    // TODO load data from sourceURL
+    const sourceURL = params.get('sourceURL')
+    console.log(`source ${sourceURL}`)
+
+    data =  await loaddataset(source)    
     // add uuid to objects and ratings - just to be sure
     data.viewpoints.forEach((viewpoint) => addUUIDtoBlips(viewpoint.blips))    
 }

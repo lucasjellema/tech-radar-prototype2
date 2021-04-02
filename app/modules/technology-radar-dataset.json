@@ -1,10 +1,4 @@
-export { getDataSet }
-const getDataSet = () => {
-    return dataset
-}
-
-
-const dataset ={
+{
     "model": {
         "objectTypes": {
             "technology": {

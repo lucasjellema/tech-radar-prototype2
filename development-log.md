@@ -33,11 +33,18 @@
 - auto-map for radar: derive sectors from distinct property values (and angle from number of entries for each value), derive rings from distinct property values (and width from number of entries for each value); user can edit labels and sequence in radar editor
 - have defaults associated with viewpoint; currently, defaults are created for the current viewpoint and do not synchronize with a new viewpoint
 - store state (including defaults) in localstorage (to be reinstated in a later session)
-- CSV to (Data Model to) Radar wizar
+- CSV to (Data Model to) Radar wizard
+- fetch radar data from external URL (anything within reach from user's browser) (import dialog & pass sourceURL as query parameter)
 
 ## April 2nd
 
 - show similar blips (context menu for blips) => define filter from tags on blip (optionally: all/selected discrete properties)
+- work with data sets in pure JSON file (preparation for loading data sets from external URLs)
+
+### Resources
+
+- mxGraph https://github.com/jgraph/mxgraph (sources) 
+- Fetch API - https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch (fetching and posting files)
    
 ## April 1st
 - Input Type Color - HTML5 color selector - https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/color for ring &* sector background

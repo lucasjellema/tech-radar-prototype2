@@ -35,7 +35,9 @@
 - store state (including defaults) in localstorage (to be reinstated in a later session)
 - CSV to (Data Model to) Radar wizar
 
+## April 2nd
 
+- show similar blips (context menu for blips) => define filter from tags on blip (optionally: all/selected discrete properties)
    
 ## April 1st
 - Input Type Color - HTML5 color selector - https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/color for ring &* sector background

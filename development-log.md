@@ -36,6 +36,17 @@
 - CSV to (Data Model to) Radar wizard
 - fetch radar data from external URL (anything within reach from user's browser) (import dialog & pass sourceURL as query parameter)
 
+## April 3rd
+
+- create new blip for existing object
+- create new blip for existing rating
+
+### Resources
+
+- Sort Arrary (and use custom compare function) https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
+- left pad strings - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/padStart
+- delete property from object: https://www.w3schools.com/howto/howto_js_remove_property_object.asp#:~:text=Remove%20Property%20from%20an%20Object&text=The%20delete%20operator%20deletes%20both,effect%20on%20variables%20or%20functions.
+
 ## April 2nd
 
 - show similar blips (context menu for blips) => define filter from tags on blip (optionally: all/selected discrete properties)

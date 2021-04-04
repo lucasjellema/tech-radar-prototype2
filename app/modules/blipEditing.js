@@ -1,8 +1,8 @@
 
 import { cartesianFromPolar, polarFromCartesian, segmentFromCartesian } from './drawingUtilities.js'
-import { getNestedPropertyValueFromObject, setNestedPropertyValueOnObject,getRatingTypeProperties } from './utils.js'
-import { getViewpoint, getData } from './data.js'
-export { handleBlipDrag, launchBlipEditor }
+import { getNestedPropertyValueFromObject, setNestedPropertyValueOnObject, getRatingTypeProperties, showOrHideElement } from './utils.js'
+import { getViewpoint, getObjectListOfOptions, getRatingListOfOptions, getData, createBlip } from './data.js'
+export { handleBlipDrag, launchNewBlipWizard, launchBlipEditor }
 
 const populateSelect = (selectElementId, data, defaultValue = null) => { // data is array objects with two properties : label and value
     let dropdown = document.getElementById(selectElementId);
@@ -11,6 +11,7 @@ const populateSelect = (selectElementId, data, defaultValue = null) => { // data
 
     let defaultOption = document.createElement('option');
     defaultOption.text = 'Choose ...';
+    defaultOption.value = -1;
 
     dropdown.add(defaultOption);
     dropdown.selectedIndex = 0;
@@ -52,34 +53,72 @@ const initializeTagsField = (blip) => {
     }
 }
 
-const createAndPopulateDataList = (listId, propertyPath, blips) => {
+const createAndPopulateDataListFromBlipPoperties = (listId, propertyPath, blips) => {
 
     const listOfDistinctValues = new Set()
     for (let i = 0; i < blips.length; i++) {
         const blip = blips[i]
         listOfDistinctValues.add(getNestedPropertyValueFromObject(blip.rating, propertyPath))
     }
-    let listElement = document.getElementById(listId)
-    if (listElement == null) {
-        listElement = document.createElement("datalist")
-        listElement.setAttribute("id", listId)
-        document.body.appendChild(listElement);
-    }
-    //remove current contents
-    listElement.length = 0
-    listElement.innerHTML = null
-    let option
-    for (let value of listOfDistinctValues) {
-        option = document.createElement('option')
-        option.value = value
-        listElement.appendChild(option)
-    }
+    populateDatalistFromValueSet(listId, listOfDistinctValues)
 }
 
 
+const launchNewBlipWizard = (viewpoint, drawRadarBlips) => {
+    showOrHideElement("modalBlipEditor", true)
+    showOrHideElement("newBlip", true)
+    showOrHideElement("blipForm", false)
+    showOrHideElement("blipImage", false)
+    showOrHideElement("ratingSelectionSection", false)
+
+
+    const objectForNewBlipSelectionContainer = document.getElementById('objectForNewBlipSelectionContainer')
+
+    objectForNewBlipSelectionContainer.innerHTML = `<div>
+              <label for="objectSelect">Based on Existing Object</label>
+                <br />
+                <select id="objectSelect" name="objectSelect">
+                   <option value="" disabled selected>Select Object to base Blip on</option>
+                </select>
+                <br />
+             </div>`
+
+    populateSelect("objectSelect", getObjectListOfOptions(), null)
+    document.getElementById("objectSelect").addEventListener("change", (e) => {
+        console.log(`object selection changed to ${e.target.value}`)
+        // find ratings for selected object
+        const objectId = e.target.value
+        if (objectId!= null && objectId!="-1") {
+        // TODO: show ratingSelectionSection with the current ratings for this object (if any exist)
+        populateSelect("ratingSelect", getRatingListOfOptions( viewpoint.ratingType, objectId), null)
+
+        showOrHideElement('ratingSelectionSection', true)
+        } else showOrHideElement('ratingSelectionSection', false)
+    })
+    const buttonBar = document.getElementById('newblipEditorButtonBar')
+    buttonBar.innerHTML = ` <input id="goEditNewBlip" type="button" value="Edit new Blip"></input>`
+    document.getElementById('goEditNewBlip').addEventListener("click", (e) => {
+        const objectId = document.getElementById("objectSelect").value
+        const objectNewLabel = document.getElementById("newObjectLabel").value
+
+        const ratingId = document.getElementById("ratingSelect").value
+        const selectedObjectId = (objectId != null && objectId != "-1") ? objectId : null
+        const selectedRatingId = (ratingId != null && ratingId != "-1") ? ratingId : null
+        const labelForNewObject = (objectNewLabel != null && objectNewLabel.length > 0) ? objectNewLabel : null
+        if ((selectedObjectId ?? labelForNewObject) != null) {
+            const blip = createBlip(selectedObjectId, labelForNewObject, selectedRatingId)
+            launchBlipEditor(blip, getViewpoint(), drawRadarBlips)
+        }
+    })
+}
+
 const launchBlipEditor = (blip, viewpoint, drawRadarBlips) => {
-    var modal = document.getElementById("modalBlipEditor");
-    modal.style.display = "block";
+    // var modal = document.getElementById("modalBlipEditor");
+    // modal.style.display = "block";
+    showOrHideElement("modalBlipEditor", true)
+    showOrHideElement("newBlip", false)
+    showOrHideElement("blipForm", true)
+    showOrHideElement("blipImage", true)
     const tbl = document.getElementById("blipEditorTable")
     // remove current content
     tbl.innerHTML = null
@@ -90,20 +129,20 @@ const launchBlipEditor = (blip, viewpoint, drawRadarBlips) => {
 
 
     // TODO cater for tags
-    let blipProperties = getRatingTypeProperties(ratingType,getData().model)
+    let blipProperties = getRatingTypeProperties(ratingType, getData().model)
 
     let html = ''
     for (let i = 0; i < blipProperties.length; i++) {
         const blipProperty = blipProperties[i]
         let value = getNestedPropertyValueFromObject(blip.rating, blipProperty.propertyPath)
-        if (value==null) value=""
+        if (value == null) value = ""
 
         const inputElementId = `blip${blipProperty.propertyPath}`
         let inputElement
         if (blipProperty.property.allowableValues != null && blipProperty.property.allowableValues.length > 0) // select
             inputElement = `<select id="${inputElementId}" ></select>`
         else if (blipProperty.property.discrete != null && blipProperty.property.discrete) {
-            createAndPopulateDataList(`${inputElementId}List`, `${blipProperty.propertyPath}`, viewpoint.blips)
+            createAndPopulateDataListFromBlipPoperties(`${inputElementId}List`, `${blipProperty.propertyPath}`, viewpoint.blips)
             inputElement = `<input id="${inputElementId}" list="${inputElementId}List" value="${value}"></input>`
         }
         else if (blipProperty.property.type == "text") {
@@ -142,18 +181,18 @@ const launchBlipEditor = (blip, viewpoint, drawRadarBlips) => {
             }, `${inputElementId}ImagePasteArea`)
         }
     }
-    blipEditorTitle.innerText = `Editing ${getNestedPropertyValueFromObject(blip.rating, viewpoint.propertyVisualMaps.blip.label)}`
+    blipEditorTitle.innerText = `Editing Rating of ${getNestedPropertyValueFromObject(blip.rating, viewpoint.propertyVisualMaps.blip.label)}`
 
     // set main image for blip 
     let imageSource = getNestedPropertyValueFromObject(blip.rating, viewpoint.propertyVisualMaps.blip.image)
-    if (imageSource!=null) {
-      document.getElementById("blipImage").src = imageSource
+    if (imageSource != null) {
+        document.getElementById("blipImage").src = imageSource
     }
     initializeTagsField(blip)
     document.getElementById("addTagToBlip").addEventListener("click",
         (event) => {
             const filterTagValue = document.getElementById("blipTagSelector").value
-            if (blip.rating.object.tags==null) {blip.rating.object.tags=[]}
+            if (blip.rating.object.tags == null) { blip.rating.object.tags = [] }
             blip.rating.object.tags.push(filterTagValue)
             initializeTagsField(blip)
         })
@@ -188,10 +227,10 @@ const saveBlipEdit = () => {
 
 
 
-    let blipProperties = getRatingTypeProperties(viewpointToReuse.ratingType,getData().model)
+    let blipProperties = getRatingTypeProperties(viewpointToReuse.ratingType, getData().model)
     for (let i = 0; i < blipProperties.length; i++) {
         const blipProperty = blipProperties[i]
-        if (blipProperty.property.type == "tags") { } // TODO handle tags (currently tags are saved directly on the blip)
+        if (blipProperty.property.type == "tags") { } // TODO handle tags (currently tags are saved directly on the blip instead of on the UI element)
         else {
             const inputElementId = `blip${blipProperty.propertyPath}`
             let value = document.getElementById(inputElementId).value
@@ -199,6 +238,22 @@ const saveBlipEdit = () => {
         }
     }
 
+    //if blip.pending - this means a new blip is added, one with perhaps a new object and or a new rating
+    if (blip.pending) {
+        delete blip.pending
+        let blipCount = getViewpoint().blips.push(blip)
+        console.log(`after saving  the pending  blip the count is now ${blipCount} == ${getViewpoint().blips.length}`)
+
+        if (blip.rating?.pending) {
+            delete blip.rating.pending
+            getData().ratings[blip.rating.id] = blip.rating
+        }
+        if (blip.rating?.object?.pending) {
+            delete blip.rating.object.pending
+            getData().objects[blip.rating.object.id] = blip.rating.object
+        }
+
+    }
 
     // close modal editor
     var modal = document.getElementById("modalBlipEditor");
@@ -251,12 +306,12 @@ const handleBlipDrag = function (blipDragEvent, viewpoint) {
     const blipId = blipDragEvent.blipId.substring(5)
     // we may be lucky and find the blip at this point in the array
     let blip
-    if (viewpoint.blips[parseInt(blipId)]!=null && viewpoint.blips[parseInt(blipId)].id == blipId )
-       blip = viewpoint.blips[parseInt(blipId)]
+    if (viewpoint.blips[parseInt(blipId)] != null && viewpoint.blips[parseInt(blipId)].id == blipId)
+        blip = viewpoint.blips[parseInt(blipId)]
     else {
         // find blip with proper id
-        blip = viewpoint.blips.filter((blip) => blip.id == blipId?blip:null)[0]
-    }   
+        blip = viewpoint.blips.filter((blip) => blip.id == blipId ? blip : null)[0]
+    }
     //    console.log(`blip ${JSON.stringify(blip)}`)
     blip.x = blipDragEvent.newX
     blip.y = blipDragEvent.newY
@@ -278,4 +333,22 @@ const getKeyForValue = function (object, value) {
 
 
 
+
+function populateDatalistFromValueSet(listId, listOfDistinctValues) {
+    let listElement = document.getElementById(listId)
+    if (listElement == null) {
+        listElement = document.createElement("datalist")
+        listElement.setAttribute("id", listId)
+        document.body.appendChild(listElement)
+    }
+    //remove current contents
+    listElement.length = 0
+    listElement.innerHTML = null
+    let option
+    for (let value of listOfDistinctValues) {
+        option = document.createElement('option')
+        option.value = value
+        listElement.appendChild(option)
+    }
+}
 

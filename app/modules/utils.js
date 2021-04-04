@@ -1,4 +1,4 @@
-export {isOperationBlackedOut, uuidv4, getNestedPropertyValueFromObject, setNestedPropertyValueOnObject,getRatingTypeProperties}
+export {isOperationBlackedOut, uuidv4, getNestedPropertyValueFromObject, setNestedPropertyValueOnObject,getRatingTypeProperties, showOrHideElement,getDateTimeString}
 
 
 // to prevent an operation from being executed too often, we record a timestamp in the near future until when 
@@ -45,19 +45,23 @@ const setNestedPropertyValueOnObject = (object, propertyPath , value) => {
    return object
 }
 
-function getRatingTypeProperties(ratingType, model) { // model = getData().model
+function getRatingTypeProperties(ratingType, model, includeObjectType=true) { // model = getData().model
    let theRatingType = ratingType
    if (typeof (theRatingType) == "string") {
        theRatingType = model?.ratingTypes[ratingType]
    }
-   return Object.keys(theRatingType.objectType.properties).map(
-       (propertyName) => {
-           return {
-               propertyPath: `object.${propertyName}`,
-               propertyScope: "object",
-               property: theRatingType.objectType.properties[propertyName]
-           };
-       }).concat(
+   let properties = []
+   if (includeObjectType) {
+       properties = properties.concat(Object.keys(theRatingType.objectType.properties).map(
+        (propertyName) => {
+            return {
+                propertyPath: `object.${propertyName}`,
+                propertyScope: "object",
+                property: theRatingType.objectType.properties[propertyName]
+            };
+        }))
+   }
+   properties = properties.concat(
            Object.keys(theRatingType.properties).map(
                (propertyName) => {
                    return {
@@ -66,5 +70,16 @@ function getRatingTypeProperties(ratingType, model) { // model = getData().model
                        property: theRatingType.properties[propertyName]
                    };
                })
-       );
+       )
+       return properties
 }
+
+const showOrHideElement = (elementId, show) => {
+    var x = document.getElementById(elementId);
+      x.style.display = show?"block":"none"
+  }
+
+const getDateTimeString = (timestampInMS) => {
+    const time = new Date(timestampInMS)
+    return `${time.getUTCHours()}:${(time.getMinutes()+"").padStart(2, '0')} ${time.getUTCDay()}-${time.getUTCMonth()}-${time.getUTCFullYear()}` 
+}  

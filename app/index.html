@@ -14,6 +14,20 @@
 </head>
 
 <body>
+    <!-- The Modal -->
+    <div id="modalEditor" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span id="closeModalEditor" class="close">&times;</span>
+            <h3 id="modalEditorTitle"></h3>
+            <div id="modalContentContainer"></div>
+
+            <div id="modalButtonBar" style="position: absolute; bottom: 25;right: 100;">
+            </div>
+
+        </div>
+    </div>
 
 
     <!-- The Modal -->
@@ -23,7 +37,7 @@
         <div class="modal-content">
             <span class="close">&times;</span>
             <img id="blipImage" width="150px" style="float:right" />
-            <h3 id="blipEditorTitle">Blip Editor</h3>
+            <h3 id="blipEditorTitle"></h3>
 
             <div id="newBlip">
                 <div class="column1_3">
@@ -44,11 +58,11 @@
                     <input type="checkbox" title="Create a new rating for the object" id="newRatingCheck"></input>
                 </div>
                 <div id="newblipEditorButtonBar" style="position: absolute; bottom: 25;right: 100;">
-                   
+
                 </div>
-                <br/><br/><br/><br/>
-                <br/><br/><br/><br/>
-                <br/><br/><br/><br/>
+                <br /><br /><br /><br />
+                <br /><br /><br /><br />
+                <br /><br /><br /><br />
 
             </div>
             <div id="blipForm">
@@ -81,6 +95,20 @@
             window.onclick = function (event) {
                 if (event.target == modal) {
                     modal.style.display = "none";
+                }
+            }
+
+            var modalEditor = document.getElementById("modalEditor");
+            // Get the <span> element that closes the modal
+            var span = document.getElementById("closeModalEditor");
+            // When the user clicks on <span> (x), close the modal
+            span.onclick = function () {
+                modalEditor.style.display = "none";
+            }
+            // When the user clicks anywhere outside of the modal, close it
+            window.onclick = function (event) {
+                if (event.target == modalEditor) {
+                    modalEditor.style.display = "none";
                 }
             }
         </script>
@@ -202,9 +230,10 @@
     <script type="module">
         import { drawRadar, subscribeToRadarEvents } from './modules/radar.js';
         import { drawRadarBlips } from './modules/radarBlips.js';
-        import { initializeViewpointFromURL, initializeFiltersTagsFromURL, getDefaultSettingsBlip, setDefaultSettingsBlip, shuffleBlips, getConfiguration, getViewpoint,  getState, subscribeToRadarRefresh } from './modules/data.js';
+        import { initializeViewpointFromURL, initializeFiltersTagsFromURL, getDefaultSettingsBlip, setDefaultSettingsBlip, shuffleBlips, getConfiguration, getViewpoint, getState, subscribeToRadarRefresh } from './modules/data.js';
         import { makeDraggable } from './modules/blipDrag.js'
-        import { handleBlipDrag, launchNewBlipWizard,launchBlipEditor } from './modules/blipEditing.js'
+        import { handleBlipDrag, launchNewBlipWizard, launchBlipEditor } from './modules/blipEditing.js'
+        import { launchSectorEditor } from './modules/sectorEditing.js'
 
         initializeViewpointFromURL()
         initializeFiltersTagsFromURL()
@@ -228,7 +257,7 @@
         })
         subscribeToRadarEvents((event) => {
             if (event.type == "blipCreation") {
-                launchNewBlipWizard( getViewpoint(), drawRadarBlips)
+                launchNewBlipWizard(getViewpoint(), drawRadarBlips)
             }
 
             if (event.type == "editBlipDefaults") {
@@ -239,7 +268,11 @@
             if (event.type == "shuffleBlips") {
                 shuffleBlips()
             }
+            if (event.type == "sectorDblClick") {
+                launchSectorEditor(event.sector, getViewpoint(), drawRadarBlips)
+            }
         })
+
 
     </script>
 

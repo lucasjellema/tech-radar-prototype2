@@ -24,7 +24,7 @@
 - generate blips in Viewpoint for all objects | selected objects
 - assign unique identifiers to objects and ratings (to allow merging)
 
-- update timestamp voor rating when blip has been edited
+
 - have input field for entering color value (in addition to color picker) with datalist / combobox with common colors
 - ?? record blip coordinates as polar coordinates
 
@@ -35,6 +35,15 @@
 - store state (including defaults) in localstorage (to be reinstated in a later session)
 - CSV to (Data Model to) Radar wizard
 - fetch radar data from external URL (anything within reach from user's browser) (import dialog & pass sourceURL as query parameter)
+
+- new visual dimensions
+  - pattern used to fill blip
+  - visual markings - like surrounding ring or partial ring or asterisk
+  - font style in label 
+
+## April 4th
+- update timestamp voor rating when blip has been edited
+- sector editor (assign one or more sector property values to sector)
 
 ## April 3rd
 

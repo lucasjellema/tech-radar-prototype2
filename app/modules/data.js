@@ -20,25 +20,26 @@ const datasetMap = {
 // - assign ID values if not already present in Object and Rating
 // - define object type and rating type on objects and ratings respectively
 // - ??? provide references to objects for name reference to ratingType, objectType etc. 
-const normalizeDataSet = (data) => {
-    data.objects = data.objects ?? {}
-    data.ratings = data.ratings ?? {}
-    data.viewpoints.forEach((viewpoint) => {
+const normalizeDataSet = (dataset) => {
+    dataset.objects = dataset.objects ?? {}
+    dataset.ratings = dataset.ratings ?? {}
+    dataset.viewpoints.forEach((viewpoint) => {
         addUUIDtoBlips(viewpoint.blips)
         console.log(`${JSON.stringify(viewpoint.ratingType)}`)
         const objectType = viewpoint.ratingType.objectType
         viewpoint.blips.forEach((blip) => {
 
-            data.objects[blip.rating.object.id] = blip.rating.object
-            data.ratings[blip.rating.id] = blip.rating
+            dataset.objects[blip.rating.object.id] = blip.rating.object
+            dataset.ratings[blip.rating.id] = blip.rating
         })
     })
-    return data
+    return dataset
 }
 
 // load data from local file - URLS for files in datasetMap - referring to local files, pure JSON content
 // as a next step: this data could also be loaded from URLs referring to external - internet resources that must be accessible from the user's browser
 const loaddataset = async (datasetKey) => {
+    console.log(`load dataset ${datasetKey} from ${datasetMap[datasetKey]}`)
     const data = await fetch(datasetMap[datasetKey])
         .then(response => {
             return response.json();
@@ -218,12 +219,14 @@ const initializeDatasetFromURL = async () => {
     console.log(`source ${source}`)
     // TODO load data from sourceURL
     const sourceURL = params.get('sourceURL')
-    console.log(`source ${sourceURL}`)
+    console.log(`sourceURL ${sourceURL}`)
 
     data = await loaddataset(source)
     // add uuid to objects and ratings - just to be sure
     data.viewpoints.forEach((viewpoint) => addUUIDtoBlips(viewpoint.blips))
+    publishRefreshRadar()
 }
+
 initializeDatasetFromURL()
 //let radarIndex = { templates: [{ title: encodeURI(config.title.text), description: "", lastupdate: "20210310T192400" }], objects: [] }
 
@@ -237,16 +240,17 @@ const createBlip = (objectId, objectNewLabel, ratingId = null) => {
             id: uuidv4(),
             timestamp: Date.now(),
             pending: true
-            , object: objectId != null 
-                      ? getObjectById(objectId) 
-                      : { id: uuidv4(), pending: true }
+            , object: objectId != null
+                ? getObjectById(objectId)
+                : { id: uuidv4(), pending: true }
         }
     // TODO existing object and new rating, then set defaults on rating propertie
-    if (ratingId==null) {
+    if (ratingId == null) {
         // set defaults on object and on rating properties
-        rating.object.label = objectNewLabel ?? "NEW" // TODO hardcoded object display property
-
-        let properties = getRatingTypeProperties(getViewpoint().ratingType, getData().model, objectId==null)
+        if (objectId == null) {
+            rating.object.label = objectNewLabel ?? "NEW" // TODO hardcoded object display property
+        }
+        let properties = getRatingTypeProperties(getViewpoint().ratingType, getData().model, objectId == null)
 
         for (let i = 0; i < properties.length; i++) {
             const property = properties[i]

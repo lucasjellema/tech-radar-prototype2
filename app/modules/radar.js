@@ -122,6 +122,7 @@ const drawSectors = function (radar, config, elementDecorator = null) {
                     .style("stroke-width", ("sectors" == config.topLayer && getState().selectedSector == i && getState().editMode) ? 8 : config.sectorConfiguration?.stroke?.strokeWidth ?? 3)
                     .style("stroke-dasharray", ("sectors" == config.topLayer && getState().selectedSector == i && getState().editMode) ? "" : config.sectorConfiguration?.stroke?.strokeArray ?? "#000")
                     .on('click', () => { const sector = i; publishRadarEvent({ type: "sectorClick", sector: i }) })
+                    .on('dblclick', () => { console.log(`dbl click on sector`);const sector = i; publishRadarEvent({ type: "sectorDblClick", sector: i }) })
                 // add color to the sector area outside the outer ring
                 const outerringArc = d3.arc()
                     .outerRadius(config.maxRingRadius * 4)
@@ -132,6 +133,7 @@ const drawSectors = function (radar, config, elementDecorator = null) {
                     .attr("id", `outerring${i}`)
                     .attr("d", outerringArc)
                     .style("fill", sector?.outerringBackgroundColor ?? "white")
+                    .on('dblclick', () => { console.log(`dbl click on sector`);const sector = i; publishRadarEvent({ type: "sectorDblClick", sector: i }) })
 
                 if (config.sectorConfiguration.showEdgeSectorLabels == null || config.sectorConfiguration.showEdgeSectorLabels) {
                     // print sector label along the edge of the arc
@@ -217,6 +219,8 @@ const drawRings = function (radar, config) {
             .style("stroke-width", ("rings" == config.topLayer && getState().selectedRing == i && getState().editMode) ? 6 : config.ringConfiguration?.stroke?.strokeWidth ?? 2)
             .style("stroke-dasharray", ("rings" == config.topLayer && getState().selectedRing == i && getState().editMode) ? "" : config.ringConfiguration?.stroke?.strokeArray ?? "9 1")
             .on('click', () => { const ring = i; publishRadarEvent({ type: "ringClick", ring: i }) })
+            .on('dblclick', () => { console.log(`dbl click on ring`);const sectorring = i; publishRadarEvent({ type: "ringDblClick", ring: i }) })
+
         
         if (ring.backgroundImage && ring.backgroundImage.image) {
             ringCanvas.append('image')

@@ -1,7 +1,7 @@
 export {isOperationBlackedOut, uuidv4, getNestedPropertyValueFromObject, setNestedPropertyValueOnObject
        ,getRatingTypeProperties, getElementValue, showOrHideElement,getDateTimeString
        ,populateSelect, getAllKeysMappedToValue, createAndPopulateDataListFromBlipProperties
-       ,populateFontsList , setTextOnElement,initializeImagePaster,undefinedToDefined}
+       ,populateFontsList , setTextOnElement,initializeImagePaster,undefinedToDefined, capitalize}
 
 
 // to prevent an operation from being executed too often, we record a timestamp in the near future until when 
@@ -153,7 +153,6 @@ const populateFontsList = (fontsListElementId) => {
 }
 
 const undefinedToDefined = (value, definedValue="") => {
-    console.log(`value ${value}`)
     let derivedValue = (typeof value == 'undefined') ? definedValue: value
     return derivedValue
 }
@@ -214,3 +213,8 @@ const initializeImagePaster = (handleImagePaste, pasteAreaElementId) => {
     }
 
 }
+
+const capitalize = (s) => {
+    if (typeof s !== 'string') return ''
+    return s.charAt(0).toUpperCase() + s.slice(1)
+  }

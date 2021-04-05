@@ -25,6 +25,7 @@
 - ?? record blip coordinates as polar coordinates
 
 - define "start angle" for sectors (to get tilting/rotating effect)
+- define "total angle" for sectors (to create half, quarter, two thirds, one third)
 
 - auto-map for radar:  derive rings from distinct property values (and width from number of entries for each value); user can edit labels and sequence in radar editor
 - have defaults associated with viewpoint; currently, defaults are created for the current viewpoint and do not synchronize with a new viewpoint
@@ -56,6 +57,9 @@
 - apply font size, color and family for sector labels 
 - radar configurator - support for sectors: remove sector, add sector, distribute angles, select mapped property
 - if no sector found for blip - then do not draw blip 
+- support for hiding sectors: in radar configurator and sector editor; in draw radar and drawblips. Still to do: expand space taken up by other sectors (every sector's angle can be multiplied with 1/(sum of all visible sectors))
+- derive generated sector label from allowable value label when available
+- only generate a blip drag event if there is real movement (> 3 pixels)
 
 ## April 4th
 - update timestamp voor rating when blip has been edited

@@ -2,7 +2,7 @@ export { launchMainEditor }
 import { drawRadar, subscribeToRadarEvents, publishRadarEvent } from './radar.js';
 import { getViewpoint, getData, publishRefreshRadar } from './data.js';
 import { launchSectorEditor } from './sectorEditing.js'
-import { populateFontsList, createAndPopulateDataListFromBlipProperties, undefinedToDefined, getAllKeysMappedToValue, getNestedPropertyValueFromObject, setNestedPropertyValueOnObject, initializeImagePaster, populateSelect, getElementValue, setTextOnElement, getRatingTypeProperties, showOrHideElement } from './utils.js'
+import {capitalize, populateFontsList, createAndPopulateDataListFromBlipProperties, undefinedToDefined, getAllKeysMappedToValue, getNestedPropertyValueFromObject, setNestedPropertyValueOnObject, initializeImagePaster, populateSelect, getElementValue, setTextOnElement, getRatingTypeProperties, showOrHideElement } from './utils.js'
 
 
 const getPropertyValuesAndCounts = (propertyPath, ratings) => { // filter on rating type!
@@ -40,7 +40,7 @@ const launchMainEditor = (viewpoint, drawRadarBlips) => {
     html += `<input type="button" id="addSectorButton"  value="Add Sector"  style="padding:6px;margin:10px"/>`
 
     html += `<table id="sectors">`
-    html += `<tr><th>Sector Label</th><th>%</th><th>Mapped Values</th><th>Current Count</th><th>Delete?</th><th>v ^</th></tr>`
+    html += `<tr><th>Sector Label</th><th>%</th><th>Mapped Values</th><th>Current Count</th><th>Visible</th><th>Delete?</th><th>v ^</th></tr>`
     for (let i = 0; i < viewpoint.template.sectorConfiguration.sectors.length; i++) {
         const sector = viewpoint.template.sectorConfiguration.sectors[i]
         // find all values mapped to the sectorToEdit
@@ -61,6 +61,7 @@ const launchMainEditor = (viewpoint, drawRadarBlips) => {
         }
         html += `</td>
         <td>${valueCount} </td>
+        <td><input id="showSector${i}" type="checkbox" ${sector?.visible == false?"":"checked"}></input></td> 
         <td><span id="deleteSector${i}" class="clickableProperty">Delete</span></td> 
         <td><span id="downSector${i}" class="clickableProperty">${i < viewpoint.template.sectorConfiguration.sectors.length - 1 ? "v" : ""}</span>&nbsp;
         <span id="upSector${i}" class="clickableProperty">${i > 0 ? "^" : ""}</span></td> 
@@ -75,6 +76,12 @@ const launchMainEditor = (viewpoint, drawRadarBlips) => {
 
     // add event listeners
     for (let i = 0; i < viewpoint.template.sectorConfiguration.sectors.length; i++) {
+        document.getElementById(`showSector${i}`).addEventListener("change", (e) => {
+            viewpoint.template.sectorConfiguration.sectors[i].visible = e.target.checked
+            publishRadarEvent({ type: "shuffleBlips" })
+            publishRefreshRadar()
+        })
+
         document.getElementById(`editSector${i}`).addEventListener("click", () => {
             launchSectorEditor(i, viewpoint, drawRadarBlips)
             // hideMe() // show the main editor?
@@ -226,8 +233,9 @@ const reconfigureSectors = (propertyPath, viewpoint) => {
     viewpoint.template.sectorConfiguration.sectors = []
     // create new entries for values in valueOccurrenceMap
     for (let i = 0; i < Object.keys(valueOccurrenceMap).length; i++) {
+        const allowableLabel = getLabelForAllowableValue(Object.keys(valueOccurrenceMap)[i], viewpoint.propertyVisualMaps["sector"].property, viewpoint)
         const newSector = {
-            "label": Object.keys(valueOccurrenceMap)[i],
+            "label": allowableLabel ?? capitalize( Object.keys(valueOccurrenceMap)[i]),
             "angle": 1 / Object.keys(valueOccurrenceMap).length,
             "labelSettings": { showCurved: true, showStraight: false, color: "#000000", fontSize: 18, fontFamily: "Helvetica" },
             "backgroundImage": {},
@@ -247,11 +255,24 @@ const reconfigureSectors = (propertyPath, viewpoint) => {
 
 }
 
+const getLabelForAllowableValue = (value, propertyPath, viewpoint) => {
+    let ratingType = viewpoint.ratingType;
+    if (typeof (ratingType) == "string") {
+        ratingType = getData().model?.ratingTypes[ratingType];
+    }
+    let ratingTypeProperties = getRatingTypeProperties(ratingType, getData().model);
+    let sectorProperty = ratingTypeProperties.filter((property) => property.propertyPath == propertyPath)[0];
+
+    for (let i = 0; i < sectorProperty.property?.allowableValues?.length; i++) {
+        if (sectorProperty.property?.allowableValues[i].value == value) return sectorProperty.property?.allowableValues[i].label
+    }
+    return null
+}
+
 const hideMe = () => {
     showOrHideElement("modalMain", false); publishRefreshRadar()
 }
 function getValueOccurrenceMap(propertyPath, viewpoint, includeAllowableValues = false) {
-    //const sectorVisualMap = viewpoint.propertyVisualMaps["sector"]
     let ratingType = viewpoint.ratingType;
     if (typeof (ratingType) == "string") {
         ratingType = getData().model?.ratingTypes[ratingType];

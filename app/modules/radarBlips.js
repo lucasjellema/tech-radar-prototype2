@@ -142,7 +142,8 @@ const drawRadarBlips = function (viewpoint) {
 }
 
 const priorSectorsAnglePercentageSum = (sectorId, config) => config.sectorConfiguration.sectors.filter((sector, index) => index < sectorId)
-    .reduce((sum, sector) => sum + sector.angle, 0)
+    .reduce((sum, sector) => 
+     sum + (sector?.visible !=false ? sector.angle:0), 0)
 
 const priorRingsWidthPercentageSum = (ringId, config) => config.ringConfiguration.rings.filter((ring, index) => index < ringId)
     .reduce((sum, ring) => sum + ring.width, 0)
@@ -173,7 +174,7 @@ const blipInSegment = (cartesian, viewpoint, segment) => {
 const drawRadarBlip = (blip, d, viewpoint) => {
     const propertyMappedToSector = viewpoint.propertyVisualMaps.sector.property
     const blipSector = viewpoint.propertyVisualMaps.sector.valueMap[getNestedPropertyValueFromObject(d.rating, propertyMappedToSector)]
-    if (blipSector == null) {
+    if (blipSector == null || viewpoint.template.sectorConfiguration.sectors[blipSector]?.visible == false) {
         // TODO get sector designated as default / other OR do NOT draw blip at all
         return
     }

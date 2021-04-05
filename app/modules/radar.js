@@ -92,6 +92,7 @@ const drawSectors = function (radar, config, elementDecorator = null) {
         let currentAnglePercentage = 0
         for (let i = 0; i < config.sectorConfiguration.sectors.length; i++) {
             let sector = config.sectorConfiguration.sectors[i]
+            if (sector?.visible ==  false) continue;
             currentAnglePercentage = currentAnglePercentage + sector.angle
             let currentAngle = 2 * Math.PI * currentAnglePercentage
             const sectorEndpoint = cartesianFromPolar({ r: config.sectorBoundariesExtended ? 2000 : config.maxRingRadius, phi: currentAngle })

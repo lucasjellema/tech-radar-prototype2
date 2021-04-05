@@ -274,7 +274,7 @@
         drawRadarBlips(getViewpoint())
 
         const svg = d3.select(`svg#${viewpoint.svg_id}`)
-        makeDraggable(svg.node(), (dragEvent) => { handleBlipDrag(dragEvent, getViewpoint()) })
+        makeDraggable(svg.node(), (dragEvent,x) => { handleBlipDrag(dragEvent, getViewpoint()) })
 
         subscribeToRadarRefresh(() => {
             //console.log(`refresh`)

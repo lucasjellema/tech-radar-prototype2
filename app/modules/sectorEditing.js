@@ -56,10 +56,11 @@ const launchSectorEditor = (sectorToEdit, viewpoint, drawRadarBlips) => {
     </td></tr>`
 
 
-    html += `<tr><td rowspan="2"><label for="sectorLabel">Label</label></td><td><input id="sectorLabel" type="text" value="${sector.label}"></input></td>
+    html += `<tr><td rowspan="1"><label for="sectorLabel">Label</label></td><td><input id="sectorLabel" type="text" value="${sector.label}"></input></td>
     <td><label for="curvedSectorLabel" >Curved Label?</label><input id="curvedSectorLabel" type="checkbox" ${sector?.labelSettings?.showCurved?"checked":""}/>
     <label for="straightSectorLabel" >Straight Label?</label><input id="straightSectorLabel" type="checkbox"  ${sector?.labelSettings?.showStraight?"checked":""}/></td>
     </tr>`
+    html += `<tr><td><label for="showSector">Visible?</label></td><td><input id="showSector" type="checkbox" ${sector?.visible == false?"":"checked"}></input></td></tr>`
     html += `</table><br/><a href="#" id="advancedToggle" >Show Advanced Properties?</a>
     <table id="advancedSectorProperties"><tr>`
     
@@ -177,6 +178,7 @@ const saveSector = (sectorToEdit, sector, viewpoint) => {
     sector.opacity = getElementValue("sectorOpacityInside")
     sector.opacityOutsideRings = getElementValue("sectorOpacityOutside")
 
+
     
     sector.edge = sector.edge ?? {}
     sector.edge.color = getElementValue("sectorEdgeColor")
@@ -188,7 +190,8 @@ const saveSector = (sectorToEdit, sector, viewpoint) => {
     sector.labelSettings.fontSize = getElementValue("sectorLabelSize")
     sector.labelSettings.showCurved = document.getElementById("curvedSectorLabel").checked // checkbox?
     sector.labelSettings.showStraight = document.getElementById("straightSectorLabel").checked // checkbox?
-
+    sector.visible = document.getElementById("showSector").checked 
+    
 
     const valueMap = viewpoint.propertyVisualMaps["sector"].valueMap
     // remove all entries from valueMap with value sector (sequence)

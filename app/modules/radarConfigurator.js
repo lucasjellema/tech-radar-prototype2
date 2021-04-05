@@ -235,12 +235,13 @@ const reconfigureSectors = (propertyPath, viewpoint) => {
     for (let i = 0; i < Object.keys(valueOccurrenceMap).length; i++) {
         const allowableLabel = getLabelForAllowableValue(Object.keys(valueOccurrenceMap)[i], viewpoint.propertyVisualMaps["sector"].property, viewpoint)
         const newSector = {
-            "label": allowableLabel ?? capitalize( Object.keys(valueOccurrenceMap)[i]),
-            "angle": 1 / Object.keys(valueOccurrenceMap).length,
-            "labelSettings": { showCurved: true, showStraight: false, color: "#000000", fontSize: 18, fontFamily: "Helvetica" },
-            "backgroundImage": {},
-            "backgroundColor": "#FFFFFF",
-            "outerringBackgroundColor": "#FFFFFF"
+            label: allowableLabel ?? capitalize( Object.keys(valueOccurrenceMap)[i]),
+            angle: 1 / Object.keys(valueOccurrenceMap).length,
+            labelSettings: { showCurved: true, showStraight: false, color: "#000000", fontSize: 18, fontFamily: "Helvetica" },
+            edge: {color:"#000000", width: 1},
+            backgroundImage: {},
+            backgroundColor: "#FFFFFF",
+            outerringBackgroundColor: "#FFFFFF"
         }
 
         viewpoint.template.sectorConfiguration.sectors.push(newSector)

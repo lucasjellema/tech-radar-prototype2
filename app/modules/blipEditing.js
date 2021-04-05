@@ -1,6 +1,6 @@
 
 import { cartesianFromPolar, polarFromCartesian, segmentFromCartesian } from './drawingUtilities.js'
-import {  createAndPopulateDataListFromBlipProperties, getNestedPropertyValueFromObject, setNestedPropertyValueOnObject, setTextOnElement, populateSelect, getRatingTypeProperties, showOrHideElement,initializeImagePaster } from './utils.js'
+import { createAndPopulateDataListFromBlipProperties, getNestedPropertyValueFromObject, setNestedPropertyValueOnObject, setTextOnElement, populateSelect, getRatingTypeProperties, showOrHideElement, initializeImagePaster } from './utils.js'
 import { getViewpoint, getObjectListOfOptions, getRatingListOfOptions, getData, createBlip } from './data.js'
 export { handleBlipDrag, launchNewBlipWizard, launchBlipEditor }
 
@@ -39,8 +39,8 @@ const launchNewBlipWizard = (viewpoint, drawRadarBlips) => {
     showOrHideElement("blipForm", false)
     showOrHideElement("blipImage", false)
     showOrHideElement("ratingSelectionSection", false)
-    
-    setTextOnElement('blipEditorTitle',"Create New Blip - for new or existing object or rating")
+
+    setTextOnElement('blipEditorTitle', "Create New Blip - for new or existing object or rating")
 
     const objectForNewBlipSelectionContainer = document.getElementById('objectForNewBlipSelectionContainer')
 
@@ -58,11 +58,11 @@ const launchNewBlipWizard = (viewpoint, drawRadarBlips) => {
         console.log(`object selection changed to ${e.target.value}`)
         // find ratings for selected object
         const objectId = e.target.value
-        if (objectId!= null && objectId!="-1") {
-        // TODO: show ratingSelectionSection with the current ratings for this object (if any exist)
-        populateSelect("ratingSelect", getRatingListOfOptions( viewpoint.ratingType, objectId), null)
+        if (objectId != null && objectId != "-1") {
+            // TODO: show ratingSelectionSection with the current ratings for this object (if any exist)
+            populateSelect("ratingSelect", getRatingListOfOptions(viewpoint.ratingType, objectId), null)
 
-        showOrHideElement('ratingSelectionSection', true)
+            showOrHideElement('ratingSelectionSection', true)
         } else showOrHideElement('ratingSelectionSection', false)
     })
     const buttonBar = document.getElementById('newblipEditorButtonBar')
@@ -96,8 +96,8 @@ const launchBlipEditor = (blip, viewpoint, drawRadarBlips) => {
     if (typeof (ratingType) == "string") {
         ratingType = getData().model?.ratingTypes[ratingType]
     }
-    
-    setTextOnElement('blipEditorTitle',`Edit Blip for ${blip.rating.object.label}`)
+
+    setTextOnElement('blipEditorTitle', `Edit Blip for ${blip.rating.object.label}`)
 
 
     // TODO cater for tags
@@ -230,7 +230,7 @@ const saveBlipEdit = () => {
 
     // close modal editor
 
-    showOrHideElement("modalBlipEditor",false)
+    showOrHideElement("modalBlipEditor", false)
     drawRadarBlipsToCall(viewpointToReuse)
 }
 
@@ -252,29 +252,25 @@ const handleBlipDrag = function (blipDragEvent, viewpoint) {
     // TODO not all elements are supported for dragging (yet) 
     console.log(`dragged element ${blipDragEvent.blipId}`)
 
-    const dropSegment = segmentFromCartesian({ x: blipDragEvent.newX, y: blipDragEvent.newY }, viewpoint)
-    //console.log(`dropsegment ${JSON.stringify(dropSegment)}`)
-    const blipId = blipDragEvent.blipId.substring(5)
-    // we may be lucky and find the blip at this point in the array
-    let blip
-    if (viewpoint.blips[parseInt(blipId)] != null && viewpoint.blips[parseInt(blipId)].id == blipId)
-        blip = viewpoint.blips[parseInt(blipId)]
+    if (blipDragEvent.blipId.startsWith("sectorBackgroundImage")) { handleSectorBackgroundImageDrag(blipDragEvent, viewpoint) }
     else {
-        // find blip with proper id
+
+        const dropSegment = segmentFromCartesian({ x: blipDragEvent.newX, y: blipDragEvent.newY }, viewpoint)
+        //console.log(`dropsegment ${JSON.stringify(dropSegment)}`)
+        const blipId = blipDragEvent.blipId.substring(5)
+        let blip
         blip = viewpoint.blips.filter((blip) => blip.id == blipId ? blip : null)[0]
+        blip.x = blipDragEvent.newX
+        blip.y = blipDragEvent.newY
+
+        const propertyMappedToSector = viewpoint.propertyVisualMaps.sector.property
+        const propertyValueDerivedFromSector = getKeyForValue(viewpoint.propertyVisualMaps.sector.valueMap, dropSegment.sector) // "find category value mapped to the sector value of dropSector" 
+        setNestedPropertyValueOnObject(blip.rating, propertyMappedToSector, propertyValueDerivedFromSector)
+
+        const propertyMappedToRing = viewpoint.propertyVisualMaps.ring.property
+        const propertyValueDerivedFromRing = getKeyForValue(viewpoint.propertyVisualMaps.ring.valueMap, dropSegment.ring) // "find category value mapped to the sector value of dropSector" 
+        setNestedPropertyValueOnObject(blip.rating, propertyMappedToRing, propertyValueDerivedFromRing)
     }
-    //    console.log(`blip ${JSON.stringify(blip)}`)
-    blip.x = blipDragEvent.newX
-    blip.y = blipDragEvent.newY
-
-    const propertyMappedToSector = viewpoint.propertyVisualMaps.sector.property
-    const propertyValueDerivedFromSector = getKeyForValue(viewpoint.propertyVisualMaps.sector.valueMap, dropSegment.sector) // "find category value mapped to the sector value of dropSector" 
-    setNestedPropertyValueOnObject(blip.rating, propertyMappedToSector, propertyValueDerivedFromSector)
-
-    const propertyMappedToRing = viewpoint.propertyVisualMaps.ring.property
-    const propertyValueDerivedFromRing = getKeyForValue(viewpoint.propertyVisualMaps.ring.valueMap, dropSegment.ring) // "find category value mapped to the sector value of dropSector" 
-    setNestedPropertyValueOnObject(blip.rating, propertyMappedToRing, propertyValueDerivedFromRing)
-
 }
 
 // find in an object the (first) key or property name for a given value 
@@ -282,5 +278,11 @@ const getKeyForValue = function (object, value) {
     return Object.keys(object).find(key => object[key] === value);
 }
 
-
+const handleSectorBackgroundImageDrag = (blipDragEvent, viewpoint) => {
+    console.log(`OK, end sector background image drag`)
+    const sectorId = blipDragEvent.blipId.substring(21) 
+    const sector = viewpoint.template.sectorConfiguration.sectors[sectorId]
+    sector.backgroundImage.x = blipDragEvent.newX // newCoordinates.x - config.width / 2
+    sector.backgroundImage.y = blipDragEvent.newY // newCoordinates.y - config.height / 2
+}
 

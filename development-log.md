@@ -41,6 +41,18 @@
   - visual markings - like surrounding ring or partial ring or asterisk
   - font style in label 
 
+
+- support font-style as property to define for labels in sector
+- include allowable property values in combobox for sector property map (in addition to current values)
+- allow multiple properties to be mapped to a sector (e.g. sector for open source container management and for Oracle integration tools)
+
+## April 5th
+- show (after initial hide) advanced sector properties
+- handle drag & drop of sector background image in main radar 
+- apply sector edge properties (width and color)
+- apply curved/straight label indicators at sector level
+- apply font size, color and family for sector labels 
+
 ## April 4th
 - update timestamp voor rating when blip has been edited
 - sector editor (assign one or more sector property values to sector)

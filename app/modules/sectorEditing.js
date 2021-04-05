@@ -51,7 +51,7 @@ const launchSectorEditor = (sectorToEdit, viewpoint, drawRadarBlips) => {
     setTextOnElement('modalEditorTitle', `Edit Sector ${sector.label}`)
     console.log(`editing sector ${JSON.stringify(sector)}`)
     const contentContainer = document.getElementById("modalContentContainer")
-    let html = `<table>`
+    let html = `<table id="basicSectorProperties">`
     html += `<tr><td><label for="properties">Values for ${sectorProperty.property.label} mapped to this sector</label></td>
     <td><input id="sectorPropertyValue" list="sectorPropertyValueList" value=""></input>
     <input type="button" id="addMappedPropertyValue" name="addTag" value="Add Value" />
@@ -60,14 +60,18 @@ const launchSectorEditor = (sectorToEdit, viewpoint, drawRadarBlips) => {
 
 
     html += `<tr><td rowspan="2"><label for="sectorLabel">Label</label></td><td><input id="sectorLabel" type="text" value="${sector.label}"></input></td>
-    <td><label for="curvedSectorLabel" >Curved Label?</label><input id="curvedSectorLabel" type="checkbox" checked/>
-    <label for="straightSectorLabel" >Straight Label?</label><input id="straightSectorLabel" type="checkbox" /></td>
+    <td><label for="curvedSectorLabel" >Curved Label?</label><input id="curvedSectorLabel" type="checkbox" ${sector?.labelSettings?.showCurved?"checked":""}/>
+    <label for="straightSectorLabel" >Straight Label?</label><input id="straightSectorLabel" type="checkbox"  ${sector?.labelSettings?.showStraight?"checked":""}/></td>
     </tr>`
+    html += `</table><br/><a href="#" id="advancedToggle" >Show Advanced Properties?</a>
+    <table id="advancedSectorProperties"><tr>`
+    
+
     html += `<tr>
     <td><label for="sectorLabelFont">Font (Family)</label>
-    <input id="sectorLabelFont" list="fontsList"   value="${undefinedToDefined(sector.labelSettings?.font)}"></input>
+    <input id="sectorLabelFont" list="fontsList"   value="${undefinedToDefined(sector.labelSettings?.fontFamily)}"></input>
     <label for="sectorLabelSize">Font Size</label>
-    <input id="sectorLabelSize" type="text" value="${undefinedToDefined(sector.labelSettings?.size)}"></input
+    <input id="sectorLabelSize" type="text" value="${undefinedToDefined(sector.labelSettings?.fontSize)}"></input
     </td>
     <td ><label for="sectorLabelColor">Color</label><input id="sectorLabelColor" type="color"  value="${sector.labelSettings?.color}" >
     </td>
@@ -77,10 +81,11 @@ const launchSectorEditor = (sectorToEdit, viewpoint, drawRadarBlips) => {
     <input id="sectorAngle" type="range" min="5" max="95" value="${Math.round(sector.angle * 100)}"></input></td>
     </tr>`
     html += `<tr><td><label for="sectorColor">Color</label></td>
-    <td><label for="sectorColorInside">Color (inside rings)</label><input id="sectorColorInside" type="color" value="${sector.backgroundColor}"></input>
+    <td><label for="sectorColorInside">Color (inside rings)</label><input id="sectorColorInside" type="color" 
+    value="${sector?.backgroundColor ?? '#FFFFFF'}"></input>
     
     </td>`
-        + `<td><label for="sectorColorOutside">Color (outside rings)</label></td><td><input id="sectorColorOutside" type="color" value="${sector.outerringBackgroundColor}"></input>
+        + `<td><label for="sectorColorOutside">Color (outside rings)</label></td><td><input id="sectorColorOutside" type="color" value="${sector?.outerringBackgroundColor  ?? "#FFFFFF"}"></input>
       
         </td></tr>`
         html += `<tr><td>  <label for="sectorOpacity">Opacity</label></td>
@@ -104,7 +109,7 @@ const launchSectorEditor = (sectorToEdit, viewpoint, drawRadarBlips) => {
      html += `<tr><td><label for="edge">Edge Settings</label></td>
      <td><label for="sectorEdgeWidth">Width (<span id="sectorEdgeHeading">${undefinedToDefined(sector.edge?.width)}</span>)</label><input id="sectorEdgeWidth" type="range" min="0" max="15" step="1" value="${sector.edge?.width}"></input>
      </td>
-     <td ><label for="sectorEdgeColor">Color</label><input id="sectorEdgeColor" type="color"  value="${sector.edge?.color}" >
+     <td ><label for="sectorEdgeColor">Color</label><input id="sectorEdgeColor" type="color"  value="${sector?.edge?.color ?? "#FFFFFF"}" >
      </td>
      </td></tr>`
 
@@ -113,7 +118,9 @@ const launchSectorEditor = (sectorToEdit, viewpoint, drawRadarBlips) => {
     <br/><br/><br/><br/><datalist id="fontsList"></datalist>
     `
     showOrHideElement(`backgroundImage`,!(typeof sector.backgroundImage?.image == 'undefined' || sector?.backgroundImage?.image== null || sector?.backgroundImage?.image.length<5))
-
+    showOrHideElement('advancedSectorProperties',false)
+    
+    document.getElementById('advancedToggle').addEventListener('click',()=> {showOrHideElement('advancedSectorProperties',true)})
     createAndPopulateDataListFromBlipProperties(`sectorPropertyValueList`, `${sectorVisualMap["property"]}`, viewpoint.blips)
     populateFontsList('fontsList')
     initializeImagePaster((imageURL) => {
@@ -169,9 +176,11 @@ const saveSector = (sectorToEdit, sector, viewpoint) => {
     sector.edge.width = getElementValue("sectorEdgeWidth")
 
     sector.labelSettings = sector.labelSettings ?? {}
-    sector.labelSettings.font = getElementValue("sectorLabelFont")
+    sector.labelSettings.fontFamily = getElementValue("sectorLabelFont")
     sector.labelSettings.color = getElementValue("sectorLabelColor")
-    sector.labelSettings.size = getElementValue("sectorLabelSize")
+    sector.labelSettings.fontSize = getElementValue("sectorLabelSize")
+    sector.labelSettings.showCurved = document.getElementById("curvedSectorLabel").checked // checkbox?
+    sector.labelSettings.showStraight = document.getElementById("straightSectorLabel").checked // checkbox?
 
 
     const valueMap = viewpoint.propertyVisualMaps["sector"].valueMap

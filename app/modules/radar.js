@@ -15,7 +15,7 @@ const styleText = (textElement, configNode, config, alternativeFontSource = null
     ]
     fontStyleElements.forEach((fontStyleElement) => {
         try {
-            let styleProperty = (configNode?.font?.[fontStyleElement.property] ?? alternativeFontSource?.font?.[fontStyleElement.property]) ?? config.defaultFont[fontStyleElement.property]
+            let styleProperty = (configNode?.[fontStyleElement.property]?? configNode?.font?.[fontStyleElement.property] ?? alternativeFontSource?.font?.[fontStyleElement.property]) ?? config.defaultFont[fontStyleElement.property]
             textElement
                 .style(fontStyleElement.style
                     , styleProperty
@@ -81,12 +81,12 @@ const drawSectors = function (radar, config, elementDecorator = null) {
 
     const sectorCanvas = radar.append("g").attr("id", "sectorCanvas")
 
-    sectorCanvas.append("line") //horizontal sector boundary
-        .attr("x1", 0).attr("y1", 0)
-        .attr("x2", config.sectorBoundariesExtended ? 2000 : config.maxRingRadius)
-        .attr("y2", 0)
-        .style("stroke", config.colors.grid)
-        .style("stroke-width", 1);
+    // sectorCanvas.append("line") //horizontal sector boundary
+    //     .attr("x1", 0).attr("y1", 0)
+    //     .attr("x2", config.sectorBoundariesExtended ? 2000 : config.maxRingRadius)
+    //     .attr("y2", 0)
+    //     .style("stroke", config.colors.grid)
+    //     .style("stroke-width", 1);
 
     for (let layer = 0; layer < 2; layer++) { // TODO if not edit mode then only one layer
         let currentAnglePercentage = 0
@@ -115,11 +115,14 @@ const drawSectors = function (radar, config, elementDecorator = null) {
                 sectorCanvas.append("path")
                     .attr("id", `piePiece${i}`)
                     .attr("d", sectorArc)
-                    .style("fill", sector.backgroundColor != null ? sector.backgroundColor : color_white)
+                    .style("fill", sector.backgroundColor ?? color_white)
                     .attr("opacity", sector.opacity != null ? sector.opacity : 0.6)
                     // define borders of sectors
-                    .style("stroke", ("sectors" == config.topLayer && getState().selectedSector == i && getState().editMode) ? "red" : config.sectorConfiguration?.stroke?.strokeColor ?? "#000")
-                    .style("stroke-width", ("sectors" == config.topLayer && getState().selectedSector == i && getState().editMode) ? 8 : config.sectorConfiguration?.stroke?.strokeWidth ?? 3)
+                    .style("stroke", ("sectors" == config.topLayer && getState().selectedSector == i && getState().editMode) ? "red" 
+                                                        : sector?.edge?.color ?? config.sectorConfiguration?.stroke?.strokeColor ?? "#000")
+                    .style("stroke-width", ("sectors" == config.topLayer && getState().selectedSector == i && getState().editMode) ? 8 
+                                                        : sector?.edge?.width ?? config.sectorConfiguration?.stroke?.strokeWidth ?? 3
+                                                        )
                     .style("stroke-dasharray", ("sectors" == config.topLayer && getState().selectedSector == i && getState().editMode) ? "" : config.sectorConfiguration?.stroke?.strokeArray ?? "#000")
                     .on('click', () => { const sector = i; publishRadarEvent({ type: "sectorClick", sector: i }) })
                     .on('dblclick', () => { console.log(`dbl click on sector`);const sector = i; publishRadarEvent({ type: "sectorDblClick", sector: i }) })
@@ -133,9 +136,10 @@ const drawSectors = function (radar, config, elementDecorator = null) {
                     .attr("id", `outerring${i}`)
                     .attr("d", outerringArc)
                     .style("fill", sector?.outerringBackgroundColor ?? "white")
+                    
                     .on('dblclick', () => { console.log(`dbl click on sector`);const sector = i; publishRadarEvent({ type: "sectorDblClick", sector: i }) })
 
-                if (config.sectorConfiguration.showEdgeSectorLabels == null || config.sectorConfiguration.showEdgeSectorLabels) {
+                if ( sector?.labelSettings?.showCurved ?? (config?.sectorConfiguration?.showEdgeSectorLabels)) {
                     // print sector label along the edge of the arc
                     displaySectorLabel(currentAnglePercentage, startAngle, endAngle, sectorCanvas, i, sector, config, elementDecorator)
                 }
@@ -152,7 +156,7 @@ const drawSectors = function (radar, config, elementDecorator = null) {
                         .attr("class", "draggable")
 
                 }
-                if (config.sectorConfiguration.showRegularSectorLabels != null && config.sectorConfiguration.showRegularSectorLabels) {
+                if ( sector?.labelSettings?.showStraight ?? (config?.sectorConfiguration?.showRegularSectorLabels)) {
                     // print horizontal sector label in the sector
                     const labelCoordinates = cartesianFromPolar({ phi: 2 * (1 - (currentAnglePercentage-0.05)) * Math.PI , r: config.maxRingRadius * 1.2 })
                     const sectorLabel = sectorCanvas.append("text")
@@ -164,7 +168,7 @@ const drawSectors = function (radar, config, elementDecorator = null) {
                         .style("user-select", "none")
                         .attr("class", getState().editMode ? "draggable" : "")
                         .call(elementDecorator ? elementDecorator : () => { }, [`svg#${config.svg_id}`, sector.label, `sectorLabel${i}`]);
-                    styleText(sectorLabel, sector, config, config.sectorConfiguration)
+                    styleText(sectorLabel, sector.labelSettings, config, config.sectorConfiguration)
                 }
 
 
@@ -293,7 +297,7 @@ function displaySectorLabel(currentAnglePercentage, startAngle, endAngle, sector
         .attr("id", `sectorLabel${sectorIndex}`)
         .attr("dy", 10)
         .attr("dx", 45)
-    styleText(sectorLabel, sector, config, config.sectorConfiguration)
+    styleText(sectorLabel, sector.labelSettings, config, config.sectorConfiguration)
 
     sectorLabel.append("textPath")
 

@@ -15,15 +15,28 @@
 
 <body>
     <!-- The Modal -->
-    <div id="modalEditor" class="modal">
+    <div id="modalEditor" class="modal2">
 
         <!-- Modal content -->
-        <div class="modal-content">
+        <div class="modal2-content">
             <span id="closeModalEditor" class="close">&times;</span>
             <h3 id="modalEditorTitle"></h3>
             <div id="modalContentContainer"></div>
 
             <div id="modalButtonBar" style="position: absolute; bottom: 25;right: 100;">
+            </div>
+
+        </div>
+    </div>
+    <div id="modalMain" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span id="closeModalMain" class="close">&times;</span>
+            <h3 id="modalMainTitle"></h3>
+            <div id="modalMainContentContainer"></div>
+
+            <div id="modalMainButtonBar" style="position: absolute; bottom: 25;right: 100;">
             </div>
 
         </div>
@@ -35,7 +48,7 @@
 
         <!-- Modal content -->
         <div class="modal-content">
-            <span class="close">&times;</span>
+            <span id="closeModalBlipEditor" class="close">&times;</span>
             <img id="blipImage" width="150px" style="float:right" />
             <h3 id="blipEditorTitle"></h3>
 
@@ -86,7 +99,7 @@
         <script>
             var modal = document.getElementById("modalBlipEditor");
             // Get the <span> element that closes the modal
-            var span = document.getElementsByClassName("close")[0];
+            var span = document.getElementById("closeModalBlipEditor");
             // When the user clicks on <span> (x), close the modal
             span.onclick = function () {
                 modal.style.display = "none";
@@ -109,6 +122,20 @@
             window.onclick = function (event) {
                 if (event.target == modalEditor) {
                     modalEditor.style.display = "none";
+                }
+            }
+            
+            var modalMain = document.getElementById("modalMain");
+            // Get the <span> element that closes the modal
+            var span = document.getElementById("closeModalMain");
+            // When the user clicks on <span> (x), close the modal
+            span.onclick = function () {
+                modalMain.style.display = "none";
+            }
+            // When the user clicks anywhere outside of the modal, close it
+            window.onclick = function (event) {
+                if (event.target == modalMain) {
+                    modalMain.style.display = "none";
                 }
             }
         </script>
@@ -234,6 +261,7 @@
         import { makeDraggable } from './modules/blipDrag.js'
         import { handleBlipDrag, launchNewBlipWizard, launchBlipEditor } from './modules/blipEditing.js'
         import { launchSectorEditor } from './modules/sectorEditing.js'
+        import {launchMainEditor} from './modules/radarConfigurator.js'
 
         initializeViewpointFromURL()
         initializeFiltersTagsFromURL()
@@ -271,6 +299,11 @@
             if (event.type == "sectorDblClick") {
                 launchSectorEditor(event.sector, getViewpoint(), drawRadarBlips)
             }
+
+            if (event.type == "mainRadarConfigurator") {
+                launchMainEditor( getViewpoint(), drawRadarBlips)
+            }
+            
         })
 
 

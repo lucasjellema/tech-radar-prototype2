@@ -177,12 +177,15 @@ function populateDatalistFromValueSet(listId, listOfDistinctValues) {
 }
 
 
-const createAndPopulateDataListFromBlipProperties = (listId, propertyPath, blips) => {
+const createAndPopulateDataListFromBlipProperties = (listId, propertyPath, blips, additionalValues =[]) => {
 
     const listOfDistinctValues = new Set()
     for (let i = 0; i < blips.length; i++) {
         const blip = blips[i]
         listOfDistinctValues.add(getNestedPropertyValueFromObject(blip.rating, propertyPath))
+    }
+    for (let i = 0; i < additionalValues?.length; i++) {
+        listOfDistinctValues.add(additionalValues[i])
     }
     populateDatalistFromValueSet(listId, listOfDistinctValues)
 }

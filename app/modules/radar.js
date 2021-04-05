@@ -1,6 +1,6 @@
 import { cartesianFromPolar, polarFromCartesian } from './drawingUtilities.js'
 import { getState, getConfiguration } from './data.js'
-export { drawRadar, subscribeToRadarEvents }
+export { drawRadar, subscribeToRadarEvents,publishRadarEvent }
 
 const color_white = "#FFF"
 
@@ -489,7 +489,7 @@ const radarMenu = (x, y, d, blip, viewpoint) => {
         .append('g').attr('class', 'radar-context-menu')
         .attr('transform', `translate(${x},${y + 30})`)
     const width = 170
-    const height = 100
+    const height = 130
     contextMenu.append('rect')
         .attr('width', width)
         .attr('height', height)
@@ -550,6 +550,20 @@ const radarMenu = (x, y, d, blip, viewpoint) => {
             d3.select('.radar-context-menu').remove();
             // create blip
             publishRadarEvent({ type: "shuffleBlips" })
+        })
+
+        menuOptions.append("text")
+        .text(`Radar Configurator`)
+        .attr("transform", `translate(0, ${75})`)
+        .style("fill", "blue")
+        .style("font-family", "Arial, Helvetica")
+        .style("font-size", "15px")
+        .style("font-weight", "bold")
+        .on("click", (e) => {
+            console.log(`Radar Config`)
+            d3.select('.radar-context-menu').remove();
+            // create blip
+            publishRadarEvent({ type: "mainRadarConfigurator" })
         })
 
     }

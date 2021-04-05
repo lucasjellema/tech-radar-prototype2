@@ -171,12 +171,11 @@ const blipInSegment = (cartesian, viewpoint, segment) => {
 }
 
 const drawRadarBlip = (blip, d, viewpoint) => {
-
-
     const propertyMappedToSector = viewpoint.propertyVisualMaps.sector.property
     const blipSector = viewpoint.propertyVisualMaps.sector.valueMap[getNestedPropertyValueFromObject(d.rating, propertyMappedToSector)]
     if (blipSector == null) {
         // TODO get sector designated as default / other OR do NOT draw blip at all
+        return
     }
 
     const propertyMappedToRing = viewpoint.propertyVisualMaps.ring.property

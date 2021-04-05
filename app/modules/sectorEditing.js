@@ -1,5 +1,5 @@
 export { launchSectorEditor }
-import { drawRadar, subscribeToRadarEvents } from './radar.js';
+import { drawRadar, subscribeToRadarEvents,publishRadarEvent } from './radar.js';
 import { getViewpoint, getData, publishRefreshRadar } from './data.js';
 import { populateFontsList, createAndPopulateDataListFromBlipProperties,undefinedToDefined, getAllKeysMappedToValue, getNestedPropertyValueFromObject, setNestedPropertyValueOnObject, initializeImagePaster, populateSelect, getElementValue, setTextOnElement, getRatingTypeProperties, showOrHideElement } from './utils.js'
 
@@ -14,9 +14,6 @@ const renderMappedPropertiesEditor = (containerElement, mappedPropertyValues) =>
      <div class="dropup-content">
          <a href="#" id="removeBlipTag${i}">Remove</a>
      </div>`
-        //     }
-        //  //containerElement.innerHTML = innerHTML
-        //  for (let i = 0; i < mappedPropertyValues.length; i++) {
 
         const div = document.createElement('div');
         div.className = "dropup"
@@ -34,7 +31,7 @@ let mappedSectorPropertyValues
 const launchSectorEditor = (sectorToEdit, viewpoint, drawRadarBlips) => {
     const sectorVisualMap = viewpoint.propertyVisualMaps["sector"]
 
-    // valueMap [value, sectorId]  => find all values mapped to the sectorToEdit
+    // find all values mapped to the sectorToEdit
     mappedSectorPropertyValues = getAllKeysMappedToValue(sectorVisualMap.valueMap, sectorToEdit)
 
     let ratingType = viewpoint.ratingType
@@ -115,13 +112,17 @@ const launchSectorEditor = (sectorToEdit, viewpoint, drawRadarBlips) => {
 
 
     contentContainer.innerHTML = `${html}</table>
-    <br/><br/><br/><br/><datalist id="fontsList"></datalist>
+    <br/><datalist id="fontsList"></datalist>
     `
     showOrHideElement(`backgroundImage`,!(typeof sector.backgroundImage?.image == 'undefined' || sector?.backgroundImage?.image== null || sector?.backgroundImage?.image.length<5))
     showOrHideElement('advancedSectorProperties',false)
     
     document.getElementById('advancedToggle').addEventListener('click',()=> {showOrHideElement('advancedSectorProperties',true)})
-    createAndPopulateDataListFromBlipProperties(`sectorPropertyValueList`, `${sectorVisualMap["property"]}`, viewpoint.blips)
+
+    const allowablesValues = sectorProperty.property?.allowableValues.map((allowableValue) => allowableValue.value)
+    createAndPopulateDataListFromBlipProperties(`sectorPropertyValueList`, `${sectorVisualMap["property"]}`, viewpoint.blips, allowablesValues)
+
+
     populateFontsList('fontsList')
     initializeImagePaster((imageURL) => {
         document.getElementById("backgroundImageURL").value = imageURL
@@ -147,7 +148,7 @@ const launchSectorEditor = (sectorToEdit, viewpoint, drawRadarBlips) => {
         sectorEdgeHeading.innerText = e.target.value
     })
     const buttonBar = document.getElementById("modalButtonBar")
-    buttonBar.innerHTML = `<input id="saveSectorEdits" type="button" value="Save Changes"></input>`
+    buttonBar.innerHTML = `<input id="launchMainEditor" type="button" value="Main Editor"></input> <input id="saveSectorEdits" type="button" value="Save Changes"></input>`
     document.getElementById("saveSectorEdits").addEventListener("click",
         (event) => {
             console.log(`save sector edits for ${sector} `)
@@ -158,6 +159,12 @@ const launchSectorEditor = (sectorToEdit, viewpoint, drawRadarBlips) => {
 
         })
 
+        document.getElementById("launchMainEditor").addEventListener("click",() => {
+            hideMe()
+
+        publishRadarEvent({ type: "mainRadarConfigurator" })
+    })
+        
 }
 const saveSector = (sectorToEdit, sector, viewpoint) => {
     console.log(`save changes to sector`)
@@ -187,5 +194,10 @@ const saveSector = (sectorToEdit, sector, viewpoint) => {
     // remove all entries from valueMap with value sector (sequence)
     getAllKeysMappedToValue(sectorVisualMap.valueMap, sectorToEdit).forEach((key) => delete sectorVisualMap.valueMap[key])
     mappedSectorPropertyValues.forEach((value) => { valueMap[value] = sectorToEdit })
+    publishRefreshRadar()
+}
 
+
+const hideMe = () => {
+    showOrHideElement("modalEditor", false)
 }

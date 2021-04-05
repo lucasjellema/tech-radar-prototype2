@@ -1,10 +1,9 @@
 # Logbook of explorations in this prototype
 
 ## TODOs
-- sector-label and ring-label styling? (font, size, fill) editable in UI 
+
 - extend (foreign object) text editor for labels - larger, add font family/size/color/style
 - extend (foreign object) text editor for different types of input (select, combo, radio)
-- context menu on sector to bring up form to edit background color, opacity, image (& scalefactor) 
 
 - defines themes: filters with selection of positive tags and negative tags 
 - sectors composed from mini-sectors - drill down on one sector to expose its mini-sectors; for example: 
@@ -16,21 +15,18 @@
 
 - zoom in on a single (or a few?) sector - that sector fills up the (angle of the) radar - the other sectors are hidden and so are blips in those sectors (same as hiding some or all other sectors?); note: the user assigned x,y are useless in this case; polar could perhaps be converted: multiply phi with how much more angle the sector gets to fill up
   
-- zoom in on a single ring - that ring fills up the entire (width of the) radar - the other rings are hidden and so are the blips those rings
+- zoom in on a single ring - that ring fills up the entire (width of the) radar - the other rings are hidden and so are the blips in those rings
 
 - allow removal of viewpoint, template, object type, rating type, objects of a specific type
 
 - blip zoom "slider" - apply scaling factor to all the blips (not to any other element)
 - generate blips in Viewpoint for all objects | selected objects
-- assign unique identifiers to objects and ratings (to allow merging)
 
-
-- have input field for entering color value (in addition to color picker) with datalist / combobox with common colors
 - ?? record blip coordinates as polar coordinates
 
 - define "start angle" for sectors (to get tilting/rotating effect)
 
-- auto-map for radar: derive sectors from distinct property values (and angle from number of entries for each value), derive rings from distinct property values (and width from number of entries for each value); user can edit labels and sequence in radar editor
+- auto-map for radar:  derive rings from distinct property values (and width from number of entries for each value); user can edit labels and sequence in radar editor
 - have defaults associated with viewpoint; currently, defaults are created for the current viewpoint and do not synchronize with a new viewpoint
 - store state (including defaults) in localstorage (to be reinstated in a later session)
 - CSV to (Data Model to) Radar wizard
@@ -42,9 +38,15 @@
   - font style in label 
 
 
-- support font-style as property to define for labels in sector
+- property Description for each sector to describe the meaning ; show as hovertext for sector label
+- support font-style, font-weight as property to define for labels in sector
+- support dash array property for sector edge
 - include allowable property values in combobox for sector property map (in addition to current values)
 - allow multiple properties to be mapped to a sector (e.g. sector for open source container management and for Oracle integration tools)
+
+- create Ring Editor similar to sector editor (or reuse sector editor for ring editing)
+ 
+- generate blips (for all ratings that qualify for the viewpoint and its current filters and visible sectors and rings) 
 
 ## April 5th
 - show (after initial hide) advanced sector properties
@@ -52,6 +54,8 @@
 - apply sector edge properties (width and color)
 - apply curved/straight label indicators at sector level
 - apply font size, color and family for sector labels 
+- radar configurator - support for sectors: remove sector, add sector, distribute angles, select mapped property
+- if no sector found for blip - then do not draw blip 
 
 ## April 4th
 - update timestamp voor rating when blip has been edited

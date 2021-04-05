@@ -245,12 +245,16 @@
                     "scope": {
                         "label": "Scope",
                         "description": "The scope or context to which the rating applies",
-                        "defaultValue": "Conclusion"
+                        "defaultValue": "Conclusion",
+                        "discrete": true
+
                     },
                     "author": {
                         "label": "Author/Evaluator",
                         "description": "The name of the person who made the judgement",
-                        "defaultValue": "System Generated"
+                        "defaultValue": "System Generated",
+                        "discrete": true
+
                     },
                     "timestamp": {
                         "label": "Time of Evaluation",

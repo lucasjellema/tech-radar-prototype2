@@ -13,8 +13,8 @@
   
 - sectors defined with (combinations of) tags (or tagfilters); objects that satisfy the tagfilter condition of a sector are displayed in the sector; a viewpoint can contain various sector-configurations - that can be linked - drilling down on one sector to another configuration optionally inherits the master sector's tag-filter - and uses the sector-tagfilters on top of that in the new configuration 
 
-- zoom in on a single (or a few?) sector - that sector fills up the (angle of the) radar - the other sectors are hidden and so are blips in those sectors (same as hiding some or all other sectors?); note: the user assigned x,y are useless in this case; polar could perhaps be converted: multiply phi with how much more angle the sector gets to fill up
-  
+- use d3 force when auto deriving x,y coordinates 
+   
 - zoom in on a single ring - that ring fills up the entire (width of the) radar - the other rings are hidden and so are the blips in those rings
 
 - allow removal of viewpoint, template, object type, rating type, objects of a specific type
@@ -22,7 +22,7 @@
 - blip zoom "slider" - apply scaling factor to all the blips (not to any other element)
 - generate blips in Viewpoint for all objects | selected objects
 
-- ?? record blip coordinates as polar coordinates
+- ?? record user defined blip coordinates as polar coordinates
 
 - define "start angle" for sectors (to get tilting/rotating effect)
 - define "total angle" for sectors (to create half, quarter, two thirds, one third)
@@ -54,7 +54,7 @@
 - expand other sectors when one or more sectors are hidden
 - support drill down on sector (by double click on sector label )
 - support rollup/show all sectors by click on "visible" column header in Radar Configurator - sector panel
-
+- support refresh of sectors based on already mapped property
 
 ### Resources
 - Color Picker - https://www.w3schools.com/colors/colors_picker.asp

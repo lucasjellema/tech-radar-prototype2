@@ -51,6 +51,10 @@
 
 ## April 6th
 
+- expand other sectors when one or more sectors are hidden
+- support drill down on sector (by double click on sector label )
+- support rollup/show all sectors by click on "visible" column header in Radar Configurator - sector panel
+
 
 ### Resources
 - Color Picker - https://www.w3schools.com/colors/colors_picker.asp

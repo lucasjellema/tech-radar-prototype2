@@ -49,6 +49,12 @@
  
 - generate blips (for all ratings that qualify for the viewpoint and its current filters and visible sectors and rings) 
 
+## April 6th
+
+
+### Resources
+- Color Picker - https://www.w3schools.com/colors/colors_picker.asp
+
 ## April 5th
 - show (after initial hide) advanced sector properties
 - handle drag & drop of sector background image in main radar 

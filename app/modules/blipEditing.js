@@ -242,12 +242,6 @@ document.getElementById("saveBlipEdits").addEventListener("click", () => {
 
 
 
-
-
-
-
-
-
 const handleBlipDrag = function (blipDragEvent, viewpoint) {
     // TODO not all elements are supported for dragging (yet) 
     console.log(`dragged element ${blipDragEvent.blipId}`)

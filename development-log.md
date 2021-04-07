@@ -15,17 +15,19 @@
 
 - use d3 force when auto deriving x,y coordinates 
    
-- zoom in on a single ring - that ring fills up the entire (width of the) radar - the other rings are hidden and so are the blips in those rings
+- zoom in on a single ring - that ring fills up the entire (width of the) radar - the other rings are hidden and so are the blips in those rings (similar to zoom in on sector)
 
 - allow removal of viewpoint, template, object type, rating type, objects of a specific type
-
-- blip zoom "slider" - apply scaling factor to all the blips (not to any other element)
-- generate blips in Viewpoint for all objects | selected objects
+- generate ratings and blips in Viewpoint for all objects | selected objects
 
 - ?? record user defined blip coordinates as polar coordinates
 
 - define "start angle" for sectors (to get tilting/rotating effect)
 - define "total angle" for sectors (to create half, quarter, two thirds, one third)
+- define default sector label font/edge/color settings for sectors
+- define default label font/edge/color settings for radar (for sectors, rings, ..)
+- radar level settings: background image, title, title font settings
+- define gradient color for blips (see https://developer.mozilla.org/en-US/docs/Web/SVG/Element/radialGradient)
 
 - auto-map for radar:  derive rings from distinct property values (and width from number of entries for each value); user can edit labels and sequence in radar editor
 - have defaults associated with viewpoint; currently, defaults are created for the current viewpoint and do not synchronize with a new viewpoint
@@ -48,16 +50,18 @@
 - create Ring Editor similar to sector editor (or reuse sector editor for ring editing)
  
 - generate blips (for all ratings that qualify for the viewpoint and its current filters and visible sectors and rings) 
-
+- generate technology objects: name, vendor, description, logo: https://www.capterra.com/database-management-software/ 
 
 ## April 7th
 - map sectors to property of type "tags"; plot blips based on tags (blip is plotted in sector based on first tag that can be mapped)
 - support drag & drop to sector based on tag value; the value associated with the sector is added as the first element in the array of tags associated with the blip
 - clean tag field after adding tag in blip editor
 - clean combobox field after adding mapped value in sector editor
-
 - do not show tags property in blip editor (in normal sequence of input elements)
 - support global blip scale factor (to size all blips with specific factor)
+
+- clean tag field after adding tag to filter
+
 
 ### Resources
 - Check if object is an array: Array.isArray() - https://www.tutorialrepublic.com/faq/how-to-check-if-object-is-an-array-in-javascript.php#:~:text=Answer%3A%20Use%20the%20Array.,an%20array%3B%20otherwise%20returns%20false%20.

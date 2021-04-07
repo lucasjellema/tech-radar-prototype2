@@ -1,6 +1,6 @@
 
 import { cartesianFromPolar, polarFromCartesian, segmentFromCartesian } from './drawingUtilities.js'
-import { createAndPopulateDataListFromBlipProperties, getNestedPropertyValueFromObject, setNestedPropertyValueOnObject, setTextOnElement, populateSelect, getRatingTypeProperties, showOrHideElement, initializeImagePaster } from './utils.js'
+import {createAndPopulateDataListFromBlipProperties, getNestedPropertyValueFromObject, setNestedPropertyValueOnObject, setTextOnElement, populateSelect, getRatingTypeProperties, showOrHideElement, initializeImagePaster } from './utils.js'
 import { getViewpoint, getObjectListOfOptions, getRatingListOfOptions, getData, createBlip } from './data.js'
 export { handleBlipDrag, launchNewBlipWizard, launchBlipEditor }
 

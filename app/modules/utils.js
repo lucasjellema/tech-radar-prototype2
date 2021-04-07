@@ -1,7 +1,8 @@
 export {isOperationBlackedOut, uuidv4, getNestedPropertyValueFromObject, setNestedPropertyValueOnObject
        ,getRatingTypeProperties, getElementValue, showOrHideElement,getDateTimeString
        ,populateSelect, getAllKeysMappedToValue, createAndPopulateDataListFromBlipProperties
-       ,populateFontsList , setTextOnElement,initializeImagePaster,undefinedToDefined, capitalize}
+       ,populateFontsList , setTextOnElement,initializeImagePaster,undefinedToDefined, capitalize
+    ,getDistinctTagValues,populateDatalistFromValueSet,getPropertyFromPropertyPath}
 
 
 // to prevent an operation from being executed too often, we record a timestamp in the near future until when 
@@ -17,6 +18,39 @@ const isOperationBlackedOut = ( blackoutKey, blackoutPeriod = blackoutPeriodDefa
    if (!isBlackedout)  
       blackoutMap[blackoutKey] = now + blackoutPeriod // set fresh blackout if currently not blacked out 
    return isBlackedout
+}
+
+
+
+function addValuesForProperty(propertyPath, blips, distinctValues) {
+    const listOfDistinctPropertyValues = new Set()
+    for (let i = 0; i < blips.length; i++) {
+        const blip = blips[i]
+        listOfDistinctPropertyValues.add(getNestedPropertyValueFromObject(blip.rating, propertyPath)?.toLowerCase().trim())
+    }
+    distinctValues = new Set([...distinctValues, ...listOfDistinctPropertyValues])
+    return distinctValues
+}
+
+const getDistinctTagValues = (viewpoint, includeDiscreteProperties = false) => {
+    const listOfDistinctTagValues = new Set()
+    for (let i = 0; i < viewpoint.blips.length; i++) {
+        const blip = viewpoint.blips[i]
+        if (blip.rating.object?.tags != null && blip.rating.object?.tags.length > 0) {
+            for (let j = 0; j < blip.rating.object?.tags.length; j++) {
+                listOfDistinctTagValues.add(blip.rating.object.tags[j].toLowerCase().trim())
+            }
+        }
+    }
+    let distinctValues = listOfDistinctTagValues
+    // TODO replace hardcoded property paths with meta model driven derivation
+    const discretePropertyPaths = ["object.category", "object.offering", "object.vendor", "scope", "ambition", "author"]
+    if (includeDiscreteProperties) {
+        for (let i = 0; i < discretePropertyPaths.length; i++) {
+            distinctValues = addValuesForProperty(discretePropertyPaths[i], viewpoint.blips, distinctValues)
+        }
+    }
+   return distinctValues
 }
 
 
@@ -46,6 +80,18 @@ const setNestedPropertyValueOnObject = (object, propertyPath , value) => {
    }
    elementToSet[propertyPathSegments[propertyPathSegments.length-1]] = value
    return object
+}
+
+const getPropertyFromPropertyPath = (propertyPath, ratingType, model) =>{
+    const ratingTypeProperties =  getRatingTypeProperties(ratingType, model, true)
+    let property
+    for (let i=0;i<ratingTypeProperties.length;i++) {
+       if (ratingTypeProperties[i].propertyPath == propertyPath) {
+           property = ratingTypeProperties[i].property
+           break
+       }
+    }
+    return property
 }
 
 function getRatingTypeProperties(ratingType, model, includeObjectType=true) { // model = getData().model

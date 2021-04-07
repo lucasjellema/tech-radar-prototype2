@@ -48,6 +48,10 @@
 - create Ring Editor similar to sector editor (or reuse sector editor for ring editing)
  
 - generate blips (for all ratings that qualify for the viewpoint and its current filters and visible sectors and rings) 
+- handle drag and drop for tags type sector: first tag associated with sector will be assigned as first tag in blip
+
+## April 7th
+- map sectors to property of type "tags"; plot blips based on tags (blip is plotted in sector based on first tag that can be mapped)
 
 ## April 6th
 

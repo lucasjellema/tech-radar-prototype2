@@ -42,19 +42,22 @@
 - property Description for each sector to describe the meaning ; show as hovertext for sector label
 - support font-style, font-weight as property to define for labels in sector
 - support dash array property for sector edge
-- include allowable property values in combobox for sector property map (in addition to current values)
+
 - allow multiple properties to be mapped to a sector (e.g. sector for open source container management and for Oracle integration tools)
 
 - create Ring Editor similar to sector editor (or reuse sector editor for ring editing)
  
 - generate blips (for all ratings that qualify for the viewpoint and its current filters and visible sectors and rings) 
-- handle drag and drop for tags type sector: first tag associated with sector will be assigned as first tag in blip
+
 
 ## April 7th
 - map sectors to property of type "tags"; plot blips based on tags (blip is plotted in sector based on first tag that can be mapped)
 - support drag & drop to sector based on tag value; the value associated with the sector is added as the first element in the array of tags associated with the blip
 - clean tag field after adding tag in blip editor
 - clean combobox field after adding mapped value in sector editor
+
+- do not show tags property in blip editor (in normal sequence of input elements)
+- support global blip scale factor (to size all blips with specific factor)
 
 ### Resources
 - Check if object is an array: Array.isArray() - https://www.tutorialrepublic.com/faq/how-to-check-if-object-is-an-array-in-javascript.php#:~:text=Answer%3A%20Use%20the%20Array.,an%20array%3B%20otherwise%20returns%20false%20.

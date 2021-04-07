@@ -161,9 +161,15 @@ const launchBlipEditor = (blip, viewpoint, drawRadarBlips) => {
         document.getElementById("blipImage").src = imageSource
     }
     initializeTagsField(blip)
+    const tagControlsContainer = document.getElementById("tagControls")
+    tagControlsContainer.innerHTML = `                    <input list="tagsList" id="blipTagSelector"></input>
+    <input type="button" id="addTagToBlip" name="addTag" value="Add Tag" />
+`
+
     document.getElementById("addTagToBlip").addEventListener("click",
         (event) => {
             const filterTagValue = document.getElementById("blipTagSelector").value
+            document.getElementById("blipTagSelector").value=""
             if (blip.rating.object.tags == null) { blip.rating.object.tags = [] }
             blip.rating.object.tags.push(filterTagValue)
             initializeTagsField(blip)

@@ -52,6 +52,13 @@
 
 ## April 7th
 - map sectors to property of type "tags"; plot blips based on tags (blip is plotted in sector based on first tag that can be mapped)
+- support drag & drop to sector based on tag value; the value associated with the sector is added as the first element in the array of tags associated with the blip
+- clean tag field after adding tag in blip editor
+- clean combobox field after adding mapped value in sector editor
+
+### Resources
+- Check if object is an array: Array.isArray() - https://www.tutorialrepublic.com/faq/how-to-check-if-object-is-an-array-in-javascript.php#:~:text=Answer%3A%20Use%20the%20Array.,an%20array%3B%20otherwise%20returns%20false%20.
+
 
 ## April 6th
 

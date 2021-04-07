@@ -140,6 +140,7 @@ const launchSectorEditor = (sectorToEdit, viewpoint, drawRadarBlips) => {
     document.getElementById("addMappedPropertyValue").addEventListener("click",
         (event) => {
             const propertyValue = document.getElementById("sectorPropertyValue").value
+            document.getElementById("sectorPropertyValue").value =""
             mappedSectorPropertyValues.push(propertyValue)
             renderMappedPropertiesEditor(document.getElementById("mappedPropertiesContainer"), mappedSectorPropertyValues)
         })

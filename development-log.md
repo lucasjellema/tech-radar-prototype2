@@ -52,6 +52,16 @@
 - generate blips (for all ratings that qualify for the viewpoint and its current filters and visible sectors and rings) 
 - generate technology objects: name, vendor, description, logo: https://www.capterra.com/database-management-software/ 
 
+
+## April 9th
+
+- hiding rings distributes area to other rings
+
+## April 8th
+- introducing Main Radar Configurator (tabs for sectors, rings, ...)
+- radar editor - edit Radar title 
+- ring configurator and ring editor (start through double click on ring label - or from main radar configurator through tab)
+
 ## April 7th
 - map sectors to property of type "tags"; plot blips based on tags (blip is plotted in sector based on first tag that can be mapped)
 - support drag & drop to sector based on tag value; the value associated with the sector is added as the first element in the array of tags associated with the blip

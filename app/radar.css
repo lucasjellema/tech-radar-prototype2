@@ -18,13 +18,25 @@
             /* Black w/ opacity */
         }
 
+
+        .modal-top {
+            background-color: #f3f03f;
+            opacity: 0.9;
+            margin: 1% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 95%;
+            z-index: 3;
+
+        }
         /* Modal Content/Box */
         .modal-content {
             background-color: #f8f1f1;
             opacity: 0.9;
-            margin: 5% auto;
+            margin: 1% auto;
             /* 5% from the top and centered */
             padding: 20px;
+            z-index: 4;
             border: 1px solid #888;
             width: 90%;
             /* Could be more or less, depending on screen size */
@@ -198,6 +210,7 @@
         /* Blue */
         .warning {
             background-color: #ff9800;
+            font-size: x-large;
         }
 
         /* Orange */

@@ -26,10 +26,9 @@
 - define "total angle" for sectors (to create half, quarter, two thirds, one third)
 - define default sector label font/edge/color settings for sectors
 - define default label font/edge/color settings for radar (for sectors, rings, ..)
-- radar level settings: background image, title, title font settings
+- radar level settings: background image
 - define gradient color for blips (see https://developer.mozilla.org/en-US/docs/Web/SVG/Element/radialGradient)
 
-- auto-map for radar:  derive rings from distinct property values (and width from number of entries for each value); user can edit labels and sequence in radar editor
 - have defaults associated with viewpoint; currently, defaults are created for the current viewpoint and do not synchronize with a new viewpoint
 - store state (including defaults) in localstorage (to be reinstated in a later session)
 - CSV to (Data Model to) Radar wizard
@@ -46,11 +45,10 @@
 - support dash array property for sector edge
 
 - allow multiple properties to be mapped to a sector (e.g. sector for open source container management and for Oracle integration tools)
-
-- create Ring Editor similar to sector editor (or reuse sector editor for ring editing)
  
 - generate blips (for all ratings that qualify for the viewpoint and its current filters and visible sectors and rings) 
 - generate technology objects: name, vendor, description, logo: https://www.capterra.com/database-management-software/ 
+- option to define "Others" sector and ring - when set, any blip not assigned to a ring or sector is assigned to the Others ring or sector and can then be displayed
 
 
 ## April 9th

@@ -49,7 +49,14 @@
 - generate blips (for all ratings that qualify for the viewpoint and its current filters and visible sectors and rings) 
 - generate technology objects: name, vendor, description, logo: https://www.capterra.com/database-management-software/ 
 - option to define "Others" sector and ring - when set, any blip not assigned to a ring or sector is assigned to the Others ring or sector and can then be displayed
+- dblclick on ring label does rollup in case the ring is the only one visible (reverse to drilldown)
 
+
+## April 10th
+- blip configurator to set default shape, color, size and define property for label and image
+- apply default blip shape, color, size when plotting blips
+- support Radar Background image (define and move around)
+- new Data Model tab - at this moment still empty
 
 ## April 9th
 

@@ -51,6 +51,9 @@
 - option to define "Others" sector and ring - when set, any blip not assigned to a ring or sector is assigned to the Others ring or sector and can then be displayed
 - dblclick on ring label does rollup in case the ring is the only one visible (reverse to drilldown)
 
+## April 11th
+- if tag in filter starts with " the value is searched for in the label property of the blip; this allows quickly searching a specific blip
+
 
 ## April 10th
 - blip configurator to set default shape, color, size and define property for label and image

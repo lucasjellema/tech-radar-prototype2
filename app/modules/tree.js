@@ -203,6 +203,8 @@ const mapRadarDataToTreeModel = (radarData) => {
             }
         }
     }
+    return data
+    // TODO fix issue with properties exception : data.objects is not organized by object type ; object keys are UUID 
     if (radarData.objects != null) {
         for (let i = 0; i < Object.keys(radarData.objects).length; i++) {
             const objectTypeKey = Object.keys(radarData.objects)[i]
@@ -342,9 +344,9 @@ const getDataFromSelectedTreeElementsInRadarData = (treeElementId, radarData) =>
 // }
 
 const initializeTree = (treeElementId, radarData, treeDataProcessingType = null, uploadedDataProcessorFunction=null) => {
-    try {
+  //  try {
     var treeview = new Treeview(treeElementId, "https://s3-us-west-2.amazonaws.com/s.cdpn.io/620300/");
-       treeview.replaceData(mapRadarDataToTreeModel(radarData));
+    treeview.replaceData(mapRadarDataToTreeModel(radarData));
 
     if (treeDataProcessingType == "download") {
         // button for downloading parts of the current data model
@@ -373,14 +375,14 @@ const initializeTree = (treeElementId, radarData, treeDataProcessingType = null,
     treeview.on("select", (event) => {
         var node = event.target;
         var data = node.dataset
-
-   // display.innerHTML = `<div class="label">${data.label}</div>${data.description ? `<div class="descr">${data.description}</div>` : ''}`;
+const display = document.getElementById("display")
+   display.innerHTML = `<div >${data.label}</div>${data.description ? `<div class="descr">${data.description}</div>` : ''}`;
         console.log(`${event.target} ${JSON.stringify(data)}`)
     });
 
-    } catch (e) {
-        console.log(`initializeTree failed with ${e}`)
-    }
+    // } catch (e) {
+    //     console.log(`initializeTree failed with ${e}`)
+    // }
 }
 
 

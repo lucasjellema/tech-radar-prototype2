@@ -23,13 +23,24 @@ const filterBlip = (blip, viewpoint) => {
             for (let i = 0; i < viewpoint.blipDisplaySettings.tagFilter.length; i++) {
                 const filter = viewpoint.blipDisplaySettings.tagFilter[i]
                 try {
-                    let blipHasFilter = JSON.stringify(blip.rating.object.tags)?.toLowerCase()?.trim()?.indexOf(filter.tag) > -1
-                    // TODO if not yet found, check discrete properties
+                    let blipHasFilter 
+                    if (filter.tag.startsWith('"')){
+                        const labelProperty = viewpoint.propertyVisualMaps.blip.label
+                        const blipLabel = getNestedPropertyValueFromObject(blip.rating,labelProperty).toLowerCase()
+                        const filterTag = filter.tag.replace(/^"+|"+$/g, '').toLowerCase()
+
+                        blipHasFilter= blipLabel.includes(filterTag)
+                    } else {
+                    blipHasFilter = JSON.stringify(blip.rating.object.tags)?.toLowerCase()?.trim()?.indexOf(filter.tag) > -1
+
+                    // TODO derive discrete properties dynamically from data.model instead of hard coded
                     const discretePropertyPaths = ["object.category", "object.offering", "object.vendor", "scope", "ambition", "author"]
                     for (let j = 0; !blipHasFilter && j < discretePropertyPaths.length; j++) {
                         blipHasFilter = getNestedPropertyValueFromObject(blip.rating, discretePropertyPaths[j])?.toLowerCase().trim() == filter.tag
                     }
+                }
 
+                    
                     // minus filter: if tag is in rating.object.tags then blip is not ok  
                     if (blipHasFilter && filter.type == "minus") {
                         blipOK = false; break;

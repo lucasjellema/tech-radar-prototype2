@@ -22,8 +22,6 @@
 
 - ?? record user defined blip coordinates as polar coordinates
 
-- define "start angle" for sectors (to get tilting/rotating effect)
-- define "total angle" for sectors (to create half, quarter, two thirds, one third)
 - define default sector label font/edge/color settings for sectors
 - define default label font/edge/color settings for radar (for sectors, rings, ..)
 - radar level settings: background image
@@ -47,12 +45,16 @@
 - allow multiple properties to be mapped to a sector (e.g. sector for open source container management and for Oracle integration tools)
  
 - generate blips (for all ratings that qualify for the viewpoint and its current filters and visible sectors and rings) 
-- generate technology objects: name, vendor, description, logo: https://www.capterra.com/database-management-software/ 
+- generate technology objects from scraped data: name, vendor, description, logo: https://www.capterra.com/database-management-software/ 
 - option to define "Others" sector and ring - when set, any blip not assigned to a ring or sector is assigned to the Others ring or sector and can then be displayed
 - dblclick on ring label does rollup in case the ring is the only one visible (reverse to drilldown)
 
 ## April 11th
 - if tag in filter starts with " the value is searched for in the label property of the blip; this allows quickly searching a specific blip
+- define "start angle" for sectors (to get tilting/rotating effect)
+- define "total angle" for sectors (to create half, quarter, two thirds, one third)
+- toggle to switch between sectors and rings as top layer
+
 
 
 ## April 10th

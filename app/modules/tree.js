@@ -127,7 +127,9 @@ const mapRadarDataToTreeModel = (radarData) => {
             if (objectType.properties != null) {
                 for (let j = 0; j < Object.keys(objectType.properties).length; j++) {
                     const property = objectType.properties[Object.keys(objectType.properties)[j]]
-                    objectTypeNode.children.properties.children[Object.keys(objectType.properties)[j]] = { label: property.label }
+                    objectTypeNode.children.properties.children[Object.keys(objectType.properties)[j]] =
+                     { label: property.label , propertyPath: `object.${Object.keys(objectType.properties)[j]}`
+                    , data: property}
                 }
             }
             data.model.children.objectTypes.children[Object.keys(radarData.model.objectTypes)[i]] = objectTypeNode
@@ -143,7 +145,8 @@ const mapRadarDataToTreeModel = (radarData) => {
             if (ratingType.properties != null) {
                 for (let j = 0; j < Object.keys(ratingType.properties).length; j++) {
                     const property = ratingType.properties[Object.keys(ratingType.properties)[j]]
-                    ratingTypeNode.children.properties.children[Object.keys(ratingType.properties)[j]] = { label: property.label }
+                    ratingTypeNode.children.properties.children[Object.keys(ratingType.properties)[j]] = 
+                    { label: property.label , property: property,  propertyPath: Object.keys(ratingType.properties)[j]}
                 }
             }
             data.model.children.ratingTypes.children[Object.keys(radarData.model.ratingTypes)[i]] = ratingTypeNode
@@ -198,7 +201,7 @@ const mapRadarDataToTreeModel = (radarData) => {
                 if (objectSets[objectTypeKey].size > 0) {
                     const objectType = radarData.model.objectTypes[objectTypeKey]
                     data.data.children[objectTypeKey] = { label: objectType.label, selectable: true, id: `dataobjects${objectTypeKey}`, children: {} }
-                    objectSets[objectTypeKey].forEach((objectLabel) => data.data.children[objectTypeKey].children[objectLabel] = { label: objectLabel })
+                    objectSets[objectTypeKey].forEach((objectLabel) => data.data.children[objectTypeKey].children[objectLabel] = { label: objectLabel, id:"uuid" })
                 }
             }
         }

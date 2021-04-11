@@ -35,16 +35,17 @@ const launchShapeConfigurator = (viewpoint, drawRadarBlips) => {
     html += `<input type="button" id="addShapeButton"  value="Add Shape"  style="padding:6px;margin:10px"/>`
 
     html += `<table id="shapes">`
-    html += `<tr><th>Shape Label</th><th>Mapped Values</th><th>Current Count</th><th><span id="showAll" >Visible</span></th><th>Delete?</th><th>v ^</th></tr>`
-    for (let i = 0; i < viewpoint.template.shapeConfiguration.shapes.length; i++) {
-        const shape = viewpoint.template.shapeConfiguration.shapes[i]
+    html += `<tr><th>Shape</th><th>Shape Label</th><th>Mapped Values</th><th>Current Count</th><th><span id="showAll" >Visible</span></th><th>Delete?</th><th>v ^</th></tr>`
+    for (let i = 0; i < viewpoint.template.shapesConfiguration.shapes.length; i++) {
+        const shape = viewpoint.template.shapesConfiguration.shapes[i]
         const mappedShapePropertyValues = getAllKeysMappedToValue(shapeVisualMap.valueMap, i)
         // find out how many occurrences of this value exist? 
 
 
 
         html += `<tr>
-        <td><span id="editShape${i}" class="clickableProperty">${shape.label}</a> </td>
+        <td><span id="editShape${i}" class="clickableProperty">${shape.shape}</span> </td>
+        <td><span id="editShape${i}" class="clickableProperty">${shape.label}</span> </td>
         <td>`
         let valueCount = 0
         for (let j = 0; j < mappedShapePropertyValues.length; j++) {
@@ -56,7 +57,7 @@ const launchShapeConfigurator = (viewpoint, drawRadarBlips) => {
         <td>${valueCount} </td>
         <td><input id="showShape${i}" type="checkbox" ${shape?.visible == false ? "" : "checked"}></input></td> 
         <td><span id="deleteShape${i}" class="clickableProperty">Delete</span></td> 
-        <td><span id="downShape${i}" class="clickableProperty">${i < viewpoint.template.shapeConfiguration.shapes.length - 1 ? "v" : ""}</span>&nbsp;
+        <td><span id="downShape${i}" class="clickableProperty">${i < viewpoint.template. shapesConfiguration.shapes.length - 1 ? "v" : ""}</span>&nbsp;
         <span id="upShape${i}" class="clickableProperty">${i > 0 ? "^" : ""}</span></td> 
         </tr> `
 
@@ -66,9 +67,9 @@ const launchShapeConfigurator = (viewpoint, drawRadarBlips) => {
     contentContainer.innerHTML = `${html}</table>`
 
     // add event listeners
-    for (let i = 0; i < viewpoint.template.shapeConfiguration.shapes.length; i++) {
+    for (let i = 0; i < viewpoint.template. shapesConfiguration.shapes.length; i++) {
         document.getElementById(`showShape${i}`).addEventListener("change", (e) => {
-            viewpoint.template.shapeConfiguration.shapes[i].visible = e.target.checked
+            viewpoint.template. shapesConfiguration.shapes[i].visible = e.target.checked
             publishRadarEvent({ type: "shuffleBlips" })
             publishRefreshRadar()
         })
@@ -84,7 +85,7 @@ const launchShapeConfigurator = (viewpoint, drawRadarBlips) => {
             upRing(i, viewpoint)
         })
         document.getElementById(`deleteShape${i}`).addEventListener("click", () => {
-            viewpoint.template.shapeConfiguration.shapes.splice(i, 1)
+            viewpoint.template. shapesConfiguration.shapes.splice(i, 1)
             // remove from propertyVisualMap all value mappings to this shape and decrease the shape reference for any entry  higher than i
             const valueMap = shapeVisualMap.valueMap
             for (let j = 0; j < Object.keys(valueMap).length; j++) {
@@ -112,7 +113,7 @@ const launchShapeConfigurator = (viewpoint, drawRadarBlips) => {
     document.getElementById(`refreshShapes`).addEventListener("click", () => { refreshShapeConfiguration(viewpoint) })
 
     document.getElementById(`showAll`).addEventListener("click", (e) => {
-        viewpoint.template.shapeConfiguration.shapes.forEach((shape, i) => {
+        viewpoint.template. shapesConfiguration.shapes.forEach((shape, i) => {
             shape.visible = true;
             document.getElementById(`showShape${i}`).checked = true
         })
@@ -121,7 +122,7 @@ const launchShapeConfigurator = (viewpoint, drawRadarBlips) => {
         publishRefreshRadar()
 
     })
- document.getElementById(`addshapeButton`).addEventListener("click", (e) => {
+ document.getElementById(`addShapeButton`).addEventListener("click", (e) => {
         const newShape = {
             label: "NEW SHape",
             width: 0.05,
@@ -130,10 +131,10 @@ const launchShapeConfigurator = (viewpoint, drawRadarBlips) => {
             backgroundColor: "#FFFFFF",
             outerringBackgroundColor: "#FFFFFF"
         }
-        viewpoint.template.shapeConfiguration.shapes.push(newShape)
+        viewpoint.template. shapesConfiguration.shapes.push(newShape)
         launchShapeonfigurator(viewpoint)
 
-        //launchShapeEditor(viewpoint.template.shapeConfiguration.shapes.length - 1, viewpoint, drawRadarBlips)
+        //launchShapeEditor(viewpoint.template. shapesConfiguration.shapes.length - 1, viewpoint, drawRadarBlips)
 
     })
 
@@ -143,9 +144,9 @@ const launchShapeConfigurator = (viewpoint, drawRadarBlips) => {
 }
 
 const backShape = (shapeToMoveBack, viewpoint) => {
-    const shapeToMove = viewpoint.template.shapeConfiguration.shapes[shapeToMoveBack]
-    viewpoint.template.shapeConfiguration.shapes[shapeToMoveBack] = viewpoint.template.shapeConfiguration.shapes[shapeToMoveBack + 1]
-    viewpoint.template.shapeConfiguration.shapes[shapeToMoveBack + 1] = shapeToMove
+    const shapeToMove = viewpoint.template. shapesConfiguration.shapes[shapeToMoveBack]
+    viewpoint.template. shapesConfiguration.shapes[shapeToMoveBack] = viewpoint.template. shapesConfiguration.shapes[shapeToMoveBack + 1]
+    viewpoint.template. shapesConfiguration.shapes[shapeToMoveBack + 1] = shapeToMove
     const shapeVisualMap = viewpoint.propertyVisualMaps["shape"]
     // update in propertyVisualMap all value mappings to either of these shapes
     const valueMap = shapeVisualMap.valueMap
@@ -162,9 +163,9 @@ const backShape = (shapeToMoveBack, viewpoint) => {
 }
 
 const upShape = (shapeToMoveUp, viewpoint) => {
-    const shapeToMove = viewpoint.template.shapeConfiguration.shapes[shapeToMoveUp]
-    viewpoint.template.shapeConfiguration.shapes[shapeToMoveUp] = viewpoint.template.shapeConfiguration.shapes[shapeToMoveUp - 1]
-    viewpoint.template.shapeConfiguration.shapes[shapeToMoveUp + -1] = shapeToMove
+    const shapeToMove = viewpoint.template. shapesConfiguration.shapes[shapeToMoveUp]
+    viewpoint.template. shapesConfiguration.shapes[shapeToMoveUp] = viewpoint.template. shapesConfiguration.shapes[shapeToMoveUp - 1]
+    viewpoint.template. shapesConfiguration.shapes[shapeToMoveUp + -1] = shapeToMove
     const shapeVisualMap = viewpoint.propertyVisualMaps["shape"]
     // update in propertyVisualMap all value mappings to either of these shapes
     const valueMap = shapeVisualMap.valueMap
@@ -194,7 +195,7 @@ const reconfigureShapes = (propertyPath, viewpoint) => {
 
     // remove entries from valueMap
     shapeVisualMap.valueMap = {}
-    viewpoint.template.shapeConfiguration.shapes = []
+    viewpoint.template. shapesConfiguration.shapes = []
     // create new entries for values in valueOccurrenceMap
     for (let i = 0; i < Object.keys(valueOccurrenceMap).length; i++) {
         const allowableLabel = getLabelForAllowableValue(Object.keys(valueOccurrenceMap)[i], viewpoint.propertyVisualMaps["shape"].property, viewpoint)
@@ -208,7 +209,7 @@ const reconfigureShapes = (propertyPath, viewpoint) => {
             outershapeBackgroundColor: "#FFFFFF"
         }
 
-        viewpoint.template.shapeConfiguration.shapes.push(newShape)
+        viewpoint.template. shapesConfiguration.shapes.push(newShape)
 
         shapeVisualMap.valueMap[Object.keys(valueOccurrenceMap)[i]] = i // map value to numerically corresponding shape
     }

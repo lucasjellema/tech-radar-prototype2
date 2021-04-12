@@ -4,6 +4,7 @@ export {
     , populateSelect, getAllKeysMappedToValue, createAndPopulateDataListFromBlipProperties
     , populateFontsList, populateShapesList, setTextOnElement, initializeImagePaster, undefinedToDefined, capitalize
     , getDistinctTagValues, getPropertyValuesAndCounts, populateDatalistFromValueSet, getPropertyFromPropertyPath
+    , findDisplayProperty
 }
 
 
@@ -128,6 +129,7 @@ function getRatingTypeProperties(ratingType, model, includeObjectType = true) { 
                 return {
                     propertyPath: `object.${propertyName}`,
                     propertyScope: "object",
+                    propertyName: propertyName,
                     property: theRatingType.objectType.properties[propertyName]
                 };
             }))
@@ -138,11 +140,26 @@ function getRatingTypeProperties(ratingType, model, includeObjectType = true) { 
                 return {
                     propertyPath: `${propertyName}`,
                     propertyScope: "rating",
+
+                    propertyName: propertyName,
                     property: theRatingType.properties[propertyName]
                 };
             })
     )
     return properties
+}
+
+const findDisplayProperty = (properties) => {
+    let displayProperty
+    for (let i = 0; i < Object.keys(properties).length; i++) {
+        const property = properties[Object.keys(properties)[i]]
+        if (i == 0 || (property.displayLabel != null && property.displayLabel)) { // i==0 is to provide a default value in case no property is designated as displayLabel
+            displayProperty = property
+            displayProperty.key = Object.keys(properties)[i]
+            break
+        }
+    }
+    return displayProperty
 }
 
 const getAllKeysMappedToValue = (object, value) => {

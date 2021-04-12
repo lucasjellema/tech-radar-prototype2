@@ -5,7 +5,7 @@ export {
 }
 import { initializeTree } from './tree.js'
 
-import { uuidv4, getNestedPropertyValueFromObject, setNestedPropertyValueOnObject, getRatingTypeProperties, getDateTimeString } from './utils.js'
+import { uuidv4, getNestedPropertyValueFromObject, setNestedPropertyValueOnObject, getRatingTypeProperties, findDisplayProperty, getDateTimeString } from './utils.js'
 
 const datasetMap = {
     emerging: "./modules/emerging-technologies-dataset.json"
@@ -26,6 +26,24 @@ const datasetMap = {
 // round blip x and y
 const serialize = (originalData) => {
     const serializedData = JSON.parse(JSON.stringify(originalData))
+
+    for (let i=0; i< Object.keys(serializedData.ratings).length;i++) {
+        const rating= serializedData.ratings[Object.keys(serializedData.ratings)[i]]
+        if  (!serializedData.objects.hasOwnProperty(rating.object.id)){  // save object in objects
+            serializedData.objects[rating.object.id]= rating.object
+        }
+        let ratingTypeName = serializedData.viewpoints[0].ratingType
+        if (typeof(ratingTypeName) == "object") ratingTypeName = serializedData.viewpoints[0].ratingType.name
+        rating.ratingType =  ratingTypeName // TEMPORARY! every rating should have its rating type defined when created
+        rating.object = rating.object.id
+    }
+
+    for (let i=0; i< Object.keys(serializedData.objects).length;i++) {
+        const object= serializedData.objects[Object.keys(serializedData.objects)[i]]
+        object.objectType = serializedData.model.objectTypes[Object.keys(serializedData.model.objectTypes)[0]].name // TEMPORARY! every object should have its object type defined when created
+
+    }
+
     serializedData.viewpoints.forEach((viewpoint) => {
         addUUIDtoBlips(viewpoint.blips) // probably unnecessary, should not harm
         viewpoint.blips.forEach((blip) => {
@@ -42,14 +60,6 @@ const serialize = (originalData) => {
         }
         
     })     
-    for (let i=0; i< Object.keys(serializedData.ratings).length;i++) {
-        const rating= serializedData.ratings[Object.keys(serializedData.ratings)[i]]
-        if  (!serializedData.objects.hasOwnProperty(rating.object.id)){  // save object in objects
-            serializedData.objects[rating.object.id]= rating.object
-        }
-
-        rating.object = rating.object.id
-    }
         // go over all rating types and replace their objectType object with objectType name
         for (let i=0; i< Object.keys(serializedData.model.ratingTypes).length;i++) {
             const ratingType= serializedData.model.ratingTypes[Object.keys(serializedData.model.ratingTypes)[i]]
@@ -73,7 +83,7 @@ const deserialize = (originalData) => {
     deserializedData.viewpoints.forEach((viewpoint) => {
         viewpoint.blips.forEach((blip) => {
             if (typeof (blip.rating) == "string") { // assume the rating is a reference to an UUID
-                blip.rating = deserializedData.ratings[blip.rating] 
+                blip.rating = deserializedData.ratings[blip.rating] // possibly check getData() as well
             }
         })
         if (viewpoint.ratingType != null && typeof(viewpoint.ratingType)=="string"){
@@ -411,8 +421,11 @@ const getObjectListOfOptions = (objectType = null) => {
     // note: only objects of the type that is used by the rating type 
     const objectsListofOptions = []
     const objectDisplayLabelProperty = "label" // TODO get display property for object type
+
     for (let i = 0; i < Object.keys(getData().objects).length; i++) {
+
         const object = data.objects[Object.keys(getData().objects)[i]]
+        findDisplayProperty()
         objectsListofOptions.push({ label: object[objectDisplayLabelProperty], value: object.id }) // TODO hardcoded proprty name for property identifying object
     }
     objectsListofOptions.sort((a, b) => a.label.toLowerCase() < b.label.toLowerCase() ? -1 : 1)

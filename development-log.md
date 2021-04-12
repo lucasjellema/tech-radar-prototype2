@@ -49,7 +49,8 @@
 - dblclick on ring label does rollup in case the ring is the only one visible (reverse to drilldown)
 
 ## April 12th
-
+- property editor, invoked from datamodelconfigurator
+- include objectType name in objects and ratingType name in ratings
 
 ## April 11th
 - if tag in filter starts with " the value is searched for in the label property of the blip; this allows quickly searching a specific blip

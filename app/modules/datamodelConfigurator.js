@@ -78,6 +78,16 @@ const launchDatamodelConfigurator = (viewpoint, drawRadarBlips) => {
 </div>`
     contentContainer.innerHTML = html
 
+
+    
+    let ratingType = viewpoint.ratingType
+    if (typeof (ratingType) == "string") {
+        ratingType = getData().model?.ratingTypes[ratingType]
+    }
+    let objectType = ratingType.objectType
+    if (typeof (objectType) == "string") {
+        objectType = getData().model?.objectTypes[objectType]
+    }
     // add event listeners
     for (let i = 0; i < blipProperties.length; i++) {
         const blipProperty = blipProperties[i]
@@ -87,23 +97,24 @@ const launchDatamodelConfigurator = (viewpoint, drawRadarBlips) => {
         document.getElementById(`editProperty${i}b`).addEventListener('click', (e) => {
             launchPropertyEditor(blipProperty.property, viewpoint)
         })
+        document.getElementById(`deleteProperty${i}`).addEventListener('click', (e) => {          
+            if (blipProperty.propertyScope == "object") {
+                delete getData().model.objectTypes[objectType.name].properties[blipProperty.propertyName] // TODO hardcoded "technology"
+            } else if (blipProperty.propertyScope == "rating") {
+                delete getData().model.ratingTypes[ratingType.name].properties[blipProperty.propertyName] // TODO hardcoded
+            }
 
+            launchDatamodelConfigurator(viewpoint, drawRadarBlips)
+        })
     }
 
-    let ratingType = viewpoint.ratingType
-    if (typeof (ratingType) == "string") {
-        ratingType = getData().model?.ratingTypes[ratingType]
-    }
-    let objectType = ratingType.objectType
-    if (typeof (objectType) == "string") {
-        objectType = getData().model?.objectTypes[objectType]
-    }
 
-    document.getElementById(`addObjectPropertyButton`).addEventListener('click', (e)=> {
-        const newProperty = {name: "NEW_PROPERTY", label:"New Property"}
+
+    document.getElementById(`addObjectPropertyButton`).addEventListener('click', (e) => {
+        const newProperty = { name: "NEW_PROPERTY", label: "New Property" }
         launchPropertyEditor(newProperty, viewpoint, drawRadarBlips, objectType)
-      
+
     })
 
-    //initializeTree("datamodelTree",getData())
+
 }

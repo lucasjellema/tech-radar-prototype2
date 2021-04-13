@@ -48,6 +48,10 @@
 - option to define "Others" sector and ring - when set, any blip not assigned to a ring or sector is assigned to the Others ring or sector and can then be displayed
 - dblclick on ring label does rollup in case the ring is the only one visible (reverse to drilldown)
 
+## April 13th
+- create new property from datamodelconfigurator
+- inspect and maintain (update, add, remove) allowable values for property in property editor
+
 ## April 12th
 - property editor, invoked from datamodelconfigurator
 - include objectType name in objects and ratingType name in ratings

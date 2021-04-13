@@ -2,7 +2,7 @@ export {
     isOperationBlackedOut, uuidv4, getNestedPropertyValueFromObject, setNestedPropertyValueOnObject
     , getRatingTypeProperties, getElementValue, showOrHideElement, getDateTimeString
     , populateSelect, getAllKeysMappedToValue, createAndPopulateDataListFromBlipProperties
-    , populateFontsList, populateShapesList, setTextOnElement, initializeImagePaster, undefinedToDefined, capitalize
+    , populateFontsList,populateDataTypesList, populateShapesList, setTextOnElement, initializeImagePaster, undefinedToDefined, capitalize
     , getDistinctTagValues, getPropertyValuesAndCounts, populateDatalistFromValueSet, getPropertyFromPropertyPath
     , findDisplayProperty
 }
@@ -213,6 +213,19 @@ const populateSelect = (selectElementId, data, defaultValue = null) => { // data
     }
 }
 
+const populateDataTypesList = (datatypesListElementId, value="string") => {
+    const datatypesList = []
+    datatypesList.push({label:`String`, value:`string`})
+    datatypesList.push({label:`Text`, value:`text`})
+    datatypesList.push({label:`URL`, value:`url`})
+    datatypesList.push({label:`Number`, value:`number`})
+    datatypesList.push({label:`Image`, value:`image`})
+    datatypesList.push({label:`Time`, value:`time`})
+    datatypesList.push({label:`Tags`, value:`tags`})
+ 
+    populateSelect(datatypesListElementId, datatypesList, value)
+}
+
 const populateFontsList = (fontsListElementId) => {
     const fontsList = []
     fontsList.push(`Georgia, serif`)
@@ -236,6 +249,7 @@ const populateFontsList = (fontsListElementId) => {
 
     populateDatalistFromValueSet(fontsListElementId, fontsList)
 }
+
 
 const populateShapesList = (shapesListElementId) => {
     const shapesList = []

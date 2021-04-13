@@ -2,7 +2,7 @@ export { launchDatamodelConfigurator }
 import { drawRadar, subscribeToRadarEvents, publishRadarEvent } from './radar.js';
 import { getViewpoint, getData, publishRefreshRadar } from './data.js';
 import { initializeTree } from './tree.js'
-import {launchPropertyEditor } from './propertyEditor.js'
+import { launchPropertyEditor } from './propertyEditor.js'
 import { capitalize, getPropertyFromPropertyPath, populateFontsList, createAndPopulateDataListFromBlipProperties, undefinedToDefined, getAllKeysMappedToValue, getNestedPropertyValueFromObject, setNestedPropertyValueOnObject, initializeImagePaster, populateSelect, getElementValue, setTextOnElement, getRatingTypeProperties, showOrHideElement } from './utils.js'
 
 const launchDatamodelConfigurator = (viewpoint, drawRadarBlips) => {
@@ -78,17 +78,32 @@ const launchDatamodelConfigurator = (viewpoint, drawRadarBlips) => {
 </div>`
     contentContainer.innerHTML = html
 
-// add event listeners
-for (let i = 0; i < blipProperties.length; i++) {
-    const blipProperty = blipProperties[i]
-    document.getElementById(`editProperty${i}`).addEventListener('click', (e)=> {
-        launchPropertyEditor(blipProperty.property, viewpoint)
+    // add event listeners
+    for (let i = 0; i < blipProperties.length; i++) {
+        const blipProperty = blipProperties[i]
+        document.getElementById(`editProperty${i}`).addEventListener('click', (e) => {
+            launchPropertyEditor(blipProperty.property, viewpoint)
+        })
+        document.getElementById(`editProperty${i}b`).addEventListener('click', (e) => {
+            launchPropertyEditor(blipProperty.property, viewpoint)
+        })
+
+    }
+
+    let ratingType = viewpoint.ratingType
+    if (typeof (ratingType) == "string") {
+        ratingType = getData().model?.ratingTypes[ratingType]
+    }
+    let objectType = ratingType.objectType
+    if (typeof (objectType) == "string") {
+        objectType = getData().model?.objectTypes[objectType]
+    }
+
+    document.getElementById(`addObjectPropertyButton`).addEventListener('click', (e)=> {
+        const newProperty = {name: "NEW_PROPERTY", label:"New Property"}
+        launchPropertyEditor(newProperty, viewpoint, drawRadarBlips, objectType)
+      
     })
-document.getElementById(`editProperty${i}b`).addEventListener('click', (e)=> {
-    launchPropertyEditor(blipProperty.property, viewpoint)
-})
-    
-}
 
     //initializeTree("datamodelTree",getData())
 }

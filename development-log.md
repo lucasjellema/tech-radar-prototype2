@@ -69,6 +69,10 @@
 - ring rollup: - dblclick on ring label does rollup in case the ring is the only one visible (reverse to drilldown)
 - sector, ring, shape mapping to values: only count ratings of the proper rating type for the radar (viewpoint)
 
+- removed hard coded property references in blip context menu
+- define title for shape dimension 
+
+
 ## April 13th
 - create new property from datamodelconfigurator
 - inspect and maintain (update, add, remove) allowable values for property in property editor

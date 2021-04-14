@@ -29,9 +29,12 @@ const launchShapeConfigurator = (viewpoint, drawRadarBlips) => {
         .map((property) => { return { label: property.propertyPath, value: property.propertyPath } })
 
     let html = ``
+    html += `<label for="shapesTitle">Title (meaning of shapes dimension)</label>
+             <input type="text" id="shapesTitle" value="${viewpoint.template.shapesConfiguration.label}"></input><br /><br />`
 
     html += `<label for="mappedPropertySelector">Rating property to map to shape</label> 
-    <select id="mappedPropertySelector" ></select><span id="refreshShapes" style="padding:20px">Refresh Shape Mapping</span>  <br/>`
+             <select id="mappedPropertySelector" ></select><span id="refreshShapes" style="padding:20px">Refresh Shape Mapping</span>  <br/>`
+
     html += `<input type="button" id="addShapeButton"  value="Add Shape"  style="padding:6px;margin:10px"/>`
 
     html += `<table id="shapes">`
@@ -63,6 +66,7 @@ const launchShapeConfigurator = (viewpoint, drawRadarBlips) => {
 
     }
     html += `</table>`
+
 
     contentContainer.innerHTML = `${html}<br/> <br/><br/>`
 
@@ -129,10 +133,22 @@ const launchShapeConfigurator = (viewpoint, drawRadarBlips) => {
             labelSettings: { color: "#000000", fontSize: 18, fontFamily: "Helvetica" },
         }
         viewpoint.template.shapesConfiguration.shapes.push(newShape)
-        launchShapeEditor(viewpoint.template.shapesConfiguration.shapes.length-1, viewpoint, drawRadarBlips)
+        launchShapeEditor(viewpoint.template.shapesConfiguration.shapes.length - 1, viewpoint, drawRadarBlips)
 
 
     })
+    const buttonBar = document.getElementById("modalMainButtonBar")
+    buttonBar.innerHTML = ` <input id="saveShapeEdits" type="button" value="Save Changes"></input>`
+    document.getElementById("saveShapeEdits").addEventListener("click",
+        (event) => {
+            console.log(`save shape  `)
+            viewpoint.template.shapesConfiguration.label = getElementValue('shapesTitle')
+            showOrHideElement('modalMain', false)
+            publishRefreshRadar()
+            if (drawRadarBlips != null) drawRadarBlips(viewpoint)
+
+        })
+
 
 
 

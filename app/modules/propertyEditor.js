@@ -22,8 +22,10 @@ const launchPropertyEditor = (propertyToEdit, viewpoint, drawRadarBlips = null, 
        <textarea id="propertyDescription" value="${undefinedToDefined(propertyToEdit.description, "")}" rows="3" cols="80"></textarea><br/>`
     html += `<label for="propertyDefaultValue">Default Value</label>
        <input id="propertyDefaultValue" value="${undefinedToDefined(propertyToEdit.defaultValue, "")}"></input><br/>`
-    html += `<label for="propertyDiscrete">Discrete</label>
-       <input id="propertyDiscrete" type="checkbox" ${propertyToEdit?.discrete == true ? "checked" : ""}>
+       html += `<label for="propertyDiscrete">Discrete</label>
+       <input id="propertyDiscrete" type="checkbox" ${propertyToEdit?.discrete == true ? "checked" : ""}>`
+       html += `<label for="propertyDisplayLabel">Display Label?</label>
+       <input id="propertyDisplayLabel" type="checkbox" ${propertyToEdit?.displayLabel == true ? "checked" : ""}>
     </input><br/>`
     html += `<h3>Allowable Values</h3>`
     // button to add Allowable Value
@@ -88,6 +90,9 @@ const saveProperty = (propertyToEdit, viewpoint, parentForNewProperty = null) =>
     propertyToEdit.type = getElementValue('propertyType')
     propertyToEdit.defaultValue = getElementValue('propertyDefaultValue')
     propertyToEdit.discrete = document.getElementById(`propertyDiscrete`).checked
+    propertyToEdit.displayLabel = document.getElementById(`propertyDisplayLabel`).checked
+
+    
     if (propertyToEdit.allowableValues?.length > 0) {
         for (let i = 0; i < propertyToEdit.allowableValues.length; i++) {
             propertyToEdit.allowableValues[i].label = getElementValue(`labelAllowableValue${i}`)

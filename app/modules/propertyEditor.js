@@ -1,6 +1,7 @@
 export { launchPropertyEditor }
 import { getViewpoint, getData, publishRefreshRadar } from './data.js';
 import { capitalize, getPropertyFromPropertyPath, populateDataTypesList, createAndPopulateDataListFromBlipProperties, undefinedToDefined, getAllKeysMappedToValue, getNestedPropertyValueFromObject, setNestedPropertyValueOnObject, initializeImagePaster, populateSelect, getElementValue, setTextOnElement, getRatingTypeProperties, showOrHideElement } from './utils.js'
+import { publishRadarEvent } from './radar.js';
 
 
 const launchPropertyEditor = (propertyToEdit, viewpoint, drawRadarBlips = null, parentForNewProperty = null) => {

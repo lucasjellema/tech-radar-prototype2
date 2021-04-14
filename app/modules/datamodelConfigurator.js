@@ -6,6 +6,17 @@ import { launchPropertyEditor } from './propertyEditor.js'
 import { capitalize, getPropertyFromPropertyPath, populateFontsList, createAndPopulateDataListFromBlipProperties, undefinedToDefined, getAllKeysMappedToValue, getNestedPropertyValueFromObject, setNestedPropertyValueOnObject, initializeImagePaster, populateSelect, getElementValue, setTextOnElement, getRatingTypeProperties, showOrHideElement } from './utils.js'
 
 const launchDatamodelConfigurator = (viewpoint, drawRadarBlips) => {
+
+    
+    let ratingType = viewpoint.ratingType
+    if (typeof (ratingType) == "string") {
+        ratingType = getData().model?.ratingTypes[ratingType]
+    }
+    let objectType = ratingType.objectType
+    if (typeof (objectType) == "string") {
+        objectType = getData().model?.objectTypes[objectType]
+    }
+
     showOrHideElement("modalMain", true)
     setTextOnElement("modalMainTitle", "Radar Configurator - Data Model")
     document.getElementById("datamodelConfigurationTab").classList.add("warning") // define a class SELECTEDTAB 
@@ -15,7 +26,7 @@ const launchDatamodelConfigurator = (viewpoint, drawRadarBlips) => {
     let blipProperties = getRatingTypeProperties(viewpoint.ratingType, getData().model)
 
     let html = ''
-    html += `<h3>Object Properties</h3>`
+    html += `<h3>Object Properties for ${objectType.label}</h3>`
     html += `<input type="button" id="addObjectPropertyButton"  value="Add Object Property"  style="padding:6px;margin:10px"/>`
     html += `<table><tr><th>Property</th><th>Label</th><th>Type</th><th>Discrete?</th><th>Allowable Values?</th><th>Delete?</th></tr>`
     for (let i = 0; i < blipProperties.length; i++) {
@@ -33,7 +44,7 @@ const launchDatamodelConfigurator = (viewpoint, drawRadarBlips) => {
     }
     html += `</table><br />`
 
-    html += `<h3>Rating Properties</h3>`
+    html += `<h3>Rating Properties for ${ratingType.label}</h3>`
     html += `<input type="button" id="addRatingPropertyButton"  value="Add Rating Property"  style="padding:6px;margin:10px"/>`
     html += `<table><tr><th>Property</th><th>Label</th><th>Type</th><th>Discrete?</th><th>Allowable Values?</th><th>Delete?</th></tr>`
     for (let i = 0; i < blipProperties.length; i++) {
@@ -77,17 +88,9 @@ const launchDatamodelConfigurator = (viewpoint, drawRadarBlips) => {
     <br />
 </div>`
     contentContainer.innerHTML = html
+    const buttonBar = document.getElementById("modalMainButtonBar")
+    buttonBar.innerHTML =''
 
-
-    
-    let ratingType = viewpoint.ratingType
-    if (typeof (ratingType) == "string") {
-        ratingType = getData().model?.ratingTypes[ratingType]
-    }
-    let objectType = ratingType.objectType
-    if (typeof (objectType) == "string") {
-        objectType = getData().model?.objectTypes[objectType]
-    }
     // add event listeners
     for (let i = 0; i < blipProperties.length; i++) {
         const blipProperty = blipProperties[i]
@@ -99,9 +102,9 @@ const launchDatamodelConfigurator = (viewpoint, drawRadarBlips) => {
         })
         document.getElementById(`deleteProperty${i}`).addEventListener('click', (e) => {          
             if (blipProperty.propertyScope == "object") {
-                delete getData().model.objectTypes[objectType.name].properties[blipProperty.propertyName] // TODO hardcoded "technology"
+                delete getData().model.objectTypes[objectType.name].properties[blipProperty.propertyName] 
             } else if (blipProperty.propertyScope == "rating") {
-                delete getData().model.ratingTypes[ratingType.name].properties[blipProperty.propertyName] // TODO hardcoded
+                delete getData().model.ratingTypes[ratingType.name].properties[blipProperty.propertyName] 
             }
 
             launchDatamodelConfigurator(viewpoint, drawRadarBlips)
@@ -115,6 +118,10 @@ const launchDatamodelConfigurator = (viewpoint, drawRadarBlips) => {
         launchPropertyEditor(newProperty, viewpoint, drawRadarBlips, objectType)
 
     })
+    document.getElementById(`addRatingPropertyButton`).addEventListener('click', (e) => {
+        const newProperty = { name: "NEW_PROPERTY", label: "New Property" }
+        launchPropertyEditor(newProperty, viewpoint, drawRadarBlips, ratingType)
 
+    })
 
 }

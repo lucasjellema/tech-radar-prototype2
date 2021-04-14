@@ -48,6 +48,26 @@
 - option to define "Others" sector and ring - when set, any blip not assigned to a ring or sector is assigned to the Others ring or sector and can then be displayed
 - dblclick on ring label does rollup in case the ring is the only one visible (reverse to drilldown)
 
+- show date (such as timestamp rating) as input date/time or as read only with property format
+  
+- handle upload data: 
+  - overwrite
+  - add new (object type, rating type, template, objects, ratings, viewpoint) - no updating existing 
+  - merge: create new blips and ratings for uploaded ones when colliding (AND some form of change between rating objects?)
+          - update existing objects with uploaded ones
+          - take the most recently changed object
+
+
+
+## April 14th
+- create new radar
+  - name/title radar
+  - existing rating type or new (provide name)
+  - if new - existing object type or new (provide name)
+  => create object type (if required) and rating type (if so ordained)
+  => create default viewpoint - refer to rating type; add to data.viewpoints; update select list?
+  => open 
+
 ## April 13th
 - create new property from datamodelconfigurator
 - inspect and maintain (update, add, remove) allowable values for property in property editor

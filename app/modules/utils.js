@@ -149,6 +149,7 @@ function getRatingTypeProperties(ratingType, model, includeObjectType = true) { 
     return properties
 }
 
+
 const findDisplayProperty = (properties) => {
     let displayProperty
     for (let i = 0; i < Object.keys(properties).length; i++) {
@@ -156,6 +157,7 @@ const findDisplayProperty = (properties) => {
         if (i == 0 || (property.displayLabel != null && property.displayLabel)) { // i==0 is to provide a default value in case no property is designated as displayLabel
             displayProperty = property
             displayProperty.key = Object.keys(properties)[i]
+            displayProperty.name = Object.keys(properties)[i]
             break
         }
     }

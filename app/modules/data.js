@@ -1,7 +1,7 @@
 export {
     initializeViewpointFromURL, initializeFiltersTagsFromURL, getDefaultSettingsBlip
     , setDefaultSettingsBlip, shuffleBlips, getConfiguration, getViewpoint, getData, getObjectById
-    , createBlip, getObjectListOfOptions, getRatingListOfOptions, subscribeToRadarRefresh, getState, publishRefreshRadar
+    , createBlip, getObjectListOfOptions, getRatingListOfOptions,getRatingTypeForRatingTypeName, subscribeToRadarRefresh, getState, publishRefreshRadar
 }
 import { initializeTree } from './tree.js'
 
@@ -32,15 +32,15 @@ const serialize = (originalData) => {
         if  (!serializedData.objects.hasOwnProperty(rating.object.id)){  // save object in objects
             serializedData.objects[rating.object.id]= rating.object
         }
-        let ratingTypeName = serializedData.viewpoints[0].ratingType
-        if (typeof(ratingTypeName) == "object") ratingTypeName = serializedData.viewpoints[0].ratingType.name
-        rating.ratingType =  ratingTypeName // TEMPORARY! every rating should have its rating type defined when created
+        let ratingTypeName = rating.ratingType
+        if (typeof(ratingTypeName) == "object") ratingTypeName = ratingTypeName.name
+        rating.ratingType =  ratingTypeName 
         rating.object = rating.object.id
     }
 
     for (let i=0; i< Object.keys(serializedData.objects).length;i++) {
         const object= serializedData.objects[Object.keys(serializedData.objects)[i]]
-        object.objectType = serializedData.model.objectTypes[Object.keys(serializedData.model.objectTypes)[0]].name // TEMPORARY! every object should have its object type defined when created
+        object.objectType = object.objectType ?? serializedData.model.objectTypes[Object.keys(serializedData.model.objectTypes)[0]].name // TEMPORARY! every object should have its object type defined when created
 
     }
 
@@ -55,7 +55,7 @@ const serialize = (originalData) => {
             if (blip.y != null) blip.y= Math.round(blip.y)
         })
         if (typeof(viewpoint.ratingType)=="object"){
-            serializedData.model.ratingType[viewpoint.ratingType.name] = viewpoint.ratingType // save ratingType in model.ratingTypes
+            serializedData.model.ratingTypes[viewpoint.ratingType.name] = viewpoint.ratingType // save ratingType in model.ratingTypes
             viewpoint.ratingType= viewpoint.ratingType.name
         }
         
@@ -323,9 +323,6 @@ const getFreshTemplate = () => {
     return freshTemplate
 }
 
-//data.templates.push(freshTemplate)
-//let config = data.templates[0]
-
 const initializeDatasetFromURL = async () => {
     const params = new URLSearchParams(window.location.search)
     const source = params.get('source') ?? "sample"
@@ -378,7 +375,7 @@ const createBlip = (objectId, objectNewLabel, ratingId = null) => {
 
 
     rating.timestamp = Date.now()
-
+    // TODO: blip id set as uuid?
     let blip = { id: `${getViewpoint().blips.length}`, rating: rating, pending: true }
     return blip
 }
@@ -416,17 +413,28 @@ const getRatingById = (id) => {
     return getData()?.ratings[id]
 }
 
+const getRatingTypeForRatingTypeName = (ratingTypeOrName) => {
+    let ratingType=ratingTypeOrName;
+    if (typeof (ratingTypeOrName) == "string") {
+        ratingType = getData().model?.ratingTypes[ratingTypeOrName]
+    }
+    return ratingType
+}
+
+
 const getObjectListOfOptions = (objectType = null) => {
     // create [{}] for object labels and id values data is array objects with two properties : label and value
     // note: only objects of the type that is used by the rating type 
     const objectsListofOptions = []
-    const objectDisplayLabelProperty = "label" // TODO get display property for object type
-
+    let objectDisplayLabelProperty = "label" // TODO get display property for object type
+    objectDisplayLabelProperty = findDisplayProperty(objectType.properties).name
     for (let i = 0; i < Object.keys(getData().objects).length; i++) {
 
         const object = data.objects[Object.keys(getData().objects)[i]]
-        findDisplayProperty()
-        objectsListofOptions.push({ label: object[objectDisplayLabelProperty], value: object.id }) // TODO hardcoded proprty name for property identifying object
+        console.log(`object type = ${object.objectType}`)
+        if (objectType == null || object.objectType == objectType.name) {
+        objectsListofOptions.push({ label: object[objectDisplayLabelProperty], value: object.id }) 
+        }
     }
     objectsListofOptions.sort((a, b) => a.label.toLowerCase() < b.label.toLowerCase() ? -1 : 1)
 

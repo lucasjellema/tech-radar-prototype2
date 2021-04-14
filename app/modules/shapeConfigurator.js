@@ -2,7 +2,7 @@ export { launchShapeConfigurator }
 import { drawRadar, subscribeToRadarEvents, publishRadarEvent } from './radar.js';
 import { getViewpoint, getData, publishRefreshRadar } from './data.js';
 //import { launchRingEditor } from './ringEditing.js'
-import { capitalize, getPropertyFromPropertyPath, getPropertyValuesAndCounts, populateFontsList, createAndPopulateDataListFromBlipProperties, undefinedToDefined, getAllKeysMappedToValue, getNestedPropertyValueFromObject, setNestedPropertyValueOnObject, initializeImagePaster, populateSelect, getElementValue, setTextOnElement, getRatingTypeProperties, showOrHideElement } from './utils.js'
+import { getListOfSupportedShapes, capitalize, getPropertyFromPropertyPath, getPropertyValuesAndCounts, populateFontsList, createAndPopulateDataListFromBlipProperties, undefinedToDefined, getAllKeysMappedToValue, getNestedPropertyValueFromObject, setNestedPropertyValueOnObject, initializeImagePaster, populateSelect, getElementValue, setTextOnElement, getRatingTypeProperties, showOrHideElement } from './utils.js'
 
 
 
@@ -11,7 +11,7 @@ import { capitalize, getPropertyFromPropertyPath, getPropertyValuesAndCounts, po
 const launchShapeConfigurator = (viewpoint, drawRadarBlips) => {
     const shapeVisualMap = viewpoint.propertyVisualMaps["shape"]
     //const valueOccurrenceMap = getPropertyValuesAndCounts(shapeVisualMap["property"], getData().ratings) // TODO only ratings of proper rating type!!
-    const valueOccurrenceMap = (shapeVisualMap==null ||shapeVisualMap["property"]==null)?null:getValueOccurrenceMap(shapeVisualMap["property"], viewpoint, true);
+    const valueOccurrenceMap = (shapeVisualMap == null || shapeVisualMap["property"] == null) ? null : getValueOccurrenceMap(shapeVisualMap["property"], viewpoint, true);
     showOrHideElement("modalMain", true)
     setTextOnElement("modalMainTitle", "Radar Configurator - Shapes")
     document.getElementById("shapeConfigurationTab").classList.add("warning") // define a class SELECTEDTAB 
@@ -57,19 +57,19 @@ const launchShapeConfigurator = (viewpoint, drawRadarBlips) => {
         <td>${valueCount} </td>
         <td><input id="showShape${i}" type="checkbox" ${shape?.visible == false ? "" : "checked"}></input></td> 
         <td><span id="deleteShape${i}" class="clickableProperty">Delete</span></td> 
-        <td><span id="downShape${i}" class="clickableProperty">${i < viewpoint.template. shapesConfiguration.shapes.length - 1 ? "v" : ""}</span>&nbsp;
+        <td><span id="downShape${i}" class="clickableProperty">${i < viewpoint.template.shapesConfiguration.shapes.length - 1 ? "v" : ""}</span>&nbsp;
         <span id="upShape${i}" class="clickableProperty">${i > 0 ? "^" : ""}</span></td> 
         </tr> `
 
     }
     html += `</table>`
 
-    contentContainer.innerHTML = `${html}</table>`
+    contentContainer.innerHTML = `${html}<br/> <br/><br/>`
 
     // add event listeners
-    for (let i = 0; i < viewpoint.template. shapesConfiguration.shapes.length; i++) {
+    for (let i = 0; i < viewpoint.template.shapesConfiguration.shapes.length; i++) {
         document.getElementById(`showShape${i}`).addEventListener("change", (e) => {
-            viewpoint.template. shapesConfiguration.shapes[i].visible = e.target.checked
+            viewpoint.template.shapesConfiguration.shapes[i].visible = e.target.checked
             publishRadarEvent({ type: "shuffleBlips" })
             publishRefreshRadar()
         })
@@ -79,13 +79,13 @@ const launchShapeConfigurator = (viewpoint, drawRadarBlips) => {
             // hideMe() // show the main editor?
         })
         document.getElementById(`downShape${i}`).addEventListener("click", () => {
-            backRing(i, viewpoint)
+            backShape(i, viewpoint)
         })
         document.getElementById(`upShape${i}`).addEventListener("click", () => {
-            upRing(i, viewpoint)
+            upShape(i, viewpoint)
         })
         document.getElementById(`deleteShape${i}`).addEventListener("click", () => {
-            viewpoint.template. shapesConfiguration.shapes.splice(i, 1)
+            viewpoint.template.shapesConfiguration.shapes.splice(i, 1)
             // remove from propertyVisualMap all value mappings to this shape and decrease the shape reference for any entry  higher than i
             const valueMap = shapeVisualMap.valueMap
             for (let j = 0; j < Object.keys(valueMap).length; j++) {
@@ -113,7 +113,7 @@ const launchShapeConfigurator = (viewpoint, drawRadarBlips) => {
     document.getElementById(`refreshShapes`).addEventListener("click", () => { refreshShapeConfiguration(viewpoint) })
 
     document.getElementById(`showAll`).addEventListener("click", (e) => {
-        viewpoint.template. shapesConfiguration.shapes.forEach((shape, i) => {
+        viewpoint.template.shapesConfiguration.shapes.forEach((shape, i) => {
             shape.visible = true;
             document.getElementById(`showShape${i}`).checked = true
         })
@@ -122,17 +122,13 @@ const launchShapeConfigurator = (viewpoint, drawRadarBlips) => {
         publishRefreshRadar()
 
     })
- document.getElementById(`addShapeButton`).addEventListener("click", (e) => {
+    document.getElementById(`addShapeButton`).addEventListener("click", (e) => {
         const newShape = {
             label: "NEW SHape",
-            width: 0.05,
-            labelSettings: {  color: "#000000", fontSize: 18, fontFamily: "Helvetica" },
-            backgroundImage: {},
-            backgroundColor: "#FFFFFF",
-            outerringBackgroundColor: "#FFFFFF"
+            labelSettings: { color: "#000000", fontSize: 18, fontFamily: "Helvetica" },
         }
-        viewpoint.template. shapesConfiguration.shapes.push(newShape)
-        launchShapeonfigurator(viewpoint)
+        viewpoint.template.shapesConfiguration.shapes.push(newShape)
+        launchShapeEditor(viewpoint)
 
         //launchShapeEditor(viewpoint.template. shapesConfiguration.shapes.length - 1, viewpoint, drawRadarBlips)
 
@@ -144,9 +140,9 @@ const launchShapeConfigurator = (viewpoint, drawRadarBlips) => {
 }
 
 const backShape = (shapeToMoveBack, viewpoint) => {
-    const shapeToMove = viewpoint.template. shapesConfiguration.shapes[shapeToMoveBack]
-    viewpoint.template. shapesConfiguration.shapes[shapeToMoveBack] = viewpoint.template. shapesConfiguration.shapes[shapeToMoveBack + 1]
-    viewpoint.template. shapesConfiguration.shapes[shapeToMoveBack + 1] = shapeToMove
+    const shapeToMove = viewpoint.template.shapesConfiguration.shapes[shapeToMoveBack]
+    viewpoint.template.shapesConfiguration.shapes[shapeToMoveBack] = viewpoint.template.shapesConfiguration.shapes[shapeToMoveBack + 1]
+    viewpoint.template.shapesConfiguration.shapes[shapeToMoveBack + 1] = shapeToMove
     const shapeVisualMap = viewpoint.propertyVisualMaps["shape"]
     // update in propertyVisualMap all value mappings to either of these shapes
     const valueMap = shapeVisualMap.valueMap
@@ -163,9 +159,9 @@ const backShape = (shapeToMoveBack, viewpoint) => {
 }
 
 const upShape = (shapeToMoveUp, viewpoint) => {
-    const shapeToMove = viewpoint.template. shapesConfiguration.shapes[shapeToMoveUp]
-    viewpoint.template. shapesConfiguration.shapes[shapeToMoveUp] = viewpoint.template. shapesConfiguration.shapes[shapeToMoveUp - 1]
-    viewpoint.template. shapesConfiguration.shapes[shapeToMoveUp + -1] = shapeToMove
+    const shapeToMove = viewpoint.template.shapesConfiguration.shapes[shapeToMoveUp]
+    viewpoint.template.shapesConfiguration.shapes[shapeToMoveUp] = viewpoint.template.shapesConfiguration.shapes[shapeToMoveUp - 1]
+    viewpoint.template.shapesConfiguration.shapes[shapeToMoveUp + -1] = shapeToMove
     const shapeVisualMap = viewpoint.propertyVisualMaps["shape"]
     // update in propertyVisualMap all value mappings to either of these shapes
     const valueMap = shapeVisualMap.valueMap
@@ -195,7 +191,9 @@ const reconfigureShapes = (propertyPath, viewpoint) => {
 
     // remove entries from valueMap
     shapeVisualMap.valueMap = {}
-    viewpoint.template. shapesConfiguration.shapes = []
+    viewpoint.template.shapesConfiguration.shapes = []
+    const shapes = getListOfSupportedShapes()
+
     // create new entries for values in valueOccurrenceMap
     for (let i = 0; i < Object.keys(valueOccurrenceMap).length; i++) {
         const allowableLabel = getLabelForAllowableValue(Object.keys(valueOccurrenceMap)[i], viewpoint.propertyVisualMaps["shape"].property, viewpoint)
@@ -206,10 +204,11 @@ const reconfigureShapes = (propertyPath, viewpoint) => {
             edge: { color: "#000000", width: 1 },
             backgroundImage: {},
             backgroundColor: "#FFFFFF",
-            outershapeBackgroundColor: "#FFFFFF"
+            outershapeBackgroundColor: "#FFFFFF",
+            shape: i < shapes.length ? shapes[i] : shapes[0]
         }
 
-        viewpoint.template. shapesConfiguration.shapes.push(newShape)
+        viewpoint.template.shapesConfiguration.shapes.push(newShape)
 
         shapeVisualMap.valueMap[Object.keys(valueOccurrenceMap)[i]] = i // map value to numerically corresponding shape
     }
@@ -240,25 +239,27 @@ const hideMe = () => {
 }
 function getValueOccurrenceMap(propertyPath, viewpoint, includeAllowableValues = false) {
     const model = getData().model
+    const focusRatingTypeName = typeof (viewpoint.ratingType) == "object" ? viewpoint.ratingType.name : viewpoint.ratingType
     let shapeProperty = getPropertyFromPropertyPath(propertyPath, viewpoint.ratingType, model)
     let valueOccurrenceMap
     if (shapeProperty.type == "tags") {
         valueOccurrenceMap = {}
         for (let i = 0; i < Object.keys(getData().ratings).length; i++) {
-            const tags = getNestedPropertyValueFromObject(getData().ratings[Object.keys(getData().ratings)[i]], propertyPath)
-            tags.forEach((tag) => {
-                const currentCount = valueOccurrenceMap[tag] ?? 0
-                valueOccurrenceMap[tag] = currentCount + 1
-
-            })
+            const rating = getData().ratings[Object.keys(getData().ratings)[i]]
+            if (rating.ratingType == focusRatingTypeName) {
+                const tags = getNestedPropertyValueFromObject(rating, propertyPath)
+                tags.forEach((tag) => {
+                    const currentCount = valueOccurrenceMap[tag] ?? 0
+                    valueOccurrenceMap[tag] = currentCount + 1
+                })
+            }
         }
-
     }
     else {
-        valueOccurrenceMap = getPropertyValuesAndCounts(propertyPath, getData().ratings); // TODO only ratings of proper rating type!!
+        valueOccurrenceMap = getPropertyValuesAndCounts(propertyPath, getData().ratings, focusRatingTypeName);
         if (includeAllowableValues) {
             for (let i = 0; i < shapeProperty.allowableValues?.length; i++) {
-                valueOccurrenceMap[shapeProperty.allowableValues[i].value] = valueOccurrenceMap[shapeProperty.property?.allowableValues[i].value] ?? 0;
+                valueOccurrenceMap[shapeProperty.allowableValues[i].value] = valueOccurrenceMap[shapeProperty.allowableValues[i].value] ?? 0;
             }
         }
     }

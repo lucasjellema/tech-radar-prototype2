@@ -67,7 +67,7 @@
   => create default viewpoint - refer to rating type; add to data.viewpoints; update select list?
   => open 
 - ring rollup: - dblclick on ring label does rollup in case the ring is the only one visible (reverse to drilldown)
-
+- sector, ring, shape mapping to values: only count ratings of the proper rating type for the radar (viewpoint)
 
 ## April 13th
 - create new property from datamodelconfigurator

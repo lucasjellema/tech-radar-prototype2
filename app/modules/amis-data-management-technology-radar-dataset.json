@@ -3518,7 +3518,7 @@
             "object": "6b72c74e-b270-498e-82d0-170e7a21d3e5",
             "status": "idea",
             "remainingEffort": "small",
-            "ratingType": "workitem"
+            "ratingType": "workitemStatus"
         },
         "a397de5f-3ace-418b-bdf6-b431b67f6a88": {
             "id": "a397de5f-3ace-418b-bdf6-b431b67f6a88",
@@ -3526,7 +3526,7 @@
             "object": "cf3e0d48-5ea0-4329-8276-92cdaff6dadd",
             "status": "idea",
             "remainingEffort": "medium",
-            "ratingType": "workitem"
+            "ratingType": "workitemStatus"
         },
         "9a7e603b-980e-471b-aa3e-9480600d1f57": {
             "id": "9a7e603b-980e-471b-aa3e-9480600d1f57",
@@ -3534,7 +3534,7 @@
             "object": "ae5e22e7-7890-49e0-894a-ab16038ad53d",
             "status": "implement",
             "remainingEffort": "small",
-            "ratingType": "workitem"
+            "ratingType": "workitemStatus"
         },
         "e264ba9a-73c5-4947-86e0-67c203087d96": {
             "id": "e264ba9a-73c5-4947-86e0-67c203087d96",
@@ -3542,7 +3542,7 @@
             "object": "a9f4615c-7afc-4e31-a2ad-8ab5b371c9d7",
             "status": "idea",
             "remainingEffort": "medium",
-            "ratingType": "workitem"
+            "ratingType": "workitemStatus"
         },
         "57955e5e-118c-471c-9fe4-47c8445bb6da": {
             "id": "57955e5e-118c-471c-9fe4-47c8445bb6da",
@@ -3550,28 +3550,31 @@
             "object": "ae5e22e7-7890-49e0-894a-ab16038ad53d",
             "status": "design",
             "remainingEffort": "small",
-            "ratingType": "workitem"
+            "ratingType": "workitemStatus"
         },
         "ad65a8f7-6e86-4ec2-830d-eda0b1afe7af": {
             "id": "ad65a8f7-6e86-4ec2-830d-eda0b1afe7af",
             "timestamp": 1618402914394,
             "object": "e3ebcf9a-f54d-4e11-9ed9-99e313b7d579",
             "status": "design",
-            "remainingEffort": "small"
+            "remainingEffort": "small",
+            "ratingType": "workitemStatus"
         },
         "81d49277-044f-45ac-b7b0-fc2ee9cd230c": {
             "id": "81d49277-044f-45ac-b7b0-fc2ee9cd230c",
             "timestamp": 1618403694010,
             "object": "202521e5-e1db-44e4-a066-421c47993c59",
             "status": "idea",
-            "remainingEffort": "medium"
+            "remainingEffort": "medium",
+            "ratingType": "workitemStatus"
         },
         "1a087ebe-222f-4936-a16b-640d3abec4ce": {
             "id": "1a087ebe-222f-4936-a16b-640d3abec4ce",
             "timestamp": 1618404396295,
             "object": "c9d22ba0-cf91-4a01-a156-6fc3b0c55bb5",
             "status": "idea",
-            "remainingEffort": "medium"
+            "remainingEffort": "medium",
+            "ratingType": "workitemStatus"
         }
     }
 }

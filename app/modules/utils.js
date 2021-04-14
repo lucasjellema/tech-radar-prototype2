@@ -258,7 +258,7 @@ const populateFontsList = (fontsListElementId) => {
 
 const populateShapesList = (shapesListElementId) => {
 
-    populateDatalistFromValueSet(shapesListElementId, getListOfSupportedShapes)
+    populateDatalistFromValueSet(shapesListElementId, getListOfSupportedShapes())
 }
 
 const getListOfSupportedShapes = () => {
@@ -268,10 +268,10 @@ const getListOfSupportedShapes = () => {
     shapesList.push(`square`)
     shapesList.push(`triangle`)
     shapesList.push(`ring`)
-    shapesList.push(`star`)
     shapesList.push(`plus`)
     shapesList.push(`rectangleHorizontal`)
     shapesList.push(`rectangleVertical`)
+    shapesList.push(`star`)
     return shapesList
 }
 

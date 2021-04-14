@@ -1,7 +1,7 @@
 export { launchShapeEditor }
 import { drawRadar, subscribeToRadarEvents, publishRadarEvent } from './radar.js';
 import { getViewpoint, getData, publishRefreshRadar } from './data.js';
-import { populateFontsList, populateDatalistFromValueSet, getPropertyFromPropertyPath, getDistinctTagValues, createAndPopulateDataListFromBlipProperties, undefinedToDefined, getAllKeysMappedToValue, getNestedPropertyValueFromObject, setNestedPropertyValueOnObject, initializeImagePaster, populateSelect, getElementValue, setTextOnElement, getRatingTypeProperties, showOrHideElement } from './utils.js'
+import { populateShapesList, populateDatalistFromValueSet, getPropertyFromPropertyPath, getDistinctTagValues, createAndPopulateDataListFromBlipProperties, undefinedToDefined, getAllKeysMappedToValue, getNestedPropertyValueFromObject, setNestedPropertyValueOnObject, initializeImagePaster, populateSelect, getElementValue, setTextOnElement, getRatingTypeProperties, showOrHideElement } from './utils.js'
 
 
 
@@ -59,13 +59,17 @@ const launchShapeEditor = (shapeToEdit, viewpoint, drawRadarBlips) => {
     html += `<tr><td rowspan="1"><label for="shapeLabel">Label</label></td><td><input id="shapeLabel" type="text" value="${shape.label}"></input></td>
 
     </tr>`
+    html += `<tr><td><label for="actualShape">Shape</label></td><td>
+    <input id="actualShape" list="shapesList" value="${shape.shape}"></input>
+    </td></tr>
+`
     html += `<tr><td><label for="showShape">Visible?</label></td><td><input id="showShape" type="checkbox" ${shape?.visible == false ? "" : "checked"}></input></td></tr>`
     html += `</table><br/>`
 
 
     contentContainer.innerHTML = `${html}
     `
-
+    populateShapesList("shapesList")
     if (getPropertyFromPropertyPath(shapeVisualMap["property"], viewpoint.ratingType, getData().model).type == "tags") {
         populateDatalistFromValueSet(`shapePropertyValueList`, getDistinctTagValues(viewpoint))
 
@@ -78,7 +82,7 @@ const launchShapeEditor = (shapeToEdit, viewpoint, drawRadarBlips) => {
     document.getElementById("addMappedPropertyValue").addEventListener("click",
         (event) => {
             const propertyValue = document.getElementById("shapePropertyValue").value
-            document.getElementById("shapePropertyValue").value =""
+            document.getElementById("shapePropertyValue").value = ""
             mappedShapePropertyValues.push(propertyValue)
             renderMappedPropertiesEditor(document.getElementById("mappedPropertiesContainer"), mappedShapePropertyValues)
         })
@@ -99,16 +103,16 @@ const launchShapeEditor = (shapeToEdit, viewpoint, drawRadarBlips) => {
     document.getElementById("launchMainEditor").addEventListener("click", () => {
         hideMe()
 
-        publishRadarEvent({ type: "mainRadarConfigurator", tab:"shape" })
+        publishRadarEvent({ type: "mainRadarConfigurator", tab: "shape" })
     })
 
 }
 const saveShape = (shapeToEdit, shape, viewpoint) => {
     console.log(`save changes to shape`)
     const shapeVisualMap = viewpoint.propertyVisualMaps["shape"]
-  
-   shape.visible = document.getElementById("showShape").checked
 
+    shape.visible = document.getElementById("showShape").checked
+    shape.shape = getElementValue('actualShape')
 
     const valueMap = viewpoint.propertyVisualMaps["shape"].valueMap
     // remove all entries from valueMap with value shape (sequence)

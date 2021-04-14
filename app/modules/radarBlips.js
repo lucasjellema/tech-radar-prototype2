@@ -1,7 +1,7 @@
 import { cartesianFromPolar, polarFromCartesian, segmentFromCartesian } from './drawingUtilities.js'
 import { launchBlipEditor } from './blipEditing.js'
 import { getViewpoint, getData, publishRefreshRadar } from './data.js'
-import { getDistinctTagValues, getPropertyFromPropertyPath, getNestedPropertyValueFromObject, uuidv4 } from './utils.js'
+import { getDistinctTagValues, getPropertyFromPropertyPath, getNestedPropertyValueFromObject, uuidv4, setNestedPropertyValueOnObject } from './utils.js'
 export { drawRadarBlips }
 
 
@@ -625,11 +625,11 @@ const menu = (x, y, d, blip, viewpoint) => {
                     .attr('y', -15)
             }
             if (shape) {
-            shape
-                .attr("id", `templateSizes${i}`)
-                .attr("fill", "black")
+                shape
+                    .attr("id", `templateSizes${i}`)
+                    .attr("fill", "black")
 
-            decorateContextMenuEntry(shapeEntry, "shape", key, d, viewpoint, label)
+                decorateContextMenuEntry(shapeEntry, "shape", key, d, viewpoint, label)
             }
         }
     }
@@ -751,18 +751,15 @@ function decorateContextMenuEntry(menuEntry, dimension, value, blip, viewpoint, 
     menuEntry.attr("class", "clickableProperty")
         .on("click", () => {
             if (dimension == "size") {
-                // translate dimensionSequence 
-                blip["rating"]["magnitude"] = value // getKeyForValue(viewpoint.propertyVisualMaps.size.valueMap, dimensionSequence)
+                setNestedPropertyValueOnObject(blip.rating, viewpoint.propertyVisualMaps.size.property, value)
                 drawRadarBlips(viewpoint)
             }
             if (dimension == "shape") {
-                console.log(`clicked ${label}   for ${dimension} for blip: ${getNestedPropertyValueFromObject(d.rating, viewpoint.propertyVisualMaps.blip.label)}; new value = ${value}`);
-                blip["rating"]["object"]["offering"] = value // getKeyForValue(viewpoint.propertyVisualMaps.shape.valueMap, dimensionSequence)
+                setNestedPropertyValueOnObject(blip.rating, viewpoint.propertyVisualMaps.shape.property, value)
                 drawRadarBlips(viewpoint)
             }
             if (dimension == "color") {
-                console.log(`clicked ${label}   for ${dimension} for blip: ${blip.rating.experience}; new value = ${value}`);
-                blip["rating"]["experience"] = value // getKeyForValue(viewpoint.propertyVisualMaps.shape.valueMap, dimensionSequence)
+                setNestedPropertyValueOnObject(blip.rating, viewpoint.propertyVisualMaps.color.property, value)
                 drawRadarBlips(viewpoint)
             }
         })

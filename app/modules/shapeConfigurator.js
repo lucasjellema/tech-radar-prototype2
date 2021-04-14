@@ -1,7 +1,7 @@
 export { launchShapeConfigurator }
 import { drawRadar, subscribeToRadarEvents, publishRadarEvent } from './radar.js';
 import { getViewpoint, getData, publishRefreshRadar } from './data.js';
-//import { launchRingEditor } from './ringEditing.js'
+import { launchShapeEditor } from './shapeEditing.js'
 import { getListOfSupportedShapes, capitalize, getPropertyFromPropertyPath, getPropertyValuesAndCounts, populateFontsList, createAndPopulateDataListFromBlipProperties, undefinedToDefined, getAllKeysMappedToValue, getNestedPropertyValueFromObject, setNestedPropertyValueOnObject, initializeImagePaster, populateSelect, getElementValue, setTextOnElement, getRatingTypeProperties, showOrHideElement } from './utils.js'
 
 
@@ -75,7 +75,8 @@ const launchShapeConfigurator = (viewpoint, drawRadarBlips) => {
         })
 
         document.getElementById(`editShape${i}`).addEventListener("click", () => {
-            launchRingEditor(i, viewpoint, drawRadarBlips)
+            launchShapeEditor(i, viewpoint, drawRadarBlips)
+
             // hideMe() // show the main editor?
         })
         document.getElementById(`downShape${i}`).addEventListener("click", () => {
@@ -128,9 +129,8 @@ const launchShapeConfigurator = (viewpoint, drawRadarBlips) => {
             labelSettings: { color: "#000000", fontSize: 18, fontFamily: "Helvetica" },
         }
         viewpoint.template.shapesConfiguration.shapes.push(newShape)
-        launchShapeEditor(viewpoint)
+        launchShapeEditor(viewpoint.template.shapesConfiguration.shapes.length-1, viewpoint, drawRadarBlips)
 
-        //launchShapeEditor(viewpoint.template. shapesConfiguration.shapes.length - 1, viewpoint, drawRadarBlips)
 
     })
 

@@ -46,7 +46,6 @@
 - generate blips (for all ratings that qualify for the viewpoint and its current filters and visible sectors and rings) 
 - generate technology objects from scraped data: name, vendor, description, logo: https://www.capterra.com/database-management-software/ 
 - option to define "Others" sector and ring - when set, any blip not assigned to a ring or sector is assigned to the Others ring or sector and can then be displayed
-- dblclick on ring label does rollup in case the ring is the only one visible (reverse to drilldown)
 
 - show date (such as timestamp rating) as input date/time or as read only with property format
   
@@ -67,6 +66,8 @@
   => create object type (if required) and rating type (if so ordained)
   => create default viewpoint - refer to rating type; add to data.viewpoints; update select list?
   => open 
+- ring rollup: - dblclick on ring label does rollup in case the ring is the only one visible (reverse to drilldown)
+
 
 ## April 13th
 - create new property from datamodelconfigurator

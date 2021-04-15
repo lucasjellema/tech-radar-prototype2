@@ -60,7 +60,7 @@
 - write rating type in every rating when downloading
 - restore rating type as object reference after uploading/normalizing
 - set new object's display property from new label entered in new blip wizard
-
+- show curved sector label after drill down
 
 ## April 14th
 - create new radar

@@ -506,6 +506,9 @@ const menu = (x, y, d, blip, viewpoint) => {
             //  d3.select('.context-menu').remove();
         });
 
+
+        // TODO dynamically adjust width and height with number of visual dimensions and max number of values
+    
     const entryHeight = 45 // number vertical pixel per context menu entry
     let height = 30 + Math.max(0,
         viewpoint.propertyVisualMaps.size?.valueMap == null ? 0 : Object.keys(viewpoint.propertyVisualMaps.size?.valueMap)?.length

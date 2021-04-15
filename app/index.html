@@ -320,8 +320,15 @@
                 launchRingEditor(event.ring, getViewpoint(), drawRadarBlips)
             }
             if (event.type == "sectorDrilldown") {
-                // set visible to false for all sectors except for sector event.sector; then redraw radar and blips
-                getViewpoint().template.sectorConfiguration.sectors.forEach((sector, i) => sector.visible = (i == event.sector))
+                // if currently only one sector is visible, the drilldown is actually a drill up and all sectors should be made visible
+                const numberOfVisibleSectors = getViewpoint().template.sectorConfiguration.sectors.filter((sector) => sector.visible).length
+                if (numberOfVisibleSectors == 1) {
+                    // drill up: set visible to true for all sectors ; then redraw radar and blips
+                    getViewpoint().template.sectorConfiguration.sectors.forEach((sector, i) => sector.visible = true)
+                } else {
+                    // set visible to false for all sectors except for sector event.sector; then redraw radar and blips
+                    getViewpoint().template.sectorConfiguration.sectors.forEach((sector, i) => sector.visible = (i == event.sector))
+                }
                 shuffleBlips()
             } if (event.type == "ringDrilldown") {
                 // if currently only one ring is visible, the drilldown is actually a drill up and all rings should be made visible

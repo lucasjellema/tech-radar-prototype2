@@ -348,15 +348,15 @@ function displaySectorLabel(currentAnglePercentage, startAngle, endAngle, sector
         .endAngle(anticlockwise ? startAngle : endAngle)
         .startAngle(anticlockwise ? endAngle : startAngle)
 
-if (fullCircle) {
-    textArc = d3.arc()
-    .outerRadius(config.maxRingRadius + 20)
-    .innerRadius(150)
-    // startAngle and endAngle are measured clockwise from the 12 o’clock in radians; the minus takes care of anti-clockwise and the +0.5 is for starting at the horizontal axis pointing east
-    .endAngle( 1.5)
-    .startAngle(-0.2)
-
-}
+    if (fullCircle) {
+        textArc = d3.arc()
+            .outerRadius(config.maxRingRadius + 20)
+            .innerRadius(150)
+            // startAngle and endAngle are measured clockwise from the 12 o’clock in radians; the minus takes care of anti-clockwise and the +0.5 is for starting at the horizontal axis pointing east
+            // this fixed angle corresponds to 2 'o clock
+            .endAngle(1.5)
+            .startAngle(-0.2)
+    }
 
     textArc = textArc().substring(0, textArc().indexOf("L"))
     // create the path following the circle along which the text is printed; the actual printing of the text is done next
@@ -389,9 +389,9 @@ const initializeSizesLegend = (viewpoint) => {
 
 
     const sizesBox = d3.select("svg#sizesLegend")
-    .style("background-color", "silver")
-    .attr("width", "1%")
-    .attr("height",  1)
+        .style("background-color", "silver")
+        .attr("width", "1%")
+        .attr("height", 1)
 
     sizesBox.selectAll("*").remove(); // clean content (if there is any)
 
@@ -446,9 +446,9 @@ const initializeShapesLegend = (viewpoint) => {
     document.getElementById('shapesLegendTitle').innerText = config.shapesConfiguration.label;
 
     const shapesBox = d3.select("svg#shapesLegend")
-    .style("background-color", "silver")
-    .attr("width", "1%")
-    .attr("height",  1)
+        .style("background-color", "silver")
+        .attr("width", "1%")
+        .attr("height", 1)
 
     shapesBox.selectAll("*").remove(); // clean content (if there is any)
     if (viewpoint.propertyVisualMaps.shape?.property == null
@@ -542,9 +542,9 @@ const initializeColorsLegend = (viewpoint) => {
     const config = viewpoint.template
 
     const colorsBox = d3.select("svg#colorsLegend")
-    .style("background-color", "silver")
-    .attr("width", "1%")
-    .attr("height",  1)
+        .style("background-color", "silver")
+        .attr("width", "1%")
+        .attr("height", 1)
 
     colorsBox.selectAll("*").remove(); // clean content (if there is any)
     document.getElementById('colorLegendTitle').innerText = "";
@@ -603,7 +603,7 @@ const radarMenu = (x, y, d, blip, viewpoint) => {
         .append('g').attr('class', 'radar-context-menu')
         .attr('transform', `translate(${x},${y + 30})`)
 
-        
+
     const width = 170
     const height = 130
     contextMenu.append('rect')

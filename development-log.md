@@ -56,6 +56,10 @@
           - update existing objects with uploaded ones
           - take the most recently changed object
 
+## April 15th
+- write rating type in every rating when downloading
+- restore rating type as object reference after uploading/normalizing
+- set new object's display property from new label entered in new blip wizard
 
 
 ## April 14th

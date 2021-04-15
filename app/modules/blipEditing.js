@@ -74,7 +74,7 @@ const launchNewBlipWizard = (viewpoint, drawRadarBlips) => {
         const selectedRatingId = (ratingId != null && ratingId != "-1") ? ratingId : null
         const labelForNewObject = (objectNewLabel != null && objectNewLabel.length > 0) ? objectNewLabel : null
         if ((selectedObjectId ?? labelForNewObject) != null) {
-            const blip = createBlip(selectedObjectId, labelForNewObject, selectedRatingId)
+            const blip = createBlip(selectedObjectId, labelForNewObject, selectedRatingId, viewpoint)
             launchBlipEditor(blip, getViewpoint(), drawRadarBlips)
         }
     })
@@ -97,7 +97,7 @@ const launchBlipEditor = (blip, viewpoint, drawRadarBlips) => {
         ratingType = getData().model?.ratingTypes[ratingType]
     }
 
-    setTextOnElement('blipEditorTitle', `Edit Blip for ${blip.rating.object.label}`)
+    setTextOnElement('blipEditorTitle', `Edit Blip for ${blip.rating[viewpoint.propertyVisualMaps.blip.label]}`) 
 
 
     // TODO cater for tags

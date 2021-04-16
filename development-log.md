@@ -14,16 +14,13 @@
 - sectors defined with (combinations of) tags (or tagfilters); objects that satisfy the tagfilter condition of a sector are displayed in the sector; a viewpoint can contain various sector-configurations - that can be linked - drilling down on one sector to another configuration optionally inherits the master sector's tag-filter - and uses the sector-tagfilters on top of that in the new configuration 
 
 - use d3 force when auto deriving x,y coordinates 
-   
-- zoom in on a single ring - that ring fills up the entire (width of the) radar - the other rings are hidden and so are the blips in those rings (similar to zoom in on sector)
 
 - allow removal of viewpoint, template, object type, rating type, objects of a specific type
 - generate ratings and blips in Viewpoint for all objects | selected objects
 
 - ?? record user defined blip coordinates as polar coordinates
 
-- define default sector label font/edge/color settings for sectors
-- define default label font/edge/color settings for radar (for sectors, rings, ..)
+
 - define gradient color for blips (see https://developer.mozilla.org/en-US/docs/Web/SVG/Element/radialGradient)
 
 - have defaults associated with viewpoint; currently, defaults are created for the current viewpoint and do not synchronize with a new viewpoint
@@ -36,9 +33,20 @@
   - visual markings - like surrounding ring or partial ring or asterisk
   - font style in label 
 
+- support edit mode: 
+  - all labels and images can be dragged
+  - all labels can be clicked to be edited
+  - sector or ring knobs are shown and can be manipulated
+
+- "recycle bin" - area on page where blips to be deleted can be dragged to
 
 - property Description for each sector to describe the meaning ; show as hovertext for sector label
-- support font-style, font-weight as property to define for labels in sector
+
+- support default font-style, font-weight as property to define for labels in sector (instead of only at individual sector level)
+- support default font-style, font-weight as property to define for labels in ring (instead of only at individual ring level)
+- define default sector label font/edge/color settings for sectors
+- define default label font/edge/color settings for radar (for sectors, rings, ..)
+ 
 - support dash array property for sector edge
 
 - allow multiple properties to be mapped to a sector (e.g. sector for open source container management and for Oracle integration tools)
@@ -56,11 +64,25 @@
           - update existing objects with uploaded ones
           - take the most recently changed object
 
+- define viewpoint.template.blip.opacity and apply when drawing blips; radarBlips.js - line 429 (currently hard code 0.4)
+
+## April 16th
+- rating (type) properties can be of type context - they provide (factual) context about the rating such as time, scope, author; they are not part of the rating
+- file manager: when ratings are uploaded and collide with existing ratings with the same ID, then a new rating is created in case the context of the uploaded rating differs from the existing rating (different scope, timestamp or author or other context property )
+
+
+
 ## April 15th
 - write rating type in every rating when downloading
 - restore rating type as object reference after uploading/normalizing
 - set new object's display property from new label entered in new blip wizard
 - show curved sector label after drill down
+- support drillup/rollup by dbl click on sector label in case of drilled down (single)sector
+
+- use ring level label settings to style ring label
+  - handle upload data: 
+  - add new (object type, rating type, template, objects, ratings, viewpoint) - no updating existing 
+- generate blips for all ratings for appropriate type that do not currently have blip
 
 ## April 14th
 - create new radar

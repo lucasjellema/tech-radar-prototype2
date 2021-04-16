@@ -27,6 +27,10 @@ const launchPropertyEditor = (propertyToEdit, viewpoint, drawRadarBlips = null, 
        html += `<label for="propertyDisplayLabel">Display Label?</label>
        <input id="propertyDisplayLabel" type="checkbox" ${propertyToEdit?.displayLabel == true ? "checked" : ""}>
     </input><br/>`
+    html+= `<label for="propertyContext">Context?</label>
+    <input id="propertyContext" type="checkbox" title="Does this property provide context for a rating (such as timestamp, scope, author) - instead of being part of the rating itself?"
+    ${propertyToEdit?.context == true ? "checked" : ""}><br/>`
+
     html += `<h3>Allowable Values</h3>`
     // button to add Allowable Value
     html += `<input type="button" id="addAllowableValueButton"  value="Add Allowable Value"  style="padding:6px;margin:10px"/>`
@@ -90,6 +94,7 @@ const saveProperty = (propertyToEdit, viewpoint, parentForNewProperty = null) =>
     propertyToEdit.type = getElementValue('propertyType')
     propertyToEdit.defaultValue = getElementValue('propertyDefaultValue')
     propertyToEdit.discrete = document.getElementById(`propertyDiscrete`).checked
+    propertyToEdit.context = document.getElementById(`propertyContext`).checked
     propertyToEdit.displayLabel = document.getElementById(`propertyDisplayLabel`).checked
 
     

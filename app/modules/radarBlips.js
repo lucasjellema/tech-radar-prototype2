@@ -1,7 +1,7 @@
 import { cartesianFromPolar, polarFromCartesian, segmentFromCartesian } from './drawingUtilities.js'
 import { launchBlipEditor } from './blipEditing.js'
 import { getViewpoint, getData, publishRefreshRadar } from './data.js'
-import { getDistinctTagValues, getPropertyFromPropertyPath, getNestedPropertyValueFromObject, uuidv4, setNestedPropertyValueOnObject } from './utils.js'
+import { getRatingTypeProperties,getDistinctTagValues, getPropertyFromPropertyPath, getNestedPropertyValueFromObject, uuidv4, setNestedPropertyValueOnObject } from './utils.js'
 export { drawRadarBlips }
 
 
@@ -25,7 +25,7 @@ const filterBlip = (blip, viewpoint) => {
                 try {
                     let blipHasFilter
                     if (filter.tag.startsWith('"')) {
-                        const labelProperty = viewpoint.propertyVisualMaps.blip.label
+                        const labelProperty = viewpoint.propertyVisualMaps.blip?.label  
                         const blipLabel = getNestedPropertyValueFromObject(blip.rating, labelProperty).toLowerCase()
                         const filterTag = filter.tag.replace(/^"+|"+$/g, '').toLowerCase()
 
@@ -124,6 +124,20 @@ const drawRadarBlips = function (viewpoint) {
     });
 
     initializeTagsFilter()
+
+    // the blip.label property should be set in order to describe the label for the blips
+    // this next section helps out when that property has not been set, by picking our own label property
+    if (viewpoint.propertyVisualMaps.blip?.label == null ||viewpoint.propertyVisualMaps.blip?.label.length =9= 0) {
+        // set blip.label to the first string type property for the object this blip is based on
+        let blipProperties = getRatingTypeProperties(viewpoint.ratingType, getData().model, true)
+        for ( let i=0;i<blipProperties.length;i++) {
+            if (blipProperties[i].property.type=="string" && blipProperties[i].propertyScope=="object") {
+                viewpoint.propertyVisualMaps.blip.label = blipProperties[i].propertyPath
+            break
+            }
+        }
+
+    }
 
     document.getElementById('applyShapes').checked = currentViewpoint.blipDisplaySettings.applyShapes
     document.getElementById('applySizes').checked = currentViewpoint.blipDisplaySettings.applySizes

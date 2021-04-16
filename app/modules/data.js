@@ -1,7 +1,7 @@
 export {
-    initializeViewpointFromURL, initializeFiltersTagsFromURL, getDefaultSettingsBlip
+    initializeViewpointFromURL, initializeFiltersTagsFromURL, getDefaultSettingsBlip,createRating 
     , setDefaultSettingsBlip, shuffleBlips, getConfiguration, getViewpoint, getData, getObjectById
-    , createBlip, getObjectListOfOptions, getRatingListOfOptions, getRatingTypeForRatingTypeName, subscribeToRadarRefresh, getState, publishRefreshRadar
+    , populateTemplateSelector, createBlip, getObjectListOfOptions, getRatingListOfOptions, getRatingTypeForRatingTypeName, subscribeToRadarRefresh, getState, publishRefreshRadar
 }
 import { initializeTree } from './tree.js'
 
@@ -41,7 +41,7 @@ const serialize = (originalData) => {
     for (let i = 0; i < Object.keys(serializedData.objects).length; i++) {
         const object = serializedData.objects[Object.keys(serializedData.objects)[i]]
         object.objectType = object.objectType ?? serializedData.model.objectTypes[Object.keys(serializedData.model.objectTypes)[0]].name // TEMPORARY! every object should have its object type defined when created
-
+        if (typeof (object.objectType) == "object") object.objectType = object.objectType.name
     }
 
     serializedData.viewpoints.forEach((viewpoint) => {
@@ -88,7 +88,7 @@ const deserialize = (originalData) => {
             if (typeof (blip.rating) == "string") { // assume the rating is a reference to an UUID
                 blip.rating = deserializedData.ratings[blip.rating] // possibly check getData() as well
             }
-            if (blip.rating.ratingType==null || typeof(blip.rating.ratingType)=="string") {blip.rating.ratingType = viewpoint.ratingType}       
+            if (blip.rating.ratingType == null || typeof (blip.rating.ratingType) == "string") { blip.rating.ratingType = viewpoint.ratingType }
         })
 
 
@@ -105,6 +105,11 @@ const deserialize = (originalData) => {
         if (typeof (ratingType.objectType) == "string") {
             ratingType.objectType = deserializedData.model.objectTypes[ratingType.objectType]
         }
+        for (let j = 0; j < Object.keys(ratingType.properties).length; j++) {
+            const property = ratingType.properties[Object.keys(ratingType.properties)[j]]
+            property.name = Object.keys(ratingType.properties)[j]
+        }
+
     }
 
     return deserializedData
@@ -132,9 +137,13 @@ const normalizeDataSet = (dataset) => {
         if (typeof (ratingType.objectType) == "string") {
             ratingType.objectType = dataset.model.objectTypes[ratingType.objectType]
         }
+        for (let j = 0; j < Object.keys(ratingType.properties).length; j++) {
+            const property = ratingType.properties[Object.keys(ratingType.properties)[j]]
+            property.name = Object.keys(ratingType.properties)[j]
+        }
     }
     dataset.viewpoints.forEach((viewpoint) => {
-        if (typeof(viewpoint.ratingType)=="string") {viewpoint.ratingType = dataset.model.ratingTypes[viewpoint.ratingType]}
+        if (typeof (viewpoint.ratingType) == "string") { viewpoint.ratingType = dataset.model.ratingTypes[viewpoint.ratingType] }
         console.log(`${JSON.stringify(viewpoint.ratingType)}`)
         // const objectType = viewpoint.ratingType.objectType
         viewpoint.blips.forEach((blip) => {
@@ -144,8 +153,8 @@ const normalizeDataSet = (dataset) => {
                 dataset.objects[blip.rating.object.id] = blip.rating.object
                 dataset.ratings[blip.rating.id] = blip.rating
             }
-            if (blip.rating.ratingType==null) {blip.rating.ratingType = viewpoint.ratingType}
-            if (blip.rating.object.objectType==null) {blip.rating.object.objectType = viewpoint.ratingType.objectType}
+            if (blip.rating.ratingType == null) { blip.rating.ratingType = viewpoint.ratingType }
+            if (blip.rating.object.objectType == null) { blip.rating.object.objectType = viewpoint.ratingType.objectType }
         })
         addUUIDtoBlips(viewpoint.blips)
 
@@ -344,44 +353,46 @@ const initializeDatasetFromURL = async () => {
 initializeDatasetFromURL()
 //let radarIndex = { templates: [{ title: encodeURI(config.title.text), description: "", lastupdate: "20210310T192400" }], objects: [] }
 
+const createRating = (ratingTypeName, object) => {
+    let rating = {
+        id: uuidv4(),
+        timestamp: Date.now(),
+        ratingType: getData().model.ratingTypes[ratingTypeName],
+        pending: true
+        , object: object
+    }
+    // TODO  set property defaults on rating propertie
+    let properties = getRatingTypeProperties(getViewpoint().ratingType, getData().model, false)
+
+    for (let i = 0; i < properties.length; i++) {
+        const property = properties[i]
+        if (property.type == "string" || property.type == "text" || property.type == "url") {
+            let value = getNestedPropertyValueFromObject(getState().defaultSettings?.rating, property.propertyPath)
+            if (value == null) value = ""
+            setNestedPropertyValueOnObject(rating, property.propertyPath, value)
+        }
+    }
+    return rating
+}
+
 // TODO use default values for all properties as defined in the meta-model
 // create blip from meta-data and from default blip
 const createBlip = (objectId, objectNewLabel, ratingId = null, viewpoint = getState().currentViewpoint) => {
     const focusRatingTypeName = typeof (viewpoint.ratingType) == "object" ? viewpoint.ratingType.name : viewpoint.ratingType
+    let object = objectId != null ? getObjectById(objectId)
+        : { id: uuidv4(), pending: true, objectType: viewpoint.ratingType.objectType.name }
 
     let rating = (ratingId != null && ratingId.length > 0)
         ? getRatingById(ratingId)
-        : {
-            id: uuidv4(),
-            timestamp: Date.now(),
-            ratingType: focusRatingTypeName,
-            pending: true
-            , object: objectId != null
-                ? getObjectById(objectId)
-                : { id: uuidv4(), pending: true, objectType: viewpoint.ratingType.objectType.name }
-        }
-    // TODO existing object and new rating, then set defaults on rating propertie
-    if (ratingId == null || ratingId.length < 1) {
-        let properties = getRatingTypeProperties(getViewpoint().ratingType, getData().model, objectId == null)
+        : createRating(focusRatingTypeName, object)
 
-        for (let i = 0; i < properties.length; i++) {
-            const property = properties[i]
-            if (property.type == "string" || property.type == "text" || property.type == "url") {
-                let value = getNestedPropertyValueFromObject(getState().defaultSettings?.rating, property.propertyPath)
-                if (value == null) value = ""
-                setNestedPropertyValueOnObject(rating, property.propertyPath, value)
-            }
-        }
-        // set defaults on object and on rating properties
-        if (objectId == null) {
-            const objectDisplayPropertyName = findDisplayProperty(viewpoint.ratingType.objectType.properties).name
-            rating.object[objectDisplayPropertyName]= objectNewLabel ?? "NEW" // TODO hardcoded object display property
-            rating.object.tags = [] // TODO hardcoded reference to tags field; check all properties of type tags
+    // set defaults on object and on rating properties
+    if (objectId == null) {
+        const objectDisplayPropertyName = findDisplayProperty(viewpoint.ratingType.objectType.properties).name
+        rating.object[objectDisplayPropertyName] = objectNewLabel ?? "NEW" // TODO hardcoded object display property
+        rating.object.tags = [] // TODO hardcoded reference to tags field; check all properties of type tags
 
-        }
     }
-
-
     rating.timestamp = Date.now()
     // TODO: blip id set as uuid?
     let blip = { id: `${getViewpoint().blips.length}`, rating: rating, pending: true }
@@ -440,7 +451,7 @@ const getObjectListOfOptions = (objectType = null) => {
 
         const object = data.objects[Object.keys(getData().objects)[i]]
         console.log(`object type = ${object.objectType}`)
-        if (objectType == null || object.objectType == objectType.name) {
+        if (objectType == null || object.objectType == objectType.name || object.objectType.name == objectType.name) {
             objectsListofOptions.push({ label: object[objectDisplayLabelProperty], value: object.id })
         }
     }

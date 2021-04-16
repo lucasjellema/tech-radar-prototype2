@@ -267,11 +267,11 @@ const getListOfSupportedShapes = () => {
     shapesList.push(`diamond`)
     shapesList.push(`square`)
     shapesList.push(`triangle`)
-    shapesList.push(`ring`)
     shapesList.push(`plus`)
     shapesList.push(`rectangleHorizontal`)
     shapesList.push(`rectangleVertical`)
     shapesList.push(`star`)
+    shapesList.push(`ring`)
     return shapesList
 }
 

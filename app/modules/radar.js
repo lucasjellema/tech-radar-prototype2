@@ -8,6 +8,7 @@ const subscribers = []
 const subscribeToRadarEvents = (subscriber) => { subscribers.push(subscriber) }
 const publishRadarEvent = (event) => { subscribers.forEach((subscriber) => { subscriber(event) }) }
 
+// configNode maps to ring.labelSettings (and sector.labelSettings)
 const styleText = (textElement, configNode, config, alternativeFontSource = null) => {
     const fontStyleElements = [{ style: "fill", property: "color" }, { style: "font-size", property: "fontSize" }
         , { style: "font-family", property: "fontFamily" }, { style: "font-weight", property: "fontWeight" }
@@ -327,7 +328,7 @@ const drawRingLabels = function (radar, config, elementDecorator) {
             .on('dblclick', () => { console.log(`dbl click on ring`); publishRadarEvent({ type: "ringDrilldown", ring: i }) })
 
             .call(elementDecorator ? elementDecorator : () => { }, [`svg#${config.svg_id}`, ring.label, `ringLabel${i}`]);
-        styleText(ringlabel, ring, config, config.ringConfiguration)
+        styleText(ringlabel, ring.labelSettings, config, config.ringConfiguration)
 
         currentRadiusPercentage = currentRadiusPercentage - ring.width * ringExpansionFactor(config)
     }
@@ -629,7 +630,7 @@ const radarMenu = (x, y, d, blip, viewpoint) => {
         .attr("transform", `translate(${initialColumnIndent}, ${20})`)
 
     menuOptions.append("text")
-        .text(`Create Blip`)
+        .text(`Create Blip[s]`)
         .style("fill", "blue")
         .style("font-family", "Arial, Helvetica")
         .style("font-size", "15px")

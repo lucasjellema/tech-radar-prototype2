@@ -1,8 +1,8 @@
 export { launchFileManager }
 import { drawRadar, subscribeToRadarEvents, publishRadarEvent } from './radar.js';
-import { getViewpoint, getData, publishRefreshRadar, populateTemplateSelector } from './data.js';
+import { getViewpoint, getData, publishRefreshRadar, populateTemplateSelector, createObject, createRating } from './data.js';
 import { launchShapeEditor } from './shapeEditing.js'
-import { getListOfSupportedShapes, capitalize, getPropertyFromPropertyPath, getPropertyValuesAndCounts, populateFontsList, createAndPopulateDataListFromBlipProperties, undefinedToDefined, getAllKeysMappedToValue, getNestedPropertyValueFromObject, setNestedPropertyValueOnObject, initializeImagePaster, populateSelect, getElementValue, setTextOnElement, getRatingTypeProperties, showOrHideElement, uuidv4 } from './utils.js'
+import { getListOfSupportedShapes, capitalize, getPropertyFromPropertyPath, getPropertyValuesAndCounts, populateFontsList, createAndPopulateDataListFromBlipProperties, undefinedToDefined, getAllKeysMappedToValue, getNestedPropertyValueFromObject, setNestedPropertyValueOnObject, initializeImagePaster, populateSelect, getElementValue, setTextOnElement, getRatingTypeProperties, showOrHideElement, uuidv4, populateDatalistFromValueSet } from './utils.js'
 
 const launchFileManager = (viewpoint, drawRadarBlips) => {
     showOrHideElement("modalMain", true)
@@ -10,29 +10,42 @@ const launchFileManager = (viewpoint, drawRadarBlips) => {
     document.getElementById("fileConfigurationTab").classList.add("warning") // define a class SELECTEDTAB 
     const contentContainer = document.getElementById("modalMainContentContainer")
     let html = ``
-    html += `                    <input type="button" id="uploadFile" name="upload" value="Upload">
+    html += `                    <input type="button" id="uploadFile" name="upload" value="Upload Radar File">< br/>
+    <input type="button" id="uploadCSVFile" name="upload" value="Upload CSV File to Merge into Radar">
     <input type="file" id="uploadfileElem" multiple accept="application/json,text/*" style="display:none">
 `
     contentContainer.innerHTML = `${html}<br/> <br/><br/>`
 
-
+    let fileType = "radar"
     let fileElem = document.getElementById("uploadfileElem");
     fileElem.addEventListener("change", async (e) => {
         if (!e.target.files.length) {
             console.log(`no files selected`)
         } else {
             const contents = await e.target.files[0].text()
-            handleUploadedFiles(contents)
+            if (fileType == "radar") {
+                handleUploadedFiles(contents)
+            }
+            else if (fileType == "csv") {
+                handleUploadedCSVFiles(contents)
+            }
         }
     }
         , false);
 
     document.getElementById('uploadFile').addEventListener("click", () => {
+        fileType = "radar"
+        if (fileElem) { fileElem.click() }
+    });
+
+    document.getElementById('uploadCSVFile').addEventListener("click", () => {
+        fileType = "csv"
         if (fileElem) { fileElem.click() }
     });
     const buttonBar = document.getElementById("modalMainButtonBar")
     buttonBar.innerHTML = ``
 }
+
 
 const handleUploadedFiles = (contents) => {
     const uploadedData = JSON.parse(contents)
@@ -90,7 +103,7 @@ const handleUploadedFiles = (contents) => {
     for (let i = 0; i < Object.keys(uploadedData.ratings).length; i++) {
         const rating = uploadedData.ratings[Object.keys(uploadedData.ratings)[i]]
         rating.object = target.objects[rating.object]
-        if (rating.object.label=="DB2") {
+        if (rating.object.label == "DB2") {
             console.log(`DB2!!`)
         }
         let ratingTypeName
@@ -165,5 +178,111 @@ const handleUploadedFiles = (contents) => {
     }
 
     populateTemplateSelector()
+
+}
+
+const handleUploadedCSVFiles = (contents) => {
+    const objects = d3.csvParse(contents)
+    console.log(`CSV file:  # of records ${objects.length}`)
+    console.log(`CSV file properties:  ${JSON.stringify(objects.columns)}`)
+    showOrHideElement("modalMain", true)
+    setTextOnElement("modalMainTitle", "Import CSV Document")
+    document.getElementById("fileConfigurationTab").classList.add("warning") // define a class SELECTEDTAB 
+    const contentContainer = document.getElementById("modalMainContentContainer")
+    let html = ``
+    html += `<h3>Quick File Summary</h3>
+    <p># of records ${objects.length}</p>
+    <h3>Mapping Properties from CSV to Radar</h3>
+    `
+    html += `<table><tr><th>CSV Field</th><th>Sample values from CSV</th><th>Mapped to Radar Property</th></tr>`
+
+    for (let i = 0; i < objects.columns.length; i++) {
+        let uniqueValues = objects.reduce((valueSample, row) => {
+            const value = row[objects.columns[i]]
+            if (value != null && value.length > 0) { valueSample.add(value)}
+            return valueSample 
+        }, new Set())
+
+        let values = Array.from(uniqueValues)
+        .reduce( (valueSample, value, index) => {
+            return valueSample + (index > 0 ? ", " : "") + value             
+        }
+        , "")
+        html += `<tr><td><span id="field${i}">${objects.columns[i]}</span></td>
+    <td><span id="values${i}" title="${values}">Sample values from CSV</span></td>
+    <td><input id="mappedProperty${i}" list="mappedPropertiesList" title="Select a predefined property (path) or define your own new property"></input></td></tr>`
+
+    }
+
+    html += `</table>`
+    html += `<datalist id="mappedPropertiesList">        <option value="X"></option></datalist>`
+
+    contentContainer.innerHTML = `${html}<br/> <br/><br/>`
+    const listOfRatingPropertyPaths = []
+    const ratingTypeProperties = getRatingTypeProperties(getViewpoint().ratingType, getData().model, true)
+    for (let i = 0; i < ratingTypeProperties.length; i++) {
+        listOfRatingPropertyPaths.push(ratingTypeProperties[i].propertyPath)
+    }
+
+    populateDatalistFromValueSet("mappedPropertiesList", listOfRatingPropertyPaths)
+    const buttonBar = document.getElementById("modalMainButtonBar")
+    buttonBar.innerHTML = `
+    <input type="button" id="processCSVrecords" name="process" value="Process CSV records based on this mapping configuration">
+    `
+    document.getElementById("processCSVrecords").addEventListener("click", () => {
+        // construct object with mapping between CSV field and Radar Property Path
+        const csvToRadarMap = {}
+        for (let i = 0; i < objects.columns.length; i++) {
+            const mappedPropertyPath = getElementValue(`mappedProperty${i}`)
+            if (mappedPropertyPath != null && mappedPropertyPath.length > 0) {
+                csvToRadarMap[objects.columns[i]] = mappedPropertyPath
+            }
+        }
+        processCSVRecords(objects, csvToRadarMap)
+    })
+
+}
+
+const processCSVRecords = (objects, csvToRadarMap) => {
+    console.log(`csvToRadarMap ${JSON.stringify(csvToRadarMap)}`)
+    // do we create ratings as well as objects?
+    let shouldCreateRating = false
+    for (let i = 0; i < Object.keys(csvToRadarMap).length; i++) {
+        const csvField = Object.keys(csvToRadarMap)[i]
+        if (!csvToRadarMap[csvField].startsWith("object.")) {
+            shouldCreateRating=true
+            break
+        }
+    }
+
+    objects.forEach((row) => {
+        // create object with defaults for object type
+        const object = createObject(getViewpoint().ratingType.objectType.name)
+        // then update object with values from csv row
+        for (let i = 0; i < Object.keys(csvToRadarMap).length; i++) {
+            const csvField = Object.keys(csvToRadarMap)[i]
+            if (csvToRadarMap[csvField].startsWith("object.")) {
+                object[csvToRadarMap[csvField].substring(7)] = row[csvField]
+            }
+        }
+        // finally add object to data.objects
+        console.log(`New Object: ${JSON.stringify(object)}`)
+        getData().objects[object.id] = object
+        
+        console.log(`Also new rating?: ${shouldCreateRating}`)
+        const rating = createRating(getViewpoint().ratingType.name, object) // all session defaults will now have been applied
+        for (let i = 0; i < Object.keys(csvToRadarMap).length; i++) {
+            const csvField = Object.keys(csvToRadarMap)[i]
+            if (!csvToRadarMap[csvField].startsWith("object.")) {
+                rating[csvToRadarMap[csvField]] = row[csvField]
+            }
+        }
+        getData().ratings[rating.id] = rating
+
+
+        
+
+    })
+
 
 }

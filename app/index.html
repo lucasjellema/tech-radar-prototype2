@@ -60,18 +60,6 @@
             </div>
             <div id="blipForm">
 
-                <table id="blipEditorTable">
-                </table>
-                <hr />
-                <label for="blipTagsContainer">Tags</label>
-                <div id="blipTagsContainer"></div>
-                <br />
-                <div id="tagControls">
-                </div>
-
-                <div id="blipEditorButtonBar" style="position: absolute; bottom: 25;right: 100;">
-                    <input id="saveBlipEdits" type="button" value="Save Changes"></input>
-                </div>
             </div>
         </div>
         <script>
@@ -283,7 +271,7 @@
 
             if (event.type == "editBlipDefaults") {
                 const blip = getDefaultSettingsBlip()
-                launchBlipEditor(blip, getViewpoint(), (viewpoint) => { setDefaultSettingsBlip(blip) })
+                launchBlipEditor(blip, getViewpoint(), (viewpoint) => { setDefaultSettingsBlip(blip) }, false)
             }
 
             if (event.type == "shuffleBlips") {

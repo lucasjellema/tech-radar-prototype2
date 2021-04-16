@@ -101,7 +101,7 @@ const launchNewBlipWizard = (viewpoint, drawRadarBlips) => {
         const labelForNewObject = (objectNewLabel != null && objectNewLabel.length > 0) ? objectNewLabel : null
         if ((selectedObjectId ?? labelForNewObject) != null) {
             const blip = createBlip(selectedObjectId, labelForNewObject, selectedRatingId, viewpoint)
-            launchBlipEditor(blip, getViewpoint(), drawRadarBlips)
+            launchBlipEditor(blip, getViewpoint(), drawRadarBlips, selectedObjectId==null)
         }
     })
 
@@ -119,9 +119,9 @@ const generateBlipsForRatings = (viewpoint) => {
     const ratingTypeName = viewpoint.ratingType.name
     const blippedRatingsSet = new Set()
     viewpoint.blips.forEach((blip) => blippedRatingsSet.add(blip.rating.id))
-    for (let i =0;i<Object.keys(getData().ratings).length;i++) {
+    for (let i = 0; i < Object.keys(getData().ratings).length; i++) {
         const rating = getData().ratings[Object.keys(getData().ratings)[i]]
-        if (!blippedRatingsSet.has(rating.id) && rating.ratingType.name == ratingTypeName ) {
+        if (!blippedRatingsSet.has(rating.id) && rating.ratingType.name == ratingTypeName) {
             let blip = { id: uuidv4(), rating: rating }
             viewpoint.blips.push(blip)
         }
@@ -137,39 +137,59 @@ const generateRatingsForObjectsAndBlipsForRatings = (viewpoint) => {
     // first: generate ratings for objects
     // next: generate blips for all ratings not yet blipped
     const objectTypeName = viewpoint.ratingType.objectType.name
-    
+
     const ratingTypeName = viewpoint.ratingType.name
-    
+
     const ratedObjectsSet = new Set()
-    for (let i =0;i<Object.keys(getData().ratings).length;i++) {
+    for (let i = 0; i < Object.keys(getData().ratings).length; i++) {
         const rating = getData().ratings[Object.keys(getData().ratings)[i]]
-        if (rating.ratingType.name == ratingTypeName ) {
+        if (rating.ratingType.name == ratingTypeName) {
             ratedObjectsSet.add(rating.object.id)
         }
     }
-    for (let i =0;i<Object.keys(getData().objects).length;i++) {
+    for (let i = 0; i < Object.keys(getData().objects).length; i++) {
         const object = getData().objects[Object.keys(getData().objects)[i]]
-        if (!ratedObjectsSet.has(object.id)  && (object.objectType.name == objectTypeName) ) {
+        if (!ratedObjectsSet.has(object.id) && (object.objectType.name == objectTypeName)) {
             // CREATE A NEW RATING!
-            const rating = createRating (ratingTypeName, object)
+            const rating = createRating(ratingTypeName, object)
             delete rating.pending
             getData().ratings[rating.id] = rating
             // TODO set author, scope on rating??
         }
     }
 
-        // TODO default values for ratings
-        generateBlipsForRatings(viewpoint)
+    // TODO default values for ratings
+    generateBlipsForRatings(viewpoint)
 }
 
 
-const launchBlipEditor = (blip, viewpoint, drawRadarBlips) => {
+const launchBlipEditor = (blip, viewpoint, drawRadarBlips, editObject = true) => {
     // var modal = document.getElementById("modalBlipEditor");
     // modal.style.display = "block";
     showOrHideElement("modalBlipEditor", true)
     showOrHideElement("newBlip", false)
     showOrHideElement("blipForm", true)
     showOrHideElement("blipImage", true)
+    const form = document.getElementById("blipForm")
+
+    let html = `
+<table id="blipEditorTable">
+</table>
+<hr />
+<label for="blipTagsContainer">Tags</label>
+<div id="blipTagsContainer"></div>
+<br />
+<div id="tagControls">
+</div>
+
+<div id="blipEditorButtonBar" style="position: absolute; bottom: 25;right: 100;">
+    <input id="saveBlipEdits" type="button" value="Save Changes"></input>
+</div>`
+    form.innerHTML = html
+    document.getElementById("saveBlipEdits").addEventListener("click", () => {
+        saveBlipEdit(editObject)
+    })
+
     const tbl = document.getElementById("blipEditorTable")
     // remove current content
     tbl.innerHTML = null
@@ -182,9 +202,9 @@ const launchBlipEditor = (blip, viewpoint, drawRadarBlips) => {
 
 
     // TODO cater for tags
-    let blipProperties = getRatingTypeProperties(ratingType, getData().model)
+    let blipProperties = getRatingTypeProperties(ratingType, getData().model, editObject)
 
-    let html = ''
+    html = ''
     for (let i = 0; i < blipProperties.length; i++) {
         const blipProperty = blipProperties[i]
         if (blipProperty.property.type == "tags") { // skip tags type properties
@@ -242,7 +262,7 @@ const launchBlipEditor = (blip, viewpoint, drawRadarBlips) => {
 
     // set main image for blip 
     let imageSource = getNestedPropertyValueFromObject(blip.rating, viewpoint.propertyVisualMaps.blip.image)
-    if (imageSource != null) {
+    if (imageSource != null && imageSource.length>0) {
         document.getElementById("blipImage").src = imageSource
     }
     initializeTagsField(blip)
@@ -267,22 +287,24 @@ const launchBlipEditor = (blip, viewpoint, drawRadarBlips) => {
 
 
 
-const saveBlipEdit = () => {
+const saveBlipEdit = (editObject) => {
     const blip = blipEdited
     // check if the values have changed for the two properties mapped to sector and ring
     // if they have, the current XY should be reset 
     const sectorPropertyPath = viewpointToReuse.propertyVisualMaps.sector.property
     const ringPropertyPath = viewpointToReuse.propertyVisualMaps.ring.property
     let resetXY = false
+    if (!(editObject && sectorPropertyPath.startsWith("object."))) {
+        let originalValue = getNestedPropertyValueFromObject(blip.rating, sectorPropertyPath)
+        let currentValue = document.getElementById(`blip${sectorPropertyPath}`).value
+        if (originalValue != currentValue) { resetXY = true }
+    }
 
-    let originalValue = getNestedPropertyValueFromObject(blip.rating, sectorPropertyPath)
-    let currentValue = document.getElementById(`blip${sectorPropertyPath}`).value
-    if (originalValue != currentValue) { resetXY = true }
-
-    originalValue = getNestedPropertyValueFromObject(blip.rating, ringPropertyPath)
-    currentValue = document.getElementById(`blip${ringPropertyPath}`).value
-    if (originalValue != currentValue) { resetXY = true }
-
+    if (!(editObject && ringPropertyPath.startsWith("object."))) {
+        let originalValue = getNestedPropertyValueFromObject(blip.rating, ringPropertyPath)
+        let currentValue = document.getElementById(`blip${ringPropertyPath}`).value
+        if (originalValue != currentValue) { resetXY = true }
+    }
     if (resetXY) {
         blip.x = null
         blip.y = null
@@ -327,9 +349,6 @@ const saveBlipEdit = () => {
 
 
 
-document.getElementById("saveBlipEdits").addEventListener("click", () => {
-    saveBlipEdit()
-})
 
 
 const getSectorExpansionFactor = (viewpoint) => {

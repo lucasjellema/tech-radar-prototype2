@@ -71,8 +71,10 @@
 - file manager: when ratings are uploaded and collide with existing ratings with the same ID, then a new rating is created in case the context of the uploaded rating differs from the existing rating (different scope, timestamp or author or other context property )
 - when viewpoint.blip.label has not been set, take the first object property of type string to be the label property
 - generate generic context properties for new rating type: author, timestamp, scope 
-- only edit rating settings when defining (session) defaults
-- only edit rating when creating a new blip/rating for an existing object 
+- when defining (session) defaults, only edit rating settings (not the object properties) 
+- only edit rating properties when creating a new blip/rating for an existing object 
+- generate ratings for all objects that do not have a rating for the current context (author, scope, time)
+- use session defaults & property defaults when generating ratings 
 
 
 ## April 15th

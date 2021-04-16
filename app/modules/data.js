@@ -361,16 +361,21 @@ const createRating = (ratingTypeName, object) => {
         pending: true
         , object: object
     }
-    // TODO  set property defaults on rating propertie
     let properties = getRatingTypeProperties(getViewpoint().ratingType, getData().model, false)
+
+    const defaultRating = getDefaultSettingsBlip()?.rating
+
 
     for (let i = 0; i < properties.length; i++) {
         const property = properties[i]
-        if (property.type == "string" || property.type == "text" || property.type == "url") {
-            let value = getNestedPropertyValueFromObject(getState().defaultSettings?.rating, property.propertyPath)
-            if (value == null) value = ""
+//        if (property.property.type == "string" || property.property.type == "text" || property.property.type == "url") {
+            let value = getNestedPropertyValueFromObject(defaultRating, property.propertyPath)
+            if (value == null || value.length==0 || value == "-1"){
+              // the value was not set on the defaultRating; perhaps the property definition contains a default value
+              value = property.property?.defaultValue 
+            } 
             setNestedPropertyValueOnObject(rating, property.propertyPath, value)
-        }
+  //      }
     }
     return rating
 }

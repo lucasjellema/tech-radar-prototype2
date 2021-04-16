@@ -10,13 +10,21 @@ const launchFileManager = (viewpoint, drawRadarBlips) => {
     document.getElementById("fileConfigurationTab").classList.add("warning") // define a class SELECTEDTAB 
     const contentContainer = document.getElementById("modalMainContentContainer")
     let html = ``
-    html += `                    <input type="button" id="uploadFile" name="upload" value="Upload Radar File">< br/>
+    html += `<input type="button" id="uploadFile" name="upload" value="Upload Radar File"></input>
+    <br />
+    <br />
     <input type="button" id="uploadCSVFile" name="upload" value="Upload CSV File to Merge into Radar">
     <input type="file" id="uploadfileElem" multiple accept="application/json,text/*" style="display:none">
-`
-    contentContainer.innerHTML = `${html}<br/> <br/><br/>`
+     `
+    html += ` 
+<label for="addValuesToPropertyAllowableValues">Extend Allowable Values for mapped Properties with Actual Values?</input>
+<input type="checkbox" id="addValuesToPropertyAllowableValues" ></input>
+<br/><br/>`
+
+    contentContainer.innerHTML = html
 
     let fileType = "radar"
+    let extendAllowableValues = false
     let fileElem = document.getElementById("uploadfileElem");
     fileElem.addEventListener("change", async (e) => {
         if (!e.target.files.length) {
@@ -27,7 +35,7 @@ const launchFileManager = (viewpoint, drawRadarBlips) => {
                 handleUploadedFiles(contents)
             }
             else if (fileType == "csv") {
-                handleUploadedCSVFiles(contents)
+                handleUploadedCSVFiles(contents, extendAllowableValues)
             }
         }
     }
@@ -40,6 +48,7 @@ const launchFileManager = (viewpoint, drawRadarBlips) => {
 
     document.getElementById('uploadCSVFile').addEventListener("click", () => {
         fileType = "csv"
+        extendAllowableValues = document.getElementById("addValuesToPropertyAllowableValues").checked
         if (fileElem) { fileElem.click() }
     });
     const buttonBar = document.getElementById("modalMainButtonBar")
@@ -181,10 +190,8 @@ const handleUploadedFiles = (contents) => {
 
 }
 
-const handleUploadedCSVFiles = (contents) => {
+const handleUploadedCSVFiles = (contents, extendAllowableValues) => {
     const objects = d3.csvParse(contents)
-    console.log(`CSV file:  # of records ${objects.length}`)
-    console.log(`CSV file properties:  ${JSON.stringify(objects.columns)}`)
     showOrHideElement("modalMain", true)
     setTextOnElement("modalMainTitle", "Import CSV Document")
     document.getElementById("fileConfigurationTab").classList.add("warning") // define a class SELECTEDTAB 
@@ -192,6 +199,7 @@ const handleUploadedCSVFiles = (contents) => {
     let html = ``
     html += `<h3>Quick File Summary</h3>
     <p># of records ${objects.length}</p>
+    ${extendAllowableValues ? "<p>Actual values will be added to allowable values for mapped properties (if they already have allowable values)" : ""}
     <h3>Mapping Properties from CSV to Radar</h3>
     `
     html += `<table><tr><th>CSV Field</th><th>Sample values from CSV</th><th>Mapped to Radar Property</th></tr>`
@@ -199,15 +207,15 @@ const handleUploadedCSVFiles = (contents) => {
     for (let i = 0; i < objects.columns.length; i++) {
         let uniqueValues = objects.reduce((valueSample, row) => {
             const value = row[objects.columns[i]]
-            if (value != null && value.length > 0) { valueSample.add(value)}
-            return valueSample 
+            if (value != null && value.length > 0) { valueSample.add(value) }
+            return valueSample
         }, new Set())
 
         let values = Array.from(uniqueValues)
-        .reduce( (valueSample, value, index) => {
-            return valueSample + (index > 0 ? ", " : "") + value             
-        }
-        , "")
+            .reduce((valueSample, value, index) => {
+                return valueSample + (index > 0 ? ", " : "") + value
+            }
+                , "")
         html += `<tr><td><span id="field${i}">${objects.columns[i]}</span></td>
     <td><span id="values${i}" title="${values}">Sample values from CSV</span></td>
     <td><input id="mappedProperty${i}" list="mappedPropertiesList" title="Select a predefined property (path) or define your own new property"></input></td></tr>`
@@ -238,51 +246,131 @@ const handleUploadedCSVFiles = (contents) => {
                 csvToRadarMap[objects.columns[i]] = mappedPropertyPath
             }
         }
-        processCSVRecords(objects, csvToRadarMap)
+        processCSVRecords(objects, csvToRadarMap, extendAllowableValues)
     })
 
 }
 
-const processCSVRecords = (objects, csvToRadarMap) => {
-    console.log(`csvToRadarMap ${JSON.stringify(csvToRadarMap)}`)
+const processCSVRecords = (objects, csvToRadarMap, extendAllowableValues) => {
     // do we create ratings as well as objects?
+    const objectType = getViewpoint().ratingType.objectType
     let shouldCreateRating = false
     for (let i = 0; i < Object.keys(csvToRadarMap).length; i++) {
         const csvField = Object.keys(csvToRadarMap)[i]
         if (!csvToRadarMap[csvField].startsWith("object.")) {
-            shouldCreateRating=true
+            shouldCreateRating = true
             break
         }
     }
+    // check for newly created properties
+    for (let i = 0; i < Object.keys(csvToRadarMap).length; i++) {
+        const csvField = Object.keys(csvToRadarMap)[i]
+        if (csvToRadarMap[csvField].startsWith("object.")) {
+            const propertyName = csvToRadarMap[csvField].substring(7)
+            if (!objectType.properties.hasOwnProperty(propertyName)) {
+                // create property in objectType
+                objectType.properties[propertyName] =
+                {
+                    "label": propertyName,
+                    "type": "string",
+                    "name": propertyName,
+                    "comment": `generated from field ${csvField} when processing uploaded CSV file`
+                }
+            }
+        }
+        else {
+            const propertyName = csvToRadarMap[csvField]
+            if (!getViewpoint().ratingType.properties.hasOwnProperty(propertyName)) {
+                // create property in objectType
+                getViewpoint().ratingType.properties[propertyName] =
+                {
+                    "label": propertyName,
+                    "type": "string",
+                    "name": propertyName,
+                    "comment": `generated from field ${csvField} when processing uploaded CSV file`
+                }
+            }
+        }
+    }
 
+    const distinctValueCollectorForObjects = {}
+    const distinctValueCollectorForRatings = {}
     objects.forEach((row) => {
         // create object with defaults for object type
-        const object = createObject(getViewpoint().ratingType.objectType.name)
+        const object = createObject(objectType.name)
         // then update object with values from csv row
         for (let i = 0; i < Object.keys(csvToRadarMap).length; i++) {
             const csvField = Object.keys(csvToRadarMap)[i]
             if (csvToRadarMap[csvField].startsWith("object.")) {
-                object[csvToRadarMap[csvField].substring(7)] = row[csvField]
+                const propertyName = csvToRadarMap[csvField].substring(7)
+                object[propertyName] = row[csvField]
+                if (object.objectType.properties[propertyName].allowableValues != null) {
+                    if (distinctValueCollectorForObjects[propertyName] == null) distinctValueCollectorForObjects[propertyName] = new Set()
+                    distinctValueCollectorForObjects[propertyName].add(row[csvField])
+                }
             }
         }
         // finally add object to data.objects
-        console.log(`New Object: ${JSON.stringify(object)}`)
+
         getData().objects[object.id] = object
-        
+
         console.log(`Also new rating?: ${shouldCreateRating}`)
         const rating = createRating(getViewpoint().ratingType.name, object) // all session defaults will now have been applied
         for (let i = 0; i < Object.keys(csvToRadarMap).length; i++) {
             const csvField = Object.keys(csvToRadarMap)[i]
             if (!csvToRadarMap[csvField].startsWith("object.")) {
+                const propertyName = csvToRadarMap[csvField]
                 rating[csvToRadarMap[csvField]] = row[csvField]
+                if (getViewpoint().ratingType.properties[propertyName].allowableValues != null) {
+                    if (distinctValueCollectorForRatings[propertyName] == null) distinctValueCollectorForRatings[propertyName] = new Set()
+                    distinctValueCollectorForRatings[propertyName].add(row[csvField])
+                }
+
             }
         }
         getData().ratings[rating.id] = rating
-
-
-        
-
     })
 
+    if (extendAllowableValues) {
+        for (let i = 0; i < Object.keys(distinctValueCollectorForObjects).length; i++) {
+            const propertyName = Object.keys(distinctValueCollectorForObjects)[i]
+            const property = objectType.properties[propertyName]
+            console.log(`extend allowable values for property ${propertyName} ${JSON.stringify(property)} with values from ${JSON.stringify(distinctValueCollectorForObjects[propertyName])}`)
+            const values = Array.from(distinctValueCollectorForObjects[propertyName])
+            for (let v = 0; v < values.length; v++) {
+                // check if v exists in property.allowableValues; if not, then add
+                let found = false
+                for (let a = 0; a < property.allowableValues.length; a++) {
+                    if (property.allowableValues[a].value == values[v]) {
+                        found = true
+                    }
+                }
+                if (!found) {
+                    property.allowableValues.push({ value: values[v], label: values[v] })
+                }
+            }
+
+        }
+
+        for (let i = 0; i < Object.keys(distinctValueCollectorForRatings).length; i++) {
+            const propertyName = Object.keys(distinctValueCollectorForRatings)[i]
+            const property = getViewpoint().ratingType.properties[propertyName]
+            console.log(`extend allowable values for property ${propertyName} ${JSON.stringify(property)} with values from ${JSON.stringify(distinctValueCollectorForRatings[propertyName])}`)
+            const values = Array.from(distinctValueCollectorForRatings[propertyName])
+            for (let v = 0; v < values.length; v++) {
+                let found = false
+                for (let a = 0; a < property.allowableValues.length; a++) {
+                    if (property.allowableValues[a].value == values[v]) {
+                        found = true
+                    }
+                }
+                if (!found) {
+                    property.allowableValues.push({ value: values[v], label: values[v] })
+                }
+            }
+
+        }
+
+    }
 
 }

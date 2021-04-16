@@ -74,6 +74,9 @@
 - use session defaults & property defaults when generating ratings 
 - show date (such as timestamp rating) as input date/time or as read only with property format
 
+- CSV upload & processing => map CSV rows to existing radar's object/rating type (create new properties)
+- 
+
 
 ## April 15th
 - write rating type in every rating when downloading

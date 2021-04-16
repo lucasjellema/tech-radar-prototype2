@@ -126,9 +126,15 @@ const deserialize = (originalData) => {
 const normalizeDataSet = (dataset) => {
     dataset.objects = dataset.objects ?? {}
     dataset.ratings = dataset.ratings ?? {}
+    for (let i = 0; i < Object.keys(dataset.objects).length; i++) {
+        const object = dataset.ratings[Object.keys(dataset.ratings)[i]]
+  // will this ruin anything?     object.objectType = dataset.model.objectTypes[object.objectType]
+    }
+
     for (let i = 0; i < Object.keys(dataset.ratings).length; i++) {
         const rating = dataset.ratings[Object.keys(dataset.ratings)[i]]
         rating.object = dataset.objects[rating.object]
+// will this ruin anything?       rating.ratingType = dataset.model.ratingTypes[rating.ratingType]
     }
 
 

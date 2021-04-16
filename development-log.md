@@ -55,13 +55,10 @@
 - generate technology objects from scraped data: name, vendor, description, logo: https://www.capterra.com/database-management-software/ 
 - option to define "Others" sector and ring - when set, any blip not assigned to a ring or sector is assigned to the Others ring or sector and can then be displayed
 
-- show date (such as timestamp rating) as input date/time or as read only with property format
   
 - handle upload data: 
   - overwrite
-  - add new (object type, rating type, template, objects, ratings, viewpoint) - no updating existing 
-  - merge: create new blips and ratings for uploaded ones when colliding (AND some form of change between rating objects?)
-          - update existing objects with uploaded ones
+  - merge:  update existing objects with uploaded ones
           - take the most recently changed object
 
 - define viewpoint.template.blip.opacity and apply when drawing blips; radarBlips.js - line 429 (currently hard code 0.4)
@@ -75,6 +72,7 @@
 - only edit rating properties when creating a new blip/rating for an existing object 
 - generate ratings for all objects that do not have a rating for the current context (author, scope, time)
 - use session defaults & property defaults when generating ratings 
+- show date (such as timestamp rating) as input date/time or as read only with property format
 
 
 ## April 15th

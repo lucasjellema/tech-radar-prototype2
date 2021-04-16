@@ -127,7 +127,7 @@ const drawRadarBlips = function (viewpoint) {
 
     // the blip.label property should be set in order to describe the label for the blips
     // this next section helps out when that property has not been set, by picking our own label property
-    if (viewpoint.propertyVisualMaps.blip?.label == null ||viewpoint.propertyVisualMaps.blip?.label.length =9= 0) {
+    if (viewpoint.propertyVisualMaps.blip?.label == null ||viewpoint.propertyVisualMaps.blip?.label.length == 0) {
         // set blip.label to the first string type property for the object this blip is based on
         let blipProperties = getRatingTypeProperties(viewpoint.ratingType, getData().model, true)
         for ( let i=0;i<blipProperties.length;i++) {

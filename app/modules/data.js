@@ -113,11 +113,13 @@ const deserialize = (originalData) => {
     }
     for (let i = 0; i < Object.keys(deserializedData.model.objectTypes).length; i++) {
         const objectType = deserializedData.model.objectTypes[Object.keys(deserializedData.model.objectTypes)[i]]
+        if (objectType.properties != null ) {
         for (let j = 0; j < Object.keys(objectType.properties).length; j++) {
             const property = objectType.properties[Object.keys(objectType.properties)[j]]
             // if objectType property does not have a property called name, then assign one based on key of property
             property.name = Object.keys(objectType.properties)[j]
         }
+    }
     }
 
 
@@ -160,11 +162,13 @@ const normalizeDataSet = (dataset) => {
 
     for (let i = 0; i < Object.keys(dataset.model.objectTypes).length; i++) {
         const objectType = dataset.model.objectTypes[Object.keys(dataset.model.objectTypes)[i]]
-        for (let j = 0; j < Object.keys(objectType.properties).length; j++) {
+        if (objectType.properties != null ) {
+        for (let j = 0; j < Object.keys(objectType?.properties).length; j++) {
             const property = objectType.properties[Object.keys(objectType.properties)[j]]
             // if objectType property does not have a property called name, then assign one based on key of property
             property.name = Object.keys(objectType.properties)[j]
         }
+    }
     }
 
     dataset.viewpoints.forEach((viewpoint) => {

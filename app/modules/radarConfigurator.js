@@ -5,6 +5,7 @@ import { capitalize, getPropertyFromPropertyPath, populateFontsList, createAndPo
 import { launchSectorConfigurator } from './sectorConfigurator.js'
 import { launchRingConfigurator } from './ringConfigurator.js'
 import { launchDatamodelConfigurator } from './datamodelConfigurator.js'
+import { launchDataExplorer } from './dataExplorer.js'
 import { launchBlipConfigurator } from './blipConfigurator.js'
 import { launchShapeConfigurator } from './shapeConfigurator.js'
 import { launchFileManager } from './fileManager.js'
@@ -24,6 +25,8 @@ const launchMainEditor = (viewpoint, drawRadarBlips, tab) => {
         launchBlipConfigurator(viewpoint, drawRadarBlips)
     }else if (tab == "shape") {
         launchShapeConfigurator(viewpoint, drawRadarBlips)
+    }else if (tab == "explorer") {
+        launchDataExplorer(viewpoint, drawRadarBlips)
     }
 
     else {
@@ -114,6 +117,7 @@ const renderTabs = (tab, viewpoint, drawRadarBlips) => {
             <span id="blipConfigurationTab" class="extra tagfilter">Blips</span>
             <span id="radarManagementConfigurationTab" class="extra tagfilter" style="margin:40">Radars Management</span>
             <span id="fileConfigurationTab" class="extra tagfilter">File Manager</span>
+            <span id="dataExplorerConfigurationTab" class="extra tagfilter">Data Explorer</span>
 `
     tabContainer.innerHTML = html
     const selectedTab = document.getElementById(`${tab ?? "radar"}ConfigurationTab`)
@@ -137,6 +141,8 @@ const renderTabs = (tab, viewpoint, drawRadarBlips) => {
         , () => { launchRadarsManagementConfigurator() })
         document.getElementById(`fileConfigurationTab`).addEventListener("click"
         , () => { launchFileManager() })
+        document.getElementById(`dataExplorerConfigurationTab`).addEventListener("click"
+        , () => { launchDataExplorer() })
     }
 
 const saveRadarSettings = (viewpoint) => {

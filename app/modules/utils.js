@@ -1,6 +1,6 @@
 export {
     isOperationBlackedOut, uuidv4, getNestedPropertyValueFromObject, setNestedPropertyValueOnObject
-    , getRatingTypeProperties, getElementValue, showOrHideElement, getDateTimeString
+    , getRatingTypeProperties, getElementValue, showOrHideElement,toggleShowHideElement, getDateTimeString
     , populateSelect, getAllKeysMappedToValue, createAndPopulateDataListFromBlipProperties
     , populateFontsList, populateDataTypesList, populateShapesList, setTextOnElement, initializeImagePaster, undefinedToDefined, capitalize
     , getDistinctTagValues, getPropertyValuesAndCounts, populateDatalistFromValueSet, getPropertyFromPropertyPath
@@ -174,6 +174,10 @@ const getAllKeysMappedToValue = (object, value) => {
 const showOrHideElement = (elementId, show) => {
     var x = document.getElementById(elementId);
     x.style.display = show ? "block" : "none"
+}
+const toggleShowHideElement = (elementId) => {
+    var x = document.getElementById(elementId);
+    x.style.display = (x.style.display=="none") ? "block" : "none"
 }
 
 const getDateTimeString = (timestampInMS) => {

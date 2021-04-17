@@ -4,7 +4,7 @@ export {
     , populateSelect, getAllKeysMappedToValue, createAndPopulateDataListFromBlipProperties
     , populateFontsList, populateDataTypesList, populateShapesList, setTextOnElement, initializeImagePaster, undefinedToDefined, capitalize
     , getDistinctTagValues, getPropertyValuesAndCounts, populateDatalistFromValueSet, getPropertyFromPropertyPath
-    , findDisplayProperty, getListOfSupportedShapes
+    , findDisplayProperty, getListOfSupportedShapes, getLabelForAllowableValue
 }
 
 
@@ -24,6 +24,14 @@ const isOperationBlackedOut = (blackoutKey, blackoutPeriod = blackoutPeriodDefau
 }
 
 
+
+const getLabelForAllowableValue = (value, allowableValues) => {
+    let label = ""
+    for (let i = 0; i < allowableValues.length; i++) {
+        if (allowableValues[i].value == value) { label = allowableValues[i].label; break }
+    }
+    return label
+}
 
 function addValuesForProperty(propertyPath, blips, distinctValues) {
     const listOfDistinctPropertyValues = new Set()

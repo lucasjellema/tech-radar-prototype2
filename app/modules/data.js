@@ -1,5 +1,5 @@
 export {
-    initializeViewpointFromURL, initializeFiltersTagsFromURL, getDefaultSettingsBlip, createRating, createObject
+    initializeViewpointFromURL, download, initializeFiltersTagsFromURL, getDefaultSettingsBlip, createRating, createObject
     , setDefaultSettingsBlip, shuffleBlips, getConfiguration, getViewpoint, getData, getObjectById
     , populateTemplateSelector, createBlip, getObjectListOfOptions, getRatingListOfOptions, getRatingTypeForRatingTypeName, subscribeToRadarRefresh, getState, publishRefreshRadar
 }

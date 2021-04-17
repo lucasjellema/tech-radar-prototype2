@@ -1,6 +1,6 @@
 export { launchFileManager }
 import { drawRadar, subscribeToRadarEvents, publishRadarEvent } from './radar.js';
-import { getViewpoint, getData, publishRefreshRadar, populateTemplateSelector, createObject, createRating } from './data.js';
+import { getViewpoint, getData, download, publishRefreshRadar, populateTemplateSelector, createObject, createRating } from './data.js';
 import { launchShapeEditor } from './shapeEditing.js'
 import { getListOfSupportedShapes, capitalize, getPropertyFromPropertyPath, getPropertyValuesAndCounts, populateFontsList, toggleShowHideElement, createAndPopulateDataListFromBlipProperties, undefinedToDefined, getAllKeysMappedToValue, getNestedPropertyValueFromObject, setNestedPropertyValueOnObject, initializeImagePaster, populateSelect, getElementValue, setTextOnElement, getRatingTypeProperties, showOrHideElement, uuidv4, populateDatalistFromValueSet } from './utils.js'
 
@@ -14,6 +14,9 @@ const launchFileManager = (viewpoint, drawRadarBlips) => {
     <br />
     <br />
     <input type="button" id="uploadCSVFile" name="upload" value="Upload CSV File to Merge into Radar">
+    <br />
+    <br />
+    <input type="button" id="exportCSVFile" name="export" value="Export CSV File from Radar">
     <input type="file" id="uploadfileElem" multiple accept="application/json,text/*" style="display:none">
      `
 
@@ -47,6 +50,12 @@ const launchFileManager = (viewpoint, drawRadarBlips) => {
         fileType = "csv"
         if (fileElem) { fileElem.click() }
     });
+
+    document.getElementById('exportCSVFile').addEventListener("click", () => {
+        fileType = "csv"
+        exportCSV()
+    });
+
     const buttonBar = document.getElementById("modalMainButtonBar")
     buttonBar.innerHTML = ``
 }
@@ -226,7 +235,7 @@ const handleUploadedCSVFiles = (contents) => {
     populateDatalistFromValueSet("mappedPropertiesList", listOfRatingPropertyPaths)
     const buttonBar = document.getElementById("modalMainButtonBar")
     buttonBar.innerHTML = `
-    <input type="button" id="defineCSVProcessing" name="process" value="Define CSV Processing Configuration">
+    <input type="button" id="defineCSVProcessing" name="process" value="Define CSV Processing Configuration"></input>
     `
     document.getElementById("defineCSVProcessing").addEventListener("click", () => {
         // construct object with mapping between CSV field and Radar Property Path
@@ -417,14 +426,14 @@ const processCSVRecords = (objects, extendAllowableValues, propertyValueMap, rad
                     if (radarFromCSVMap.has(prop.propertyPath)) {
                         let valueFromCSV = row[radarFromCSVMap.get(prop.propertyPath)]
 
-                                            // check if valueFromCSV occurs in csvFieldToRadarPropertyValueMapper = if so, the converted value should be used
-                    if (csvFieldToRadarPropertyValueMapper.hasOwnProperty(prop.propertyPath)) {
-                        const convertedValue = csvFieldToRadarPropertyValueMapper[prop.propertyPath][valueFromCSV]
-                        if (convertedValue != null && convertedValue != "") {
-                            console.log(`converted ${valueFromCSV} to ${convertedValue}`)
-                            valueFromCSV = convertedValue
+                        // check if valueFromCSV occurs in csvFieldToRadarPropertyValueMapper = if so, the converted value should be used
+                        if (csvFieldToRadarPropertyValueMapper.hasOwnProperty(prop.propertyPath)) {
+                            const convertedValue = csvFieldToRadarPropertyValueMapper[prop.propertyPath][valueFromCSV]
+                            if (convertedValue != null && convertedValue != "") {
+                                console.log(`converted ${valueFromCSV} to ${convertedValue}`)
+                                valueFromCSV = convertedValue
+                            }
                         }
-                    }
 
 
                         rating[propertyName] = valueFromCSV
@@ -539,3 +548,81 @@ function identifyAndAddNewProperties(radarFromCSVMap) {
 
 }
 
+const exportCSV = () => {
+    const contentContainer = document.getElementById("modalMainContentContainer")
+    let html = ``
+    html += `<h3>Export Radar Data in CSV File</h3>
+    <br />
+    <label for="exportAllRatings">All Ratings for ${getViewpoint().ratingType.name}:
+     # ${Object.keys(getData().ratings).filter((key) => getData().ratings[key].ratingType == getViewpoint().ratingType.name || getData().ratings[key].ratingType.name == getViewpoint().ratingType.name).length}?</input>
+    <input type="radio" id="exportAllRatings" value="exportAllRatings" name="exportOptions"></input>
+
+    <br />
+    <label for="exportAllBlippedRatings">All Blipped Ratings (in current radar): # ${getViewpoint().blips.length}?</input>
+    <input type="radio" id="exportAllBlippedRatings" value="exportAllBlippedRatings" name="exportOptions"></input>
+    
+    <br />
+    <label for="exportAllBlippedFilteredRatings">All Blipped and Filtered Ratings (in current radar)?</input>
+    <input type="radio" id="exportAllBlippedFilteredRatings" value="exportAllBlippedFilteredRatings" name="exportOptions"></input>
+    <br />
+    <label for="exportAllVisibleRatings">All Currently Visible Ratings?</input>
+    <input type="radio" id="exportAllVisibleRatings" value="exportAllVisibleRatings" name="exportOptions"></input>
+    <br />
+    `
+    html += `<h3>Map Radar Properties to CSV Fields</h3>`
+    html += `<table>
+    <tr><th>Include?</th><th>Radar Property</th><th>CSV Field</th></tr>`
+    const ratingTypeProperties = getRatingTypeProperties(getViewpoint().ratingType, getData().model, true)
+    for (let i = 0; i < ratingTypeProperties.length; i++) {
+        html += `
+        <tr><td><input type="checkbox" id="include${i}" checked></input></td>
+        <td>${ratingTypeProperties[i].propertyPath}</td>
+        <td><input type="text" id="csvField${i}" value="${ratingTypeProperties[i].property.name}"></input></td></tr>`
+
+    }
+    html += `</table><br /><br />`
+    contentContainer.innerHTML = html
+
+    const buttonBar = document.getElementById("modalMainButtonBar")
+    buttonBar.innerHTML = `
+    <input type="button" id="exportCSVFileFromRadar" name="process" value="Export CSV File">
+    `
+    document.getElementById("exportCSVFileFromRadar").addEventListener("click", () => {
+        // gather all property to field mappings
+        const exportableProperties = []
+        for (let i = 0; i < ratingTypeProperties.length; i++) {
+            if (document.getElementById(`include${i}`).checked) {
+                exportableProperties.push({
+                    radarProperty: ratingTypeProperties[i]
+                    , csvField: getElementValue(`csvField${i}`)
+                })
+            }
+        }
+
+        // then start processing
+        // TODO: which type of processing (all, fuiltered,...)
+        console.log(`export ${JSON.stringify(exportableProperties)}`)
+        exportRadarDataToCSVFile(exportableProperties)
+    })
+}
+
+const exportRadarDataToCSVFile = (exportableProperties) => {
+    let csv = ``
+    for (let i = 0; i < exportableProperties.length; i++) {
+        csv += (i > 0 ? ',' : '') + exportableProperties[i].csvField
+    }
+    csv += `\n`
+    for (let i = 0; i < Object.keys(getData().ratings).length; i++) {
+        const rating = getData().ratings[Object.keys(getData().ratings)[i]]
+        let row = ``
+        if (rating.ratingType == getViewpoint().ratingType.name || rating.ratingType.name == getViewpoint().ratingType.name) {
+            for (let j = 0; j < exportableProperties.length; j++) {
+                console.log(`prop path ${exportableProperties[j].radarProperty.propertyPath}`)
+                row += (j > 0 ? ',' : '') + `"${getNestedPropertyValueFromObject(rating, exportableProperties[j].radarProperty.propertyPath)}"`
+            }
+            csv += `${row}\n`
+        }
+
+    }
+    download(`radar-data.csv`, csv)
+}

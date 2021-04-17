@@ -62,12 +62,15 @@
           - take the most recently changed object
 
 - define viewpoint.template.blip.opacity and apply when drawing blips; radarBlips.js - line 429 (currently hard code 0.4)
-- export radar (ratings & objects combined) as CSV; define fields and map from nested property path
+
 
 ## April 17th
 - upon import csv: 
   - allow values to be defined for unmapped object and rating properties
   - allow value mappings to be defined for imported values in CSV to values assigned in object/rating properties 
+- Start Data Explorer
+- export radar data as CSV - currently for all ratings of the current radar's rating type ( CSV rows derived from (ratings & objects combined); define fields and map from nested property path)
+  
 
 ## April 16th
 - rating (type) properties can be of type context - they provide (factual) context about the rating such as time, scope, author; they are not part of the rating

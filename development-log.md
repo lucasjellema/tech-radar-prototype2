@@ -72,6 +72,7 @@
 - Generate Radar (object type & rating type, objects, ratings, sector & ring & shape & blip configuration from CSV file) - note: only fresh viewpoint with fresh objects and ratings and types - no merging with existing data
 - show viewpoints in data explorer
 - colors configurator and editor
+- support colors in CSV wizard
   
 ## April 17th
 - upon import csv: 

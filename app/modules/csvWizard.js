@@ -5,6 +5,7 @@ import { starterTemplate } from './radarsManagement.js'
 import { reconfigureSectorsFromPropertyPath } from './sectorConfigurator.js'
 import { reconfigureRingsFromPropertyPath } from './ringConfigurator.js'
 import { reconfigureShapesFromPropertyPath } from './shapeConfigurator.js'
+import { reconfigureColorsFromPropertyPath } from './colorConfigurator.js'
 
 
 const createRadarFromCSV = (contents) => {
@@ -192,6 +193,11 @@ const generateRadarFromCSV = (objects, newRadar) => {
     if (propertyPath != null && propertyPath.length > 1) {
         reconfigureShapesFromPropertyPath(propertyPath, viewpoint)
         viewpoint.template.shapesConfiguration.label=`${propertyPath}`
+    }
+    propertyPath = getPropertyPathForVisualDimension(newRadar, "color");
+    if (propertyPath != null && propertyPath.length > 1) {
+        reconfigureColorsFromPropertyPath(propertyPath, viewpoint)
+        viewpoint.template.colorsConfiguration.label=`${propertyPath}`
     }
 
 

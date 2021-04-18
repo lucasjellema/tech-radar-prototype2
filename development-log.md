@@ -76,6 +76,7 @@
 - sizes configurator and editor
 - support sizes in CSV wizard
 - data explorer: button to open blip editor from rating
+- fixed bug in determining drop ring in case one or more rings are hidden
   
 ## April 17th
 - upon import csv: 

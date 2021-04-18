@@ -73,6 +73,9 @@
 - show viewpoints in data explorer
 - colors configurator and editor
 - support colors in CSV wizard
+- sizes configurator and editor
+- support sizes in CSV wizard
+- data explorer: button to open blip editor from rating
   
 ## April 17th
 - upon import csv: 

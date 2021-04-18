@@ -25,7 +25,7 @@
 
 - have defaults associated with viewpoint; currently, defaults are created for the current viewpoint and do not synchronize with a new viewpoint
 - store state (including defaults) in localstorage (to be reinstated in a later session)
-- CSV to (Data Model to) Radar wizard
+
 - fetch radar data from external URL (anything within reach from user's browser) (import dialog & pass sourceURL as query parameter)
 
 - new visual dimensions
@@ -64,6 +64,10 @@
 - define viewpoint.template.blip.opacity and apply when drawing blips; radarBlips.js - line 429 (currently hard code 0.4)
 
 
+## April 18th
+- Generate Radar (object type & rating type, objects, ratings, sector & ring & shape & blip configuration from CSV file) - note: only fresh viewpoint with fresh objects and ratings and types - no merging with existing data
+- show viewpoints in data explorer
+
 ## April 17th
 - upon import csv: 
   - allow values to be defined for unmapped object and rating properties
@@ -72,6 +76,7 @@
 - export radar data as CSV - currently for all ratings of the current radar's rating type ( CSV rows derived from (ratings & objects combined); define fields and map from nested property path)
 - data explorer: show objects and ratings, object types and rating types & details for objects and ratings (not yet edit/delete/create; not yet meta data)
 
+- Create Radar from CSV Wizard 
 
 ## April 16th
 - rating (type) properties can be of type context - they provide (factual) context about the rating such as time, scope, author; they are not part of the rating

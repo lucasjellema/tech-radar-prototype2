@@ -8,8 +8,9 @@ import { launchDatamodelConfigurator } from './datamodelConfigurator.js'
 import { launchDataExplorer } from './dataExplorer.js'
 import { launchBlipConfigurator } from './blipConfigurator.js'
 import { launchShapeConfigurator } from './shapeConfigurator.js'
+import { launchColorConfigurator } from './colorConfigurator.js'
 import { launchFileManager } from './fileManager.js'
-import {launchRadarsManagementConfigurator} from './radarsManagement.js'
+import { launchRadarsManagementConfigurator } from './radarsManagement.js'
 
 
 
@@ -23,9 +24,11 @@ const launchMainEditor = (viewpoint, drawRadarBlips, tab) => {
         launchDatamodelConfigurator(viewpoint, drawRadarBlips)
     } else if (tab == "blip") {
         launchBlipConfigurator(viewpoint, drawRadarBlips)
-    }else if (tab == "shape") {
+    } else if (tab == "shape") {
         launchShapeConfigurator(viewpoint, drawRadarBlips)
-    }else if (tab == "explorer") {
+    } else if (tab == "color") {
+        launchColorConfigurator(viewpoint, drawRadarBlips)
+    } else if (tab == "explorer") {
         launchDataExplorer(viewpoint, drawRadarBlips)
     }
 
@@ -126,24 +129,26 @@ const renderTabs = (tab, viewpoint, drawRadarBlips) => {
     // add tab event listeners
     document.getElementById(`sectorConfigurationTab`).addEventListener("click"
         , () => { launchSectorConfigurator(viewpoint, drawRadarBlips) })
-        document.getElementById(`ringConfigurationTab`).addEventListener("click"
+    document.getElementById(`ringConfigurationTab`).addEventListener("click"
         , () => { launchRingConfigurator(viewpoint, drawRadarBlips) })
-        document.getElementById(`shapeConfigurationTab`).addEventListener("click"
+    document.getElementById(`shapeConfigurationTab`).addEventListener("click"
         , () => { launchShapeConfigurator(viewpoint, drawRadarBlips) })
+    document.getElementById(`colorConfigurationTab`).addEventListener("click"
+        , () => { launchColorConfigurator(viewpoint, drawRadarBlips) })
     document.getElementById(`radarConfigurationTab`).addEventListener("click"
         , () => { launchMainEditor(viewpoint, drawRadarBlips, "radar") })
     document.getElementById(`datamodelConfigurationTab`).addEventListener("click"
         , () => { launchDatamodelConfigurator(viewpoint, drawRadarBlips) })
-        document.getElementById(`blipConfigurationTab`).addEventListener("click"
+    document.getElementById(`blipConfigurationTab`).addEventListener("click"
         , () => { launchBlipConfigurator(viewpoint, drawRadarBlips) })
 
-        document.getElementById(`radarManagementConfigurationTab`).addEventListener("click"
+    document.getElementById(`radarManagementConfigurationTab`).addEventListener("click"
         , () => { launchRadarsManagementConfigurator() })
-        document.getElementById(`fileConfigurationTab`).addEventListener("click"
+    document.getElementById(`fileConfigurationTab`).addEventListener("click"
         , () => { launchFileManager() })
-        document.getElementById(`dataExplorerConfigurationTab`).addEventListener("click"
+    document.getElementById(`dataExplorerConfigurationTab`).addEventListener("click"
         , () => { launchDataExplorer() })
-    }
+}
 
 const saveRadarSettings = (viewpoint) => {
     viewpoint.template.title.text = getElementValue("radarTitle")

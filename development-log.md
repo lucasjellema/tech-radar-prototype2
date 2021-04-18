@@ -16,9 +16,10 @@
 - use d3 force when auto deriving x,y coordinates 
 
 - allow removal of viewpoint, template, object type, rating type, objects of a specific type
-- generate ratings and blips in Viewpoint for all objects | selected objects
+- generate ratings and blips in Viewpoint for selected objects
 
-- ?? record user defined blip coordinates as polar coordinates
+- record user defined blip coordinates as polar coordinates
+  - scale R and PHI in blip coordinates along with sectors and rings (to roughly maintain same relative position )
 
 
 - define gradient color for blips (see https://developer.mozilla.org/en-US/docs/Web/SVG/Element/radialGradient)
@@ -51,7 +52,7 @@
 
 - allow multiple properties to be mapped to a sector (e.g. sector for open source container management and for Oracle integration tools)
  
-- generate blips (for all ratings that qualify for the viewpoint and its current filters and visible sectors and rings) 
+- generate blips (for all ratings that qualify for the viewpoint's current filters and visible sectors and rings) 
 - generate technology objects from scraped data: name, vendor, description, logo: https://www.capterra.com/database-management-software/ 
 - option to define "Others" sector and ring - when set, any blip not assigned to a ring or sector is assigned to the Others ring or sector and can then be displayed
 
@@ -64,10 +65,14 @@
 - define viewpoint.template.blip.opacity and apply when drawing blips; radarBlips.js - line 429 (currently hard code 0.4)
 
 
+- sizes configurator and editor
+
+
 ## April 18th
 - Generate Radar (object type & rating type, objects, ratings, sector & ring & shape & blip configuration from CSV file) - note: only fresh viewpoint with fresh objects and ratings and types - no merging with existing data
 - show viewpoints in data explorer
-
+- colors configurator and editor
+  
 ## April 17th
 - upon import csv: 
   - allow values to be defined for unmapped object and rating properties

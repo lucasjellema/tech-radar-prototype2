@@ -297,7 +297,7 @@ const drawRadarBlip = (blip, d, viewpoint) => {
             const blipColorId = viewpoint.propertyVisualMaps.color.valueMap[getNestedPropertyValueFromObject(d.rating, propertyMappedToColor)]
                 ?? viewpoint.propertyVisualMaps.color.valueMap["other"]
             blipColor = viewpoint.template.colorsConfiguration.colors[blipColorId].color
-            if (viewpoint.template.colorConfiguration.colors[blipColorId]?.visible== false) return
+            if (viewpoint.template.colorsConfiguration.colors[blipColorId]?.visible== false) return
         } catch (e) {
             blipColor = "blue"
             //console.log(`draw radar blip fall back to no apply color because of ${e}`)
@@ -310,7 +310,7 @@ const drawRadarBlip = (blip, d, viewpoint) => {
             const blipSizeId = viewpoint.propertyVisualMaps.size.valueMap[getNestedPropertyValueFromObject(d.rating, propertyMappedToSize)]
                 ?? viewpoint.propertyVisualMaps.size.valueMap["other"]
             blipSize = viewpoint.template.sizesConfiguration.sizes[blipSizeId].size
-            if (viewpoint.template.sizeConfiguration.sizes[blipSizeId]?.visible== false) return
+            if (viewpoint.template.sizesConfiguration.sizes[blipSizeId]?.visible== false) return
 
         } catch (e) {
             blipSize = 1

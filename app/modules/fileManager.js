@@ -130,9 +130,7 @@ const handleUploadedFiles = (contents) => {
     for (let i = 0; i < Object.keys(uploadedData.ratings).length; i++) {
         const rating = uploadedData.ratings[Object.keys(uploadedData.ratings)[i]]
         rating.object = target.objects[rating.object]
-        if (rating.object.label == "DB2") {
-            console.log(`DB2!!`)
-        }
+
         let ratingTypeName
         if (typeof (rating.ratingType) == "string") ratingTypeName = rating.ratingType
         if (typeof (rating.ratingType) == "object") ratingTypeName = rating.ratingType.name
@@ -624,7 +622,6 @@ const exportRadarDataToCSVFile = (exportableProperties) => {
         let row = ``
         if (rating.ratingType == getViewpoint().ratingType.name || rating.ratingType.name == getViewpoint().ratingType.name) {
             for (let j = 0; j < exportableProperties.length; j++) {
-                console.log(`prop path ${exportableProperties[j].radarProperty.propertyPath}`)
                 row += (j > 0 ? ',' : '') + `"${getNestedPropertyValueFromObject(rating, exportableProperties[j].radarProperty.propertyPath)}"`
             }
             csv += `${row}\n`

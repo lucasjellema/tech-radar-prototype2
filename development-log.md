@@ -65,7 +65,15 @@
 - define viewpoint.template.blip.opacity and apply when drawing blips; radarBlips.js - line 429 (currently hard code 0.4)
 
 
-- sizes configurator and editor
+
+- before drawing blips: create a segment matrix [sector, ring] with for each segment
+  visible?, start and end phi, start and end R
+  when checking the current position of a blip - only compare with boundaries of its segement
+  when calculating a position for a blip - work within segment boundaries
+  (this should save on a lot of calculations) 
+
+## April 19th
+- do not show blips with hidden color, size, shape
 
 
 ## April 18th

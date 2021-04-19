@@ -575,19 +575,24 @@ const initializeColorsLegend = (viewpoint) => {
         || Object.keys(viewpoint.propertyVisualMaps.color.valueMap).length == 0) {
         return
     }
+    const numberOfVisibleColors = config.colorsConfiguration.colors.filter((color) => !(color.visible == false)).length
+
     colorsBox
         .style("background-color", "#EFF")
         .attr("width", "80%")
-        .attr("height", config.colorsConfiguration.colors.length * 45 + 20)
+        .attr("height", numberOfVisibleColors * 45 + 20)
     document.getElementById('colorLegendTitle').innerText = config.colorsConfiguration.label;
     colorsBox.append('g').attr('class', 'colorsBox')
     const circleIndent = 5
     const labelIndent = 50
+    let displayedColorsCounter = 0
+
     for (let i = 0; i < config.colorsConfiguration.colors.length; i++) {
+        if (config.colorsConfiguration.colors[i].visible == false) continue // skip invisible colors
         const colorToShow = config.colorsConfiguration.colors[i].color
         const label = config.colorsConfiguration.colors[i].label
         const colorEntry = colorsBox.append('g')
-            .attr("transform", `translate(${circleIndent + 20}, ${30 + i * 45})`)
+            .attr("transform", `translate(${circleIndent + 20}, ${30 + displayedColorsCounter * 45})`)
 
             .append('circle')
             .attr("id", `templatecolors${i}`)
@@ -598,11 +603,12 @@ const initializeColorsLegend = (viewpoint) => {
             .attr("id", `colorLabel${i}`)
             .text(label)
             .attr("x", labelIndent)
-            .attr("y", 38 + i * 45)
+            .attr("y", 38 + displayedColorsCounter * 45)
             .style("fill", "#000")
             .style("font-family", "Arial, Helvetica")
             .style("font-size", "18px")
             .style("font-weight", "normal")
+            displayedColorsCounter++
     }
 }
 

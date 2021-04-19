@@ -39,7 +39,7 @@ const launchShapeConfigurator = (viewpoint, drawRadarBlips) => {
 
     html += `<table id="shapes">`
     html += `<tr><th>Shape</th><th>Shape Label</th><th>Mapped Values</th><th>Current Count</th><th><span id="showAll" >Visible</span></th>
-    <th>Others?</th>
+    <th><input id="supportOthers" type="checkbox" checked} title="Support an 'others' shape, to catch all orphaned blips"></input>Others?</th>
     <th>Delete?</th><th>v ^</th></tr>`
     for (let i = 0; i < viewpoint.template.shapesConfiguration.shapes.length; i++) {
         const shape = viewpoint.template.shapesConfiguration.shapes[i]
@@ -53,11 +53,13 @@ const launchShapeConfigurator = (viewpoint, drawRadarBlips) => {
         <td><span id="editShape${i}" class="clickableProperty">${shape.label}</span> </td>
         <td>`
         let valueCount = 0
+        if (valueOccurrenceMap!=null) {
         for (let j = 0; j < mappedShapePropertyValues.length; j++) {
             html += `
         <span id="tag0" class="extra tagfilter dropbtn">${mappedShapePropertyValues[j]} (${undefinedToDefined(valueOccurrenceMap[mappedShapePropertyValues[j]], 0)})</span>`
             valueCount += undefinedToDefined(valueOccurrenceMap[mappedShapePropertyValues[j]], 0)
         }
+    }
         html += `</td>
         <td>${valueCount} </td>
         <td><input id="showShape${i}" type="checkbox" ${shape?.visible == false ? "" : "checked"}></input></td> 
@@ -74,6 +76,16 @@ const launchShapeConfigurator = (viewpoint, drawRadarBlips) => {
     contentContainer.innerHTML = `${html}<br/> <br/><br/>`
 
     // add event listeners
+    document.getElementById(`supportOthers`).addEventListener("change", (e) => {
+        const supportOthers = e.target.checked
+        if (!supportOthers) {
+            viewpoint.template.shapesConfiguration.shapes.forEach((shape) => shape.others = false)        
+            for (let i = 0; i < viewpoint.template.shapesConfiguration.shapes.length; i++) {
+                document.getElementById(`othersShape${i}`).checked = false
+            }    
+            } // 
+    
+    })
     for (let i = 0; i < viewpoint.template.shapesConfiguration.shapes.length; i++) {
         document.getElementById(`othersShape${i}`).addEventListener("change", (e) => {
             viewpoint.template.shapesConfiguration.shapes.forEach((shape) => shape.others = false)
@@ -273,7 +285,9 @@ function getValueOccurrenceMap(propertyPath, viewpoint, includeAllowableValues =
     const focusRatingTypeName = typeof (viewpoint.ratingType) == "object" ? viewpoint.ratingType.name : viewpoint.ratingType
     let shapeProperty = getPropertyFromPropertyPath(propertyPath, viewpoint.ratingType, model)
     let valueOccurrenceMap
-    if (shapeProperty.type == "tags") {
+    if (shapeProperty== null) return;
+
+    if (shapeProperty?.type == "tags") {
         valueOccurrenceMap = {}
         for (let i = 0; i < Object.keys(getData().ratings).length; i++) {
             const rating = getData().ratings[Object.keys(getData().ratings)[i]]

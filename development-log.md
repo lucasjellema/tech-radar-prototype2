@@ -78,6 +78,7 @@
 - support Others for rings, colors, shizes and shapes - designate visual dimension value to display all blips whose value does not map to an existing value in the dimension
 
 - dbl click on shape|color|size legend opens radar configurator with relevant tab selected 
+- context menu on radar allows creation of blip in ring & sector context (of mouse position)
 
 ### Resources
 - find DOM elements using query selector (in standard Browser JS): https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector 

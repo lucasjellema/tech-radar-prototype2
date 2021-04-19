@@ -2,7 +2,7 @@ import { cartesianFromPolar, polarFromCartesian, segmentFromCartesian } from './
 import { launchBlipEditor } from './blipEditing.js'
 import { getViewpoint, getData, publishRefreshRadar, getDistinctTagValues } from './data.js'
 import { getLabelForAllowableValue, getRatingTypeProperties, getPropertyFromPropertyPath, getNestedPropertyValueFromObject, uuidv4, setNestedPropertyValueOnObject } from './utils.js'
-export { drawRadarBlips }
+export { drawRadarBlips ,prepareBlipDrawingContext}
 
 
 const radarCanvasElementId = "radarCanvas"
@@ -184,11 +184,51 @@ const drawRadarBlips = function (viewpoint) {
 // this should improve performance and save on the number of calculations/derivations
 // - TODO segment matrix - with details for each sector/ring combination 
 // - others sector/ring/shape/color/size
-// - TODO ring and sector expansion factor
+// - ring and sector expansion factor
 const prepareBlipDrawingContext = () => {
+    currentViewpoint = getViewpoint()
     const blipDrawingContext = {}
-    blipDrawingContext.othersDimensionValue = {}
+    blipDrawingContext['sectorExpansionFactor'] = sectorExpansionFactor()
+    blipDrawingContext['ringExpansionFactor'] = ringExpansionFactor()
+
+    const segmentMatrix = []
+
+    let sectorAngleSum = parseFloat(getViewpoint().template.sectorsConfiguration.initialAngle ?? 0)
+    
+    for (let s=0; s < getViewpoint().template.sectorsConfiguration.sectors.length;s++) {
+        segmentMatrix.push([])
+        const sector = getViewpoint().template.sectorsConfiguration.sectors[s]
+        let currentSectorAngle =  
+         (sector?.visible != false ? sector.angle : 0) * blipDrawingContext['sectorExpansionFactor'] 
+         
+
+        let ringWidthSum = 0
+
+        for (let r=0; r < getViewpoint().template.ringsConfiguration.rings.length;r++) {
+            const ring = getViewpoint().template.ringsConfiguration.rings[r]
+            let currentRingWidth = (ring?.visible != false ? ring.width : 0) * blipDrawingContext['ringExpansionFactor'] 
+            const segment = { startPhi : 2 * (1 - sectorAngleSum) * Math.PI 
+                            , endPhi: 2 * (1 - (sectorAngleSum + currentSectorAngle)) * Math.PI
+                            , startAngle : sectorAngleSum
+                            , endAngle: sectorAngleSum + currentSectorAngle
+                            , startWidth: ringWidthSum
+                            , endWidth: ringWidthSum + currentRingWidth
+                            , startR: Math.round((1- ringWidthSum) * getViewpoint().template.maxRingRadius)
+                            , endR: Math.round((1- ringWidthSum - currentRingWidth) * getViewpoint().template.maxRingRadius)
+                            }
+            segmentMatrix[s].push(segment)
+            segment.visible = !(ring.visible==false || sector.visible==false)
+
+            ringWidthSum += currentRingWidth
+
+        }
+        sectorAngleSum += currentSectorAngle
+    
+    }
+    console.log(`segment matrix = ${JSON.stringify(segmentMatrix)}`)
+    blipDrawingContext.segmentMatrix = segmentMatrix
     // others: an object with for each visual dimension the value that is designated as others
+    blipDrawingContext.othersDimensionValue = {}
     const visualDimensions = ["sector", "ring", "shape", "color", "size"]
     visualDimensions.forEach((dimension) => {
         if (getViewpoint().template[`${dimension}sConfiguration`] != null) {
@@ -215,17 +255,11 @@ const sectorExpansionFactor = () => {
     const expansionFactor = parseFloat((totalAvailableAngle - initialAngle) * (totalVisibleSectorsAngleSum == 0 ? 1 : (1 / totalVisibleSectorsAngleSum)))
     //   console.log(`expansionFactor ${expansionFactor}`)
     return expansionFactor
-
 }
-
-
-
 
 const priorSectorsAnglePercentageSum = (sectorId, config) => config.sectorsConfiguration.sectors.filter((sector, index) => index < sectorId)
     .reduce((sum, sector) =>
         sum + (sector?.visible != false ? sector.angle : 0), 0) * sectorExpansionFactor() + parseFloat(currentViewpoint.template.sectorsConfiguration.initialAngle ?? 0)
-
-
 
 const ringExpansionFactor = () => {
     // factor to multiply each witdh with - derived from the sum of widths of all visible rings , calibrated with the total available ring width
@@ -280,8 +314,7 @@ const findSectorForRating = (rating, viewpoint) => {
         }
     } else {
         sector = viewpoint.propertyVisualMaps.sector.valueMap[propertyValue]
-    }
-    // TODO support for a catch all sector and/or a sector -1
+    }    
     return sector
 }
 

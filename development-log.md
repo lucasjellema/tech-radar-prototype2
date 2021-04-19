@@ -74,7 +74,11 @@
 
 ## April 19th
 - do not show blips with hidden color, size, shape
+- support Others for sectors - designate sector to display all blips whose value does not map to an existing sector
+- support Others for rings, colors, shizes and shapes - designate visual dimension value to display all blips whose value does not map to an existing value in the dimension
 
+### Resources
+- find DOM elements using query selector (in standard Browser JS): https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector 
 
 ## April 18th
 - Generate Radar (object type & rating type, objects, ratings, sector & ring & shape & blip configuration from CSV file) - note: only fresh viewpoint with fresh objects and ratings and types - no merging with existing data

@@ -73,8 +73,9 @@
   (this should save on a lot of calculations) 
 
 ## April 20th
-- derive discrete properties to filter against (in tag filter) dynamically (instead of hard coded)  
+- derive discrete properties (and properties with allowable values) to filter against (in tag filter) dynamically (instead of hard coded)  
 - drill down on segment 
+- workaround: create blip by double click on radar title
 
 ## April 19th
 - do not show blips with hidden color, size, shape

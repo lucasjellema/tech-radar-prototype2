@@ -74,8 +74,9 @@
 
 ## April 20th
 - derive discrete properties (and properties with allowable values) to filter against (in tag filter) dynamically (instead of hard coded)  
-- drill down on segment 
+- drill down (and up) on segment 
 - workaround: create blip by double click on radar title
+- aggregation mode: cluster blips in the same segment for the same object; show list of scope values in hover text; show list of authors in blip details popup
 
 ## April 19th
 - do not show blips with hidden color, size, shape

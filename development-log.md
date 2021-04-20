@@ -73,7 +73,8 @@
   (this should save on a lot of calculations) 
 
 ## April 20th
-- derive discrete properties to filter against (in tag filter) dynamically (instead of hard coded)   
+- derive discrete properties to filter against (in tag filter) dynamically (instead of hard coded)  
+- drill down on segment 
 
 ## April 19th
 - do not show blips with hidden color, size, shape

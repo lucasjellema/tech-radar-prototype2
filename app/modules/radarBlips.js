@@ -187,30 +187,24 @@ const drawRadarBlips = function (viewpoint) {
         blipsLayer.selectAll("*").remove();
     }
     const filteredBlips = viewpoint.blips.filter((blip) => filterBlip(blip, viewpoint))
-    // if aggregate 
-    // go through blips and aggregate
 
     // go through blips and assign blips to segment
     filteredBlips.forEach((blip) => {
         const segment = findSegmentForRating(blip.rating, viewpoint, blipDrawingContext)
-        if (segment.ring != -1) {
+//        if (segment.ring != -1) {
             blipDrawingContext.segmentMatrix[segment.sector][segment.ring].blips.push(blip)
-        }
+  //      }
     })
 
     // compose new set of blips
     // eliminate [blips in] invisible segments 
     let visibleBlips = []
     for (let s = 0; s < getViewpoint().template.sectorsConfiguration.sectors.length; s++) {
-        for (let r = 0; r < getViewpoint().template.ringsConfiguration.rings.length; r++) {
+        for (let r = -1; r < getViewpoint().template.ringsConfiguration.rings.length; r++) {
             const segment = blipDrawingContext.segmentMatrix[s][r]
             if (segment.visible) {
 
                 if (currentViewpoint.blipDisplaySettings.aggregationMode == true) {
-
-                    // add extra blip - just for fun
-                    // TODO aggregration
-                    // organize for this segment the blips per object 
                     const blipsPerObject = {}
                     segment.blips.forEach((blip) => {
                         if (!blipsPerObject.hasOwnProperty(blip.rating.object.id)) { blipsPerObject[blip.rating.object.id] = [] }
@@ -292,7 +286,7 @@ const prepareBlipDrawingContext = () => {
     let sectorAngleSum = parseFloat(getViewpoint().template.sectorsConfiguration.initialAngle ?? 0)
 
     for (let s = 0; s < getViewpoint().template.sectorsConfiguration.sectors.length; s++) {
-        segmentMatrix.push([])
+        segmentMatrix.push({})
         const sector = getViewpoint().template.sectorsConfiguration.sectors[s]
         let currentSectorAngle =
             (sector?.visible != false ? sector.angle : 0) * blipDrawingContext['sectorExpansionFactor']
@@ -314,12 +308,17 @@ const prepareBlipDrawingContext = () => {
                 , endR: Math.round((1 - ringWidthSum - currentRingWidth) * getViewpoint().template.maxRingRadius)
                 , blips: []
             }
-            segmentMatrix[s].push(segment)
+            segmentMatrix[s][r]= segment
             segment.visible = !(ring.visible == false || sector.visible == false)
 
             ringWidthSum += currentRingWidth
 
         }
+        // add ring -1 (the outer zone)
+        segmentMatrix[s][-1]= segmentMatrix[s][0]
+        segmentMatrix[s][-1].startR = 3000
+        segmentMatrix[s][-1].endR = segmentMatrix[s][0].startR        
+        
         sectorAngleSum += currentSectorAngle
 
     }

@@ -72,6 +72,9 @@
   when calculating a position for a blip - work within segment boundaries
   (this should save on a lot of calculations) 
 
+## April 20th
+- derive discrete properties to filter against (in tag filter) dynamically (instead of hard coded)   
+
 ## April 19th
 - do not show blips with hidden color, size, shape
 - support Others for sectors - designate sector to display all blips whose value does not map to an existing sector

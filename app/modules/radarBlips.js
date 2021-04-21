@@ -561,7 +561,7 @@ const drawRadarBlip = (blip, d, viewpoint, blipDrawingContext) => {
     if (d.segmentWidthPercentage != null && d.segmentAnglePercentage != null) {
         const anglePercentage = segment.startAngle + d.segmentAnglePercentage * segment.anglePercentage
         let widthPercentage = segment.startWidth + d.segmentWidthPercentage * segment.widthPercentage
-        if (blipRing == -1 && widthPercentage > 0) { widthPercentage = -1 * widthPercentage }
+        if (blipRing == -1 ) { widthPercentage = -1 * d.segmentWidthPercentage }
         const phi = 2 * (1 - anglePercentage) * Math.PI
         const r = (1 - widthPercentage) * viewpoint.template.maxRingRadius
         xy = cartesianFromPolar({ r: r, phi: phi })

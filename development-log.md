@@ -74,6 +74,12 @@
 
 ## April 21st
 - retain relative position in segment for dragged/dropped blips (expand/contract as sectors & rings are shown and hidden)
+- hide / show display settings panel
+- hide and show ring minus one
+- store randomly derived position as polar (percentage) coordinates - and retain 
+
+### Resources
+- merge JavaScript objects - https://www.javascripttutorial.net/object/javascript-merge-objects/
 
 ## April 20th
 - derive discrete properties (and properties with allowable values) to filter against (in tag filter) dynamically (instead of hard coded)  

@@ -72,6 +72,9 @@
   when calculating a position for a blip - work within segment boundaries
   (this should save on a lot of calculations) 
 
+## April 21st
+- retain relative position in segment for dragged/dropped blips (expand/contract as sectors & rings are shown and hidden)
+
 ## April 20th
 - derive discrete properties (and properties with allowable values) to filter against (in tag filter) dynamically (instead of hard coded)  
 - drill down (and up) on segment 

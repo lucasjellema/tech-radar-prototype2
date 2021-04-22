@@ -72,6 +72,9 @@
   when calculating a position for a blip - work within segment boundaries
   (this should save on a lot of calculations) 
 
+## April 22nd
+- CSV file upload can match CSV records with existing objects and ratings (this allows existing data to be easily updated)
+
 ## April 21st
 - retain relative position in segment for dragged/dropped blips (expand/contract as sectors & rings are shown and hidden)
 - hide / show display settings panel

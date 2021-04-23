@@ -65,10 +65,6 @@
   - merge:  update existing objects with uploaded ones
           - take the most recently changed object
 
-- define viewpoint.template.blip.opacity and apply when drawing blips; radarBlips.js - line 429 (currently hard code 0.4)
-
-
-
 - before drawing blips: create a segment matrix [sector, ring] with for each segment
   visible?, start and end phi, start and end R
   when checking the current position of a blip - only compare with boundaries of its segement
@@ -78,7 +74,7 @@
 
 - fixed issue in segment drill down
 - drill down on each of the three visual dimensions shape, color, size
-
+- edit blip opacity in blip configurator
 
 ### Resources
 SVG Events , animation & bound data  https://octoperf.com/blog/2018/04/17/d3-js-mouse-events-and-transitions-tutorial/#how-to-bind-data-using-d3datum

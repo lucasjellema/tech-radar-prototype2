@@ -53,9 +53,12 @@
 - allow multiple properties to be mapped to a sector (e.g. sector for open source container management and for Oracle integration tools)
  
 - generate blips (for all ratings that qualify for the viewpoint's current filters and visible sectors and rings) 
+ 
 - generate technology objects from scraped data: name, vendor, description, logo: https://www.capterra.com/database-management-software/ 
 - option to define "Others" sector and ring - when set, any blip not assigned to a ring or sector is assigned to the Others ring or sector and can then be displayed
 
+- bulk operations on all currently visible ratings/blips
+  - delete , update a field, export to CSV (already available through file manager), hide, special effect
   
 - handle upload data: 
   - overwrite
@@ -69,8 +72,16 @@
 - before drawing blips: create a segment matrix [sector, ring] with for each segment
   visible?, start and end phi, start and end R
   when checking the current position of a blip - only compare with boundaries of its segement
-  when calculating a position for a blip - work within segment boundaries
-  (this should save on a lot of calculations) 
+
+
+## April 23rd
+
+- fixed issue in segment drill down
+- drill down on each of the three visual dimensions shape, color, size
+
+
+### Resources
+SVG Events , animation & bound data  https://octoperf.com/blog/2018/04/17/d3-js-mouse-events-and-transitions-tutorial/#how-to-bind-data-using-d3datum
 
 ## April 22nd
 - CSV file upload can match CSV records with existing objects and ratings (this allows existing data to be easily updated)

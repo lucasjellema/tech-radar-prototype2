@@ -190,10 +190,8 @@ const launchSectorConfigurator = (viewpoint, drawRadarBlips) => {
         const newSector = {
             label: "NEW SECTOR",
             angle: 0.05,
-            labelSettings: { showCurved: true, showStraight: false, color: "#000000", fontSize: 18, fontFamily: "Helvetica" },
+            labelSettings: { },
             backgroundImage: {},
-            backgroundColor: "#FFFFFF",
-            outerringBackgroundColor: "#FFFFFF"
         }
         viewpoint.template.sectorsConfiguration.sectors.push(newSector)
         launchSectorConfigurator(viewpoint)

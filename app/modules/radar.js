@@ -277,11 +277,14 @@ const drawRings = function (radar, config) {
         ringCanvas.append("path")
             .attr("id", `ring${i}`)
             .attr("d", ringArc)
-            .style("fill", ring.backgroundColor != null ? ring.backgroundColor : color_white)
-            .attr("opacity", ring.opacity != null ? ring.opacity : 0.6)
+            .style("fill", ring.backgroundColor ?? (config.ringsConfiguration.backgroundColor ?? color_white))
+            .attr("opacity", ring.opacity != null ? ring.opacity : (config.ringsConfiguration.opacity ?? 0.6))
             // define borders of rings
-            .style("stroke", ("rings" == config.topLayer && getState().selectedRing == i && getState().editMode) ? "red" : config.ringsConfiguration?.stroke?.strokeColor ?? "#000")
-            .style("stroke-width", ("rings" == config.topLayer && getState().selectedRing == i && getState().editMode) ? 6 : config.ringsConfiguration?.stroke?.strokeWidth ?? 2)
+            .style("stroke", ("rings" == config.topLayer && getState().selectedRing == i && getState().editMode) ? "red"
+                : ring?.edge?.color ?? config.ringsConfiguration?.edge?.color ?? "#000")
+            .style("stroke-width", ("rings" == config.topLayer && getState().selectedSector == i && getState().editMode) ? 8
+                : ring?.edge?.width ?? config.ringsConfiguration?.edge?.width ?? 3)
+
             .style("stroke-dasharray", ("rings" == config.topLayer && getState().selectedRing == i && getState().editMode) ? "" : config.ringsConfiguration?.stroke?.strokeArray ?? "9 1")
             .on('click', () => { const ring = i; publishRadarEvent({ type: "ringClick", ring: i }) })
             .on('dblclick', () => { console.log(`dbl click on ring`); const sectorring = i; publishRadarEvent({ type: "ringDblClick", ring: i }) })
@@ -326,6 +329,8 @@ const drawRingLabels = function (radar, config, elementDecorator) {
     for (let i = 0; i < config.ringsConfiguration.rings.length; i++) {
         let ring = config.ringsConfiguration.rings[i]
         if (ring?.visible == false) continue;
+        if (ring?.showStraight ?? config.ringsConfiguration?.showLabel == false) continue;
+
         let currentRadius = currentRadiusPercentage * config.maxRingRadius
         const ringlabel = radar.append("text")
             .attr("id", `ringLabel${i}`)
@@ -341,7 +346,7 @@ const drawRingLabels = function (radar, config, elementDecorator) {
         })
 
             .call(elementDecorator ? elementDecorator : () => { }, [`svg#${config.svg_id}`, ring.label, `ringLabel${i}`]);
-        styleText(ringlabel, ring.labelSettings, config, config.ringsConfiguration)
+        styleText(ringlabel, ring.labelSettings, config, config.ringsConfiguration.labelSettings)
 
         currentRadiusPercentage = currentRadiusPercentage - ring.width * ringExpansionFactor(config)
     }

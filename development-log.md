@@ -74,6 +74,7 @@
 
 - define defaults for color, font, edge for sectors and inherit for all sectors that do not have specific settings
 - define defaults for font size, family and color for blips
+- define defaults for color, font, edge for rings and inherit for all rings that do not have specific settings
 
 ### Resources
 Stakeholder Map - https://www.smaply.com/blog/stakeholdermaps - use circles (rings) and blips; categories/departments (sectors); support connections

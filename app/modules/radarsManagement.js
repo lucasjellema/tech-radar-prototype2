@@ -172,7 +172,7 @@ const starterTemplate = {
     colors: {},
     ringsConfiguration: { rings: [] },
     sectorsConfiguration: { sectors: [], labelSettings:{showCurved:true} },
-    shapesConfiguration: { shapes: [] },
+    shapesConfiguration: { shapes: [] , labelSettings:{showLabel:true} },
     sizesConfiguration: { sizes: [] },
     colorsConfiguration: { colors: [] },
     blip: ""

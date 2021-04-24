@@ -171,7 +171,7 @@ const starterTemplate = {
     backgroundImage: {},
     colors: {},
     ringsConfiguration: { rings: [] },
-    sectorsConfiguration: { sectors: [] },
+    sectorsConfiguration: { sectors: [], labelSettings:{showCurved:true} },
     shapesConfiguration: { shapes: [] },
     sizesConfiguration: { sizes: [] },
     colorsConfiguration: { colors: [] },

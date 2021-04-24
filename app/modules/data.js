@@ -4,7 +4,6 @@ export {
     , populateTemplateSelector, createBlip, getObjectListOfOptions, getRatingListOfOptions, getRatingTypeForRatingTypeName
     , subscribeToRadarRefresh, getState, publishRefreshRadar, getDistinctTagValues
 }
-import { initializeTree } from './tree.js'
 
 import { uuidv4, getNestedPropertyValueFromObject, setNestedPropertyValueOnObject, getRatingTypeProperties, findDisplayProperty, getDateTimeString } from './utils.js'
 
@@ -16,6 +15,7 @@ const datasetMap = {
     , verkenning: "./data/cab-verkenningen-radar-dataset.json"
     , amisdatamgt: "./data/amis-data-management-technology-radar-dataset.json"
     , cabintegration :"./data/cab-integration-techradar.json"
+    , realintegration : "./data/real-techradar-integration.json"
 }
 
 

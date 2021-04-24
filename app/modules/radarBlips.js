@@ -399,7 +399,7 @@ const drawRadarBlip = (blip, d, viewpoint, blipDrawingContext) => {
 
     const propertyMappedToRing = viewpoint.propertyVisualMaps.ring.property
     let blipRing = viewpoint.propertyVisualMaps.ring.valueMap[getNestedPropertyValueFromObject(d.rating, propertyMappedToRing)]
-    if (blipRing == null) {
+    if (blipRing == null || blipRing === undefined) {
         if (blipDrawingContext.othersDimensionValue["ring"] != null) {
             blipRing = blipDrawingContext.othersDimensionValue["ring"]
         }
@@ -538,7 +538,7 @@ const drawRadarBlip = (blip, d, viewpoint, blipDrawingContext) => {
         }
     }
     let scaleFactor = blipSize * viewpoint.blipDisplaySettings.blipScaleFactor ?? 1
-    if (d.artificial == true) { scaleFactor = scaleFactor * (1 + (d.aggregation.count - 1) / 3) }
+    if (d.artificial == true) { scaleFactor = scaleFactor * (1 + (d.aggregation.count - 1) / 4) }
     blip.attr("transform", `translate(${xy.x},${xy.y}) scale(${scaleFactor})`)
         .attr("id", `blip-${d.id}`)
     if (!viewpoint.blipDisplaySettings.showLabels
@@ -596,28 +596,35 @@ const drawRadarBlip = (blip, d, viewpoint, blipDrawingContext) => {
             line = label.trim().substring(label.trim().indexOf(" "))
             line0 = label.split(" ")[0]
         }
+
+        const fontFamily = viewpoint.propertyVisualMaps.blip?.labelSettings?.fontFamily??"Arial, Helvetica"
+        const fontSize = viewpoint.propertyVisualMaps.blip?.labelSettings?.fontSize??"14"
+        const fontColor = viewpoint.propertyVisualMaps.blip?.labelSettings?.fontColor??"#000000"
+        const lineHeight = parseInt(fontSize) 
+        
         if (label.length > 11 && line != line0) { // if long label, show first part above second part of label
             blip.append("text")
                 .text(line0)
                 .attr("x", 0) // if on left side, then move to the left, if on the right side then move to the right
-                .attr("y", -45) // if on upper side, then move up, if on the down side then move down
+                .attr("y", -16 - 2* lineHeight) // if on upper side, then move up, if on the down side then move down
                 .attr("text-anchor", "middle")
                 .attr("alignment-baseline", "before-edge")
-                .style("fill", "#000")
-                .style("font-family", "Arial, Helvetica")
+                .style("fill", fontColor)
+                .style("font-family", fontFamily)
                 .style("font-stretch", "extra-condensed")
-                .style("font-size", "14px")
+                .style("font-size", fontSize)
         }
         blip.append("text")
             .text(line)
             .attr("x", 0) // if on left side, then move to the left, if on the right side then move to the right
-            .attr("y", -30) // if on upper side, then move up, if on the down side then move down
+            .attr("y", -16 - lineHeight) // if on upper side, then move up, if on the down side then move down
             .attr("text-anchor", "middle")
             .attr("alignment-baseline", "before-edge")
-            .style("fill", "#000")
-            .style("font-family", "Arial, Helvetica")
+            .style("fill", fontColor)
+            .style("font-family", fontFamily)
             .style("font-stretch", "extra-condensed")
-            .style("font-size", function (d) { return label.length > 2 ? `${14}px` : "17px"; })
+            .style("font-size", fontSize)
+        .style("font-stretch", "extra-condensed")
     }
 
     if (viewpoint.blipDisplaySettings.showShapes) {

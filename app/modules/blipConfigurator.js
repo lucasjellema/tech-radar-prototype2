@@ -27,13 +27,21 @@ const launchBlipConfigurator = (viewpoint, drawRadarBlips) => {
     <span>0 - transparent</span><input id="blipOpacitySlider" type="range" min="0" max="1" step="0.05" value="${undefinedToDefined(viewpoint.propertyVisualMaps.blip?.opacity,0.4)}" style="width:30%"></input><span>1 - opaque</span>
 </p>
     <br/><br/><br/><br/>
-Font settings for Blip Label    
+
+<h3>Default Font Settings for Blip Label</h3>
+<label for="defaultBlipLabelFont">Font (Family)</label>
+<input id="defaultBlipLabelFont" list="fontsList"   value="${undefinedToDefined(viewpoint.propertyVisualMaps.blip?.labelSettings?.fontFamily)}"></input>
+<label for="defaultBlipLabelSize">Font Size</label>
+<input id="defaultBlipLabelSize" type="text" value="${undefinedToDefined(viewpoint.propertyVisualMaps.blip?.labelSettings?.fontSize)}"></input
+<label for="defaultBlipLabelColor">Color</label>
+<input id="defaultBlipLabelColor" type="color"  value="${viewpoint.propertyVisualMaps.blip?.labelSettings?.color}" >
+<br />
 Blip Edge (decoration)?
 <br/><datalist id="shapesList"></datalist>
     `
     contentContainer.innerHTML = html
 
-
+    populateFontsList('fontsList')
 
     let ratingType = getRatingTypeForRatingTypeName(viewpoint.ratingType)
     let ratingTypeProperties = getRatingTypeProperties(ratingType, getData().model)
@@ -73,4 +81,9 @@ const saveBlipSettings = (viewpoint) => {
     viewpoint.propertyVisualMaps.blip.defaultColor = getElementValue("blipDefaultColor")
     viewpoint.propertyVisualMaps.blip.defaultSize = getElementValue("blipDefaultSize")
     viewpoint.propertyVisualMaps.blip.opacity = getElementValue("blipOpacitySlider")
+    if (viewpoint.propertyVisualMaps.blip.labelSettings == null) { viewpoint.propertyVisualMaps.blip.labelSettings = {} }
+
+    viewpoint.propertyVisualMaps.blip.labelSettings.fontFamily = getElementValue("defaultBlipLabelFont")
+viewpoint.propertyVisualMaps.blip.labelSettings.fontSize = getElementValue("defaultBlipLabelSize")
+viewpoint.propertyVisualMaps.blip.labelSettings.color = getElementValue("defaultBlipLabelColor")
 }

@@ -13,14 +13,12 @@
   
 - sectors defined with (combinations of) tags (or tagfilters); objects that satisfy the tagfilter condition of a sector are displayed in the sector; a viewpoint can contain various sector-configurations - that can be linked - drilling down on one sector to another configuration optionally inherits the master sector's tag-filter - and uses the sector-tagfilters on top of that in the new configuration 
 
+- highlight segment - show segment - magnified , on top of somewhat opaque area overlaying the radar
+
 - use d3 force when auto deriving x,y coordinates 
 
 - allow removal of viewpoint, template, object type, rating type, objects of a specific type
 - generate ratings and blips in Viewpoint for selected objects
-
-- record user defined blip coordinates as polar coordinates
-  - scale R and PHI in blip coordinates along with sectors and rings (to roughly maintain same relative position )
-
 
 - define gradient color for blips (see https://developer.mozilla.org/en-US/docs/Web/SVG/Element/radialGradient)
 
@@ -43,9 +41,7 @@
 
 - property Description for each sector to describe the meaning ; show as hovertext for sector label
 
-- support default font-style, font-weight as property to define for labels in sector (instead of only at individual sector level)
 - support default font-style, font-weight as property to define for labels in ring (instead of only at individual ring level)
-- define default sector label font/edge/color settings for sectors
 - define default label font/edge/color settings for radar (for sectors, rings, ..)
  
 - support dash array property for sector edge
@@ -55,7 +51,7 @@
 - generate blips (for all ratings that qualify for the viewpoint's current filters and visible sectors and rings) 
  
 - generate technology objects from scraped data: name, vendor, description, logo: https://www.capterra.com/database-management-software/ 
-- option to define "Others" sector and ring - when set, any blip not assigned to a ring or sector is assigned to the Others ring or sector and can then be displayed
+
 
 - bulk operations on all currently visible ratings/blips
   - delete , update a field, export to CSV (already available through file manager), hide, special effect
@@ -69,6 +65,18 @@
   visible?, start and end phi, start and end R
   when checking the current position of a blip - only compare with boundaries of its segement
 
+- aggregation mode
+  - write aggregation count inside blip (red circle, white number)
+  - allow definition of aggregation group by (object, object or rating property) (or even multiple properties?) note: aggregation always per segment (sector/ring combination)
+  - allow definition of what is aggregated: simple count or aggregation of one or more properties   
+
+## April 24th
+
+- define defaults for color, font, edge for sectors and inherit for all sectors that do not have specific settings
+- define defaults for font size, family and color for blips
+
+### Resources
+Stakeholder Map - https://www.smaply.com/blog/stakeholdermaps - use circles (rings) and blips; categories/departments (sectors); support connections
 
 ## April 23rd
 

@@ -104,6 +104,8 @@ const launchSectorConfigurator = (viewpoint, drawRadarBlips) => {
     <label for="defaultSectorEdgeWidth">Width (<span id="defaultSectorEdgeHeading">${undefinedToDefined(viewpoint.template.sectorsConfiguration?.edge?.width)}</span>)</label>
     <input id="defaultSectorEdgeWidth" type="range" min="0" max="15" step="1" value="${viewpoint.template.sectorsConfiguration?.edge?.width}" style="width:300px"></input>
     <label for="defaultSectorEdgeColor">Color</label><input id="defaultSectorEdgeColor" type="color"  value="${viewpoint.template.sectorsConfiguration?.edge?.color ?? "#FFFFFF"}" >
+    <label for="defaultSectorEdgeStrokeArray">Stroke Array</label><input id="defaultSectorEdgeStrokeArray" type="text" title="Stroke Array, A list of comma and/or white space separated <length>s and <percentage>s that specify the lengths of alternating dashes and gaps. For example:  3 1 (3 strokes, one gap) or 10, 1 (10 strokes, one gap)" value="${undefinedToDefined( viewpoint.template.sectorsConfiguration?.edge?.strokeArray,'')}"></input>
+
     </div>
     <br/><br/> `
 
@@ -230,6 +232,8 @@ const saveSettings = (viewpoint) => {
     if (viewpoint.template.sectorsConfiguration.edge == null) { viewpoint.template.sectorsConfiguration.edge = {} }
     viewpoint.template.sectorsConfiguration.edge.width = getElementValue("defaultSectorEdgeWidth")
     viewpoint.template.sectorsConfiguration.edge.color = getElementValue("defaultSectorEdgeColor")
+    viewpoint.template.sectorsConfiguration.edge.strokeArray = getElementValue("defaultSectorEdgeStrokeArray")
+
 
 }
 

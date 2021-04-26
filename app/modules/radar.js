@@ -132,12 +132,7 @@ const drawSectors = function (radar, config, elementDecorator = null) {
             e.preventDefault();
         })
 
-    // sectorCanvas.append("line") //horizontal sector boundary
-    //     .attr("x1", 0).attr("y1", 0)
-    //     .attr("x2", config.sectorBoundariesExtended ? 2000 : config.maxRingRadius)
-    //     .attr("y2", 0)
-    //     .style("stroke", config.colors.grid)
-    //     .style("stroke-width", 1);
+
     const initialAngle = parseFloat(config.sectorsConfiguration.initialAngle ?? 0)
     const sectorExpansionFctr = sectorExpansionFactor(config)
     for (let layer = 0; layer < 2; layer++) { // TODO if not edit mode then only one layer
@@ -173,7 +168,8 @@ const drawSectors = function (radar, config, elementDecorator = null) {
                     .style("stroke-width", ("sectors" == config.topLayer && getState().selectedSector == i && getState().editMode) ? 8
                         : sector?.edge?.width ?? config.sectorsConfiguration?.edge?.width ?? 3
                     )
-                    .style("stroke-dasharray", ("sectors" == config.topLayer && getState().selectedSector == i && getState().editMode) ? "" : config.sectorsConfiguration?.stroke?.strokeArray ?? "#000")
+                    .style("stroke-dasharray", ("sectors" == config.topLayer && getState().selectedSector == i && getState().editMode) ? "" 
+                    : sector?.edge?.strokeArray ?? config.sectorsConfiguration?.edge?.strokeArray)
                     .on('click', () => { const sector = i; publishRadarEvent({ type: "sectorClick", sector: i }) })
                     .on('dblclick', () => { const sector = i; publishRadarEvent({ type: "sectorDblClick", sector: i }) })
 
@@ -194,6 +190,14 @@ const drawSectors = function (radar, config, elementDecorator = null) {
                     .attr("id", `outerring${i}`)
                     .attr("d", outerringArc)
                     .style("fill", sector?.outerringBackgroundColor ?? (config.sectorsConfiguration.outerringBackgroundColor ?? color_white))
+                    // define borders of sectors
+                    .style("stroke", ("sectors" == config.topLayer && getState().selectedSector == i && getState().editMode) ? "red"
+                        : sector?.edge?.color ?? config.sectorsConfiguration?.edge?.color ?? "#000")
+                    .style("stroke-width", ("sectors" == config.topLayer && getState().selectedSector == i && getState().editMode) ? 8
+                        : sector?.edge?.width ?? config.sectorsConfiguration?.edge?.width ?? 3
+                    )
+                    .style("stroke-dasharray", ("sectors" == config.topLayer && getState().selectedSector == i && getState().editMode) ? "" 
+                    : sector?.edge?.strokeArray ?? config.sectorsConfiguration?.edge?.strokeArray)
                     .attr("opacity", sector.opacityOutsideRings ?? (config.sectorsConfiguration.opacityOutsideRings ?? 1))
                     .on('dblclick', () => { publishRadarEvent({ type: "sectorDblClick", sector: i }) })
 
@@ -285,7 +289,9 @@ const drawRings = function (radar, config) {
             .style("stroke-width", ("rings" == config.topLayer && getState().selectedSector == i && getState().editMode) ? 8
                 : ring?.edge?.width ?? config.ringsConfiguration?.edge?.width ?? 3)
 
-            .style("stroke-dasharray", ("rings" == config.topLayer && getState().selectedRing == i && getState().editMode) ? "" : config.ringsConfiguration?.stroke?.strokeArray ?? "9 1")
+            .style("stroke-dasharray", ("rings" == config.topLayer && getState().selectedRing == i && getState().editMode) ? "" 
+            : ring?.edge?.strokeArray ?? config.ringsConfiguration?.edge?.strokeArray)
+            //config.ringsConfiguration?.stroke?.strokeArray ?? "9 1")
             .on('click', () => { const ring = i; publishRadarEvent({ type: "ringClick", ring: i }) })
             .on('dblclick', () => { console.log(`dbl click on ring`); const sectorring = i; publishRadarEvent({ type: "ringDblClick", ring: i }) })
             .on('contextmenu', (e) => {

@@ -95,6 +95,8 @@ const launchRingConfigurator = (viewpoint, drawRadarBlips) => {
     <label for="defaultRingEdgeWidth">Width (<span id="defaultRingEdgeHeading">${undefinedToDefined(viewpoint.template.ringsConfiguration?.edge?.width)}</span>)</label>
     <input id="defaultRingEdgeWidth" type="range" min="0" max="15" step="1" value="${viewpoint.template.ringsConfiguration?.edge?.width}" style="width:300px"></input>
     <label for="defaultRingEdgeColor">Color</label><input id="defaultRingEdgeColor" type="color"  value="${viewpoint.template.ringsConfiguration?.edge?.color ?? "#FFFFFF"}" >
+    <label for="defaultRingEdgeStrokeArray">Stroke Array</label><input id="defaultRingEdgeStrokeArray" type="text" title="Stroke Array, A list of comma and/or white space separated <length>s and <percentage>s that specify the lengths of alternating dashes and gaps. For example:  3 1 (3 strokes, one gap) or 10, 1 (10 strokes, one gap)" value="${undefinedToDefined( viewpoint.template.ringsConfiguration?.edge?.strokeArray,'')}"></input>
+
     </div>
     <br/><br/> `
 
@@ -221,6 +223,8 @@ const saveSettings = (viewpoint) => {
     if (viewpoint.template.ringsConfiguration.edge == null) { viewpoint.template.ringsConfiguration.edge = {} }
     viewpoint.template.ringsConfiguration.edge.width = getElementValue("defaultRingEdgeWidth")
     viewpoint.template.ringsConfiguration.edge.color = getElementValue("defaultRingEdgeColor")
+    viewpoint.template.ringsConfiguration.edge.strokeArray = getElementValue("defaultRingEdgeStrokeArray")
+
 }
 
 const backRing = (ringToMoveBack, viewpoint) => {

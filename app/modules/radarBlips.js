@@ -1,10 +1,10 @@
 import { cartesianFromPolar, polarFromCartesian, segmentFromCartesian } from './drawingUtilities.js'
 import { launchBlipEditor } from './blipEditing.js'
 import { getViewpoint, getData, publishRefreshRadar, getDistinctTagValues, getState } from './data.js'
-import { undefinedToDefined, filterBlip,assignBlipsToSegments,findSectorForRating, getLabelForAllowableValue, toggleShowHideElement, getRatingTypeProperties, getPropertyFromPropertyPath, getNestedPropertyValueFromObject, uuidv4, setNestedPropertyValueOnObject } from './utils.js'
+import { supportedShapes, undefinedToDefined, filterBlip, assignBlipsToSegments, findSectorForRating, getLabelForAllowableValue, toggleShowHideElement, getRatingTypeProperties, getPropertyFromPropertyPath, getNestedPropertyValueFromObject, uuidv4, setNestedPropertyValueOnObject } from './utils.js'
 export { drawRadarBlips, prepareBlipDrawingContext, }
 
-
+const shapeDefinitionsFile = "shape-definitions.svg"
 const radarCanvasElementId = "radarCanvas"
 const blipsLayerElementId = "blipsLayer"
 let currentViewpoint
@@ -170,7 +170,7 @@ const drawRadarBlips = function (viewpoint) {
     const filteredBlips = viewpoint.blips.filter((blip) => filterBlip(blip, viewpoint, getData()))
 
     // go through blips and assign blips to segment
-    assignBlipsToSegments(filteredBlips, viewpoint, blipDrawingContext,getData())
+    assignBlipsToSegments(filteredBlips, viewpoint, blipDrawingContext, getData())
 
     // compose new set of blips
     // eliminate [blips in] invisible segments 
@@ -292,7 +292,7 @@ const prepareBlipDrawingContext = () => {
 
         }
         // add ring -1 (the outer zone)
-        segmentMatrix[s][-1] = {...segmentMatrix[s][0]}
+        segmentMatrix[s][-1] = { ...segmentMatrix[s][0] }
         segmentMatrix[s][-1].blips = []
         segmentMatrix[s][-1].startR = 3000
         segmentMatrix[s][-1].endR = segmentMatrix[s][0].startR
@@ -361,7 +361,7 @@ const sectorRingToPosition = (sector, ring, config) => { // return randomized X,
             r = config.maxRingRadius * rFactor
         }
         else {
-            segmentWidthPercentage = - ( Math.random() * 0.39)
+            segmentWidthPercentage = - (Math.random() * 0.39)
             r = config.maxRingRadius * (1 - segmentWidthPercentage)  // 0.33 range of how far outer ring blips can stray NOTE depends on sector angle - for the sectors between 0.4 and 0.6 and 0.9 and 0.1 there is more leeway  
         }
         const cartesian = cartesianFromPolar({ r: r, phi: 2 * (1 - phi) * Math.PI })
@@ -417,21 +417,21 @@ const drawRadarBlip = (blip, d, viewpoint, blipDrawingContext) => {
     try {
 
         const propertyMappedToShape = viewpoint.propertyVisualMaps.shape?.property
-        if (propertyMappedToShape!=null) {
-        let blipShapeId = viewpoint.propertyVisualMaps.shape.valueMap[getNestedPropertyValueFromObject(d.rating, propertyMappedToShape)]
-        if (blipShapeId == null) {
-            if (blipDrawingContext.othersDimensionValue["shape"] != null) {
-                blipShapeId = blipDrawingContext.othersDimensionValue["shape"]
+        if (propertyMappedToShape != null) {
+            let blipShapeId = viewpoint.propertyVisualMaps.shape.valueMap[getNestedPropertyValueFromObject(d.rating, propertyMappedToShape)]
+            if (blipShapeId == null) {
+                if (blipDrawingContext.othersDimensionValue["shape"] != null) {
+                    blipShapeId = blipDrawingContext.othersDimensionValue["shape"]
+                }
+                else {
+                    return
+                }
             }
-            else {
+            if (viewpoint.template.shapesConfiguration.shapes[blipShapeId]?.visible == false) {
                 return
             }
-        }
-        if (viewpoint.template.shapesConfiguration.shapes[blipShapeId]?.visible == false) {
-            return
-        }
-        blipShape = viewpoint.template.shapesConfiguration.shapes[blipShapeId].shape
-    } else {blipShape = "circle"}
+            blipShape = viewpoint.template.shapesConfiguration.shapes[blipShapeId].shape
+        } else { blipShape = "circle" }
     } catch (e) {
         blipShape = "circle"
         console.log(`draw radar blip fall back to circle because of ${e}`)
@@ -454,9 +454,9 @@ const drawRadarBlip = (blip, d, viewpoint, blipDrawingContext) => {
             if (viewpoint.template.colorsConfiguration.colors[blipColorId]?.visible == false) {
                 return
             }
-        
 
-        blipColor = viewpoint.template.colorsConfiguration.colors[blipColorId].color
+
+            blipColor = viewpoint.template.colorsConfiguration.colors[blipColorId].color
         } else {
             blipColor = "blue"
 
@@ -475,24 +475,24 @@ const drawRadarBlip = (blip, d, viewpoint, blipDrawingContext) => {
     try {
 
         const propertyMappedToSize = viewpoint.propertyVisualMaps.size?.property
-        if (propertyMappedToSize!=null) {
-        let blipSizeId = viewpoint.propertyVisualMaps.size.valueMap[getNestedPropertyValueFromObject(d.rating, propertyMappedToSize)]
-        if (blipSizeId == null) {
-            if (blipDrawingContext.othersDimensionValue["size"] != null) {
-                blipSizeId = blipDrawingContext.othersDimensionValue["size"]
+        if (propertyMappedToSize != null) {
+            let blipSizeId = viewpoint.propertyVisualMaps.size.valueMap[getNestedPropertyValueFromObject(d.rating, propertyMappedToSize)]
+            if (blipSizeId == null) {
+                if (blipDrawingContext.othersDimensionValue["size"] != null) {
+                    blipSizeId = blipDrawingContext.othersDimensionValue["size"]
+                }
+                else {
+                    return
+                }
             }
-            else {
+            if (viewpoint.template.sizesConfiguration.sizes[blipSizeId]?.visible == false) {
                 return
             }
-        }
-        if (viewpoint.template.sizesConfiguration.sizes[blipSizeId]?.visible == false) {
-            return
-        }
 
-        blipSize = viewpoint.template.sizesConfiguration.sizes[blipSizeId].size
-    } else {
-        blipSize = 1
-    }
+            blipSize = viewpoint.template.sizesConfiguration.sizes[blipSizeId].size
+        } else {
+            blipSize = 1
+        }
     } catch (e) {
         blipSize = 1
 
@@ -516,8 +516,8 @@ const drawRadarBlip = (blip, d, viewpoint, blipDrawingContext) => {
     if (d.segmentWidthPercentage != null && d.segmentAnglePercentage != null) {
         const anglePercentage = segment.startAngle + d.segmentAnglePercentage * segment.anglePercentage
         let widthPercentage = segment.startWidth + d.segmentWidthPercentage * segment.widthPercentage
-        if (blipRing == -1 ) { 
-            widthPercentage = -1 * Math.abs(d.segmentWidthPercentage )
+        if (blipRing == -1) {
+            widthPercentage = -1 * Math.abs(d.segmentWidthPercentage)
             widthPercentage = Math.max(-0.5, widthPercentage) // TODO this should not be necessary, but widthPercentage is getting too big
         }
         const phi = 2 * (1 - anglePercentage) * Math.PI
@@ -597,16 +597,16 @@ const drawRadarBlip = (blip, d, viewpoint, blipDrawingContext) => {
             line0 = label.split(" ")[0]
         }
 
-        const fontFamily = viewpoint.propertyVisualMaps.blip?.labelSettings?.fontFamily??"Arial, Helvetica"
-        const fontSize = viewpoint.propertyVisualMaps.blip?.labelSettings?.fontSize??"14"
-        const fontColor = viewpoint.propertyVisualMaps.blip?.labelSettings?.fontColor??"#000000"
-        const lineHeight = parseInt(fontSize) 
-        
+        const fontFamily = viewpoint.propertyVisualMaps.blip?.labelSettings?.fontFamily ?? "Arial, Helvetica"
+        const fontSize = viewpoint.propertyVisualMaps.blip?.labelSettings?.fontSize ?? "14"
+        const fontColor = viewpoint.propertyVisualMaps.blip?.labelSettings?.fontColor ?? "#000000"
+        const lineHeight = parseInt(fontSize)
+
         if (label.length > 11 && line != line0) { // if long label, show first part above second part of label
             blip.append("text")
                 .text(line0)
                 .attr("x", 0) // if on left side, then move to the left, if on the right side then move to the right
-                .attr("y", -16 - 2* lineHeight) // if on upper side, then move up, if on the down side then move down
+                .attr("y", -16 - 2 * lineHeight) // if on upper side, then move up, if on the down side then move down
                 .attr("text-anchor", "middle")
                 .attr("alignment-baseline", "before-edge")
                 .style("fill", fontColor)
@@ -624,52 +624,61 @@ const drawRadarBlip = (blip, d, viewpoint, blipDrawingContext) => {
             .style("font-family", fontFamily)
             .style("font-stretch", "extra-condensed")
             .style("font-size", fontSize)
-        .style("font-stretch", "extra-condensed")
+            .style("font-stretch", "extra-condensed")
     }
 
     if (viewpoint.blipDisplaySettings.showShapes) {
         let shape
+        let supportedShape = supportedShapes[blipShape]
+        if (supportedShape.externalShape == true) {
+            shape = blip.append("use")
+                .attr('xlink:href', `${supportedShape.externalFile}#${supportedShape.symbolId}`)
+                .attr('transform', 'scale(0.05)');
 
-        if (blipShape == "circle") {
-            shape = blip.append("circle")
-                .attr("r", 15)
-        }
-        if (blipShape == "diamond") {
-            const diamond = d3.symbol().type(d3.symbolDiamond).size(800);
-            shape = blip.append('path').attr("d", diamond)
-        }
-        if (blipShape == "square") {
-            const square = d3.symbol().type(d3.symbolSquare).size(800);
-            shape = blip.append('path').attr("d", square)
-        }
+        } else {
+            if (blipShape == "circle") {
+                shape = blip.append("circle")
+                    .attr("r", 15)
+            }
+            if (blipShape == "diamond") {
+                const diamond = d3.symbol().type(d3.symbolDiamond).size(800);
+                shape = blip.append('path').attr("d", diamond)
+            }
+            if (blipShape == "square") {
+                const square = d3.symbol().type(d3.symbolSquare).size(800);
+                shape = blip.append('path').attr("d", square)
+            }
 
-        if (blipShape == "star") {
-            const star = d3.symbol().type(d3.symbolStar).size(720);
-            shape = blip.append('path').attr("d", star)
+            if (blipShape == "star") {
+                const star = d3.symbol().type(d3.symbolStar).size(720);
+                shape = blip.append('path').attr("d", star)
+            }
+            if (blipShape == "plus") {
+                const plus = d3.symbol().type(d3.symbolCross).size(720);
+                shape = blip.append('path').attr("d", plus)
+            }
+            if (blipShape == "triangle") {
+                const triangle = d3.symbol().type(d3.symbolTriangle).size(720);
+                shape = blip.append('path').attr("d", triangle)
+            }
+            if (blipShape == "rectangleHorizontal") {
+                shape = blip.append('rect').attr('width', 38)
+                    .attr('height', 10)
+                    .attr('x', -20)
+                    .attr('y', -4)
+            }
+            if (blipShape == "rectangleVertical") {
+                shape = blip.append('rect')
+                    .attr('width', 10)
+                    .attr('height', 38)
+                    .attr('x', -5)
+                    .attr('y', -15)
+            }
         }
-        if (blipShape == "plus") {
-            const plus = d3.symbol().type(d3.symbolCross).size(720);
-            shape = blip.append('path').attr("d", plus)
+        if (shape != null) {
+            shape.attr("fill", blipColor);
+            shape.attr("opacity", undefinedToDefined(viewpoint.propertyVisualMaps.blip.opacity, 0.4));
         }
-        if (blipShape == "triangle") {
-            const triangle = d3.symbol().type(d3.symbolTriangle).size(720);
-            shape = blip.append('path').attr("d", triangle)
-        }
-        if (blipShape == "rectangleHorizontal") {
-            shape = blip.append('rect').attr('width', 38)
-                .attr('height', 10)
-                .attr('x', -20)
-                .attr('y', -4)
-        }
-        if (blipShape == "rectangleVertical") {
-            shape = blip.append('rect')
-                .attr('width', 10)
-                .attr('height', 38)
-                .attr('x', -5)
-                .attr('y', -15)
-        }
-        shape.attr("fill", blipColor);
-        shape.attr("opacity", undefinedToDefined(viewpoint.propertyVisualMaps.blip.opacity,0.4));
     }
 
     if (viewpoint.blipDisplaySettings.showImages && getNestedPropertyValueFromObject(d.rating, viewpoint.propertyVisualMaps.blip.image) != null) {

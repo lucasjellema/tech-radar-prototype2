@@ -5,7 +5,7 @@ export {
     , populateFontsList, populateDataTypesList, populateShapesList,populateColorsList,populateSizesList, setTextOnElement, initializeImagePaster, undefinedToDefined, capitalize
     , getPropertyValuesAndCounts, populateDatalistFromValueSet, getPropertyFromPropertyPath
     , findDisplayProperty, getListOfSupportedShapes, getListOfSupportedColors, getListOfSupportedSizes, getLabelForAllowableValue, getUniqueFieldValues
-    ,filterBlip, assignBlipsToSegments,findSectorForRating
+    ,filterBlip, assignBlipsToSegments,findSectorForRating, supportedShapes
 }
 
 
@@ -305,19 +305,33 @@ const populateShapesList = (shapesListElementId) => {
 }
 
 const getListOfSupportedShapes = () => {
-    const shapesList = []
-    shapesList.push(`circle`)
-    shapesList.push(`diamond`)
-    shapesList.push(`square`)
-    shapesList.push(`triangle`)
-    shapesList.push(`plus`)
-    shapesList.push(`rectangleHorizontal`)
-    shapesList.push(`rectangleVertical`)
-    shapesList.push(`star`)
-    shapesList.push(`ring`)
+    const shapesList = Object.keys(supportedShapes)
     return shapesList
 }
 
+const supportedShapes = {
+    circle: {},
+    diamond: {},
+    square: {},
+    triangle: {},
+    plus: {},
+    rectangleHorizontal: {},
+    rectangleVertical: {},
+    star: {},
+    ring: {},
+    leftArrow: {externalShape:true, symbolId:"icon-arrow-thick-left", externalFile:"shape-definitions.svg"}   , 
+    downArrow: {externalShape:true, symbolId:"icon-arrow-thick-down", externalFile:"shape-definitions.svg"}    ,
+    upArrow: {externalShape:true, symbolId:"icon-arrow-thick-up", externalFile:"shape-definitions.svg"}    ,
+    rightArrow: {externalShape:true, symbolId:"icon-arrow-thick-right", externalFile:"shape-definitions.svg"}, 
+    rightCheveron: {externalShape:true, symbolId:"icon-cheveron-right", externalFile:"shape-definitions.svg"}, 
+    leftCheveron: {externalShape:true, symbolId:"icon-cheveron-left", externalFile:"shape-definitions.svg"}, 
+    upCheveron: {externalShape:true, symbolId:"icon-cheveron-up", externalFile:"shape-definitions.svg"}, 
+    downCheveron: {externalShape:true, symbolId:"icon-cheveron-down", externalFile:"shape-definitions.svg"}, 
+    happySmiley: {externalShape:true, symbolId:"icon-mood-happy-outline", externalFile:"shape-definitions.svg"}, 
+    neutralSmiley: {externalShape:true, symbolId:"icon-mood-neutral-outline", externalFile:"shape-definitions.svg"}, 
+    sadSmiley: {externalShape:true, symbolId:"icon-mood-sad-outline", externalFile:"shape-definitions.svg"}, 
+    
+}
 
 const undefinedToDefined = (value, definedValue = "") => {
     let derivedValue = (typeof value == 'undefined') ? definedValue : value

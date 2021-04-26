@@ -70,11 +70,25 @@
   - allow definition of aggregation group by (object, object or rating property) (or even multiple properties?) note: aggregation always per segment (sector/ring combination)
   - allow definition of what is aggregated: simple count or aggregation of one or more properties   
 
+## April 26th
+
+-- support for additional shapes for default blip shape (TODO: use these shapes in visual dimension )
+
+### Resources
+- use external icons in D3 - https://bl.ocks.org/tomgp/e2681041cf3cf677657ed551e122c4e2
+- introduction on SVG Sprites - https://css-tricks.com/svg-sprites-use-better-icon-fonts/
+- SVG docs Use element - https://developer.mozilla.org/en-US/docs/Web/SVG/Element/use
+- D3 docs - Selection Join and Key function - https://observablehq.com/@d3/selection-join
+- IcoMoon - icon library and compose SVG sprites document - https://icomoon.io/app/#/select
+- D3 tutorials - data binding - https://www.tutorialsteacher.com/d3js/data-binding-in-d3js 
+- 
+
 ## April 24th
 
 - define defaults for color, font, edge for sectors and inherit for all sectors that do not have specific settings
 - define defaults for font size, family and color for blips
 - define defaults for color, font, edge for rings and inherit for all rings that do not have specific settings
+- support edge dash array for sector and ring
 
 ### Resources
 Stakeholder Map - https://www.smaply.com/blog/stakeholdermaps - use circles (rings) and blips; categories/departments (sectors); support connections

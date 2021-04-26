@@ -1,5 +1,6 @@
 import { cartesianFromPolar, polarFromCartesian } from './drawingUtilities.js'
 import { getState, getConfiguration, getViewpoint } from './data.js'
+import { supportedShapes } from './utils.js'
 export { drawRadar, subscribeToRadarEvents, publishRadarEvent }
 
 const color_white = "#FFF"
@@ -579,6 +580,13 @@ const initializeShapesLegend = (viewpoint) => {
         // .attr("fill", "black")
 
         let shape
+        let supportedShape = supportedShapes[shapeToDraw]
+        if (supportedShape.externalShape == true) {
+            shape = shapeEntry.append("use")
+                .attr('xlink:href', `${supportedShape.externalFile}#${supportedShape.symbolId}`)
+                .attr('transform', ' translate(-37,-15) scale(0.18)');
+
+        } else {
 
         if (shapeToDraw == "circle") {
             shape = shapeEntry.append("circle")
@@ -619,6 +627,7 @@ const initializeShapesLegend = (viewpoint) => {
                 .attr('y', -15)
 
         }
+    }
         if (shape == null) {
             console.log(`handled exception in shapes legend - shape ${shapeToDraw} cannot be drawn`)
             continue

@@ -70,9 +70,12 @@
   - allow definition of aggregation group by (object, object or rating property) (or even multiple properties?) note: aggregation always per segment (sector/ring combination)
   - allow definition of what is aggregated: simple count or aggregation of one or more properties   
 
+TODO - define scale and translate factor for externally defined paths/shapes
+
 ## April 26th
 
 -- support for additional shapes for default blip shape (TODO: use these shapes in visual dimension )
+- support additional shapes from external library - use in blip context menu, for rendering blip and in shape legend
 
 ### Resources
 - use external icons in D3 - https://bl.ocks.org/tomgp/e2681041cf3cf677657ed551e122c4e2

@@ -4,7 +4,7 @@ import { supportedShapes,undefinedToDefined } from './utils.js'
 export { drawRadar, subscribeToRadarEvents, publishRadarEvent }
 
 const color_white = "#FFF"
-
+let firstTime = true
 const subscribers = []
 const subscribeToRadarEvents = (subscriber) => { subscribers.push(subscriber) }
 const publishRadarEvent = (event) => { subscribers.forEach((subscriber) => { subscriber(event) }) }
@@ -93,6 +93,10 @@ function drawRadar(viewpoint, elementDecorator = null) {
 }
 
 function initializeRadar(config) {
+    if (firstTime){
+        firstTime=false
+    document.getElementById('aggregationModeToggle').addEventListener("dblclick", () => {publishRadarEvent({ type: "mainRadarConfigurator", tab: "aggregation" })});
+    }
     const svg = d3.select(`svg#${config.svg_id}`)
         .style("background-color", config.colors.background)
         .attr("width", config.width + 150 )

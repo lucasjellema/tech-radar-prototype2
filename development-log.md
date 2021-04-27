@@ -72,6 +72,25 @@
 
 TODO - define scale and translate factor for externally defined paths/shapes
 
+## April 27th
+
+- Further refinement of external shapes and how to render them in legend and in blip; added shapes cloud, ring, location
+- Aggregation Editor - dynamically define property to group by
+- Define properties to collect values for (presented in blip detail popup)
+- define property to use values of in hover text
+- define color for aggregation blips (for now the assumption is that aggregated blips will have a special color; a special shape is also an option thought not yet implemented)
+- show highlight indicator with aggregation count in case of aggregation
+- label for aggregated blips is normal size
+
+### Resources
+
+- On SVG transformation functions - http://tutorials.jenkov.com/svg/svg-transformation.html#transformation-functions
+- On SVG Gradients - http://tutorials.jenkov.com/svg/svg-gradients.html 
+- D3 force Polar - https://observablehq.com/@fil/forcepolar
+- Intro D3 force (custom force to force blips inside custom area - the segment) - https://observablehq.com/@ben-tanen/a-tutorial-to-using-d3-force-from-someone-who-just-learned-ho
+- D3 docs on Force (including fixed position) - https://github.com/d3/d3-force
+- 
+
 ## April 26th
 
 -- support for additional shapes for default blip shape (TODO: use these shapes in visual dimension )

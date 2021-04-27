@@ -3,7 +3,7 @@ export { launchAggregationConfigurator }
 import { drawRadar, subscribeToRadarEvents, publishRadarEvent } from './radar.js';
 import { getRatingTypeForRatingTypeName, getViewpoint, getData, publishRefreshRadar } from './data.js';
 import { capitalize, getPropertyFromPropertyPath, populateFontsList, populateShapesList, createAndPopulateDataListFromBlipProperties, undefinedToDefined, getAllKeysMappedToValue, getNestedPropertyValueFromObject, setNestedPropertyValueOnObject, initializeImagePaster, populateSelect, getElementValue, setTextOnElement, getRatingTypeProperties, showOrHideElement } from './utils.js'
-import { get } from 'browser-sync';
+
 
 const launchAggregationConfigurator = (viewpoint, drawRadarBlips) => {
     showOrHideElement("modalMain", true)
@@ -14,6 +14,9 @@ const launchAggregationConfigurator = (viewpoint, drawRadarBlips) => {
     let html = `
     <label for="blipGroupByPropertySelector">Property used to Group By</label>
     <select id="blipGroupByPropertySelector"></select>  
+    <br /> 
+    <label for="blipHoverPropertySelector">Property used in Hover Label</label>
+    <select id="blipHoverPropertySelector"></select>  
     <br />
     <label for="collectPropertySelector">Properties to collect values from</label>
     <select id="collectPropertySelector" multiple size="10"></select>  
@@ -53,8 +56,9 @@ const launchAggregationConfigurator = (viewpoint, drawRadarBlips) => {
     // Blip Edge (decoration)?
     // <br/><datalist id="shapesList"></datalist>
     //  `
-    populateShapesList("shapesList")
     contentContainer.innerHTML = html
+    populateShapesList("shapesList")
+    
 
     let ratingType = getRatingTypeForRatingTypeName(viewpoint.ratingType)
     let ratingTypeProperties = getRatingTypeProperties(ratingType, getData().model)
@@ -63,8 +67,9 @@ const launchAggregationConfigurator = (viewpoint, drawRadarBlips) => {
     const candidateGroupByProperties = ratingTypeProperties
         .filter((property) => property.property.type == "string")
         .map((property) => { return { label: property.propertyPath, value: property.propertyPath } })
-    populateSelect("blipGroupByPropertySelector", candidateGroupByProperties, viewpoint.propertyVisualMaps.aggregation?.groupByProperty)   // data is array objects with two properties : label and value
-    populateSelect("collectPropertySelector", candidateGroupByProperties, viewpoint.propertyVisualMaps.aggregation?.collectProperty)   // data is array objects with two properties : label and value
+        populateSelect("blipGroupByPropertySelector", candidateGroupByProperties, viewpoint.propertyVisualMaps.aggregation?.groupByProperty)   // data is array objects with two properties : label and value
+        populateSelect("blipHoverPropertySelector", candidateGroupByProperties, viewpoint.propertyVisualMaps.aggregation?.hoverProperty)   // data is array objects with two properties : label and value
+        populateSelect("collectPropertySelector", candidateGroupByProperties, viewpoint.propertyVisualMaps.aggregation?.collectProperty)   // data is array objects with two properties : label and value
 
 
     const buttonBar = document.getElementById("modalMainButtonBar")
@@ -85,11 +90,13 @@ const launchAggregationConfigurator = (viewpoint, drawRadarBlips) => {
 const saveAggregationEdits = (viewpoint) => {
     if (viewpoint.propertyVisualMaps.aggregation == null) viewpoint.propertyVisualMaps.aggregation = {}
     viewpoint.propertyVisualMaps.aggregation.groupByProperty = getElementValue("blipGroupByPropertySelector")
+    viewpoint.propertyVisualMaps.aggregation.hoverProperty = getElementValue("blipHoverPropertySelector")
 
     viewpoint.propertyVisualMaps.aggregation.shape = getElementValue("aggregatedBlipShape")
     viewpoint.propertyVisualMaps.aggregation.color = getElementValue("aggregatedBlipColor")
     const collectProperties = getSelectValues(document.getElementById("collectPropertySelector"))
-    console.log(`selected collect props = ${JSON.stringify(collectProperties)}`)
+    viewpoint.propertyVisualMaps.aggregation.collectProperties = collectProperties
+    // console.log(`selected collect props = ${JSON.stringify(collectProperties)}`)
 
 }
 

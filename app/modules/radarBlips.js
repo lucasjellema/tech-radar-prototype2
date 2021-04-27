@@ -181,32 +181,54 @@ const drawRadarBlips = function (viewpoint) {
             if (segment.visible) {
 
                 if (currentViewpoint.blipDisplaySettings.aggregationMode == true) {
-                    const blipsPerObject = {}
+                    let propertyToGroupBy = currentViewpoint.propertyVisualMaps?.aggregation?.groupByProperty ?? "object.id"
+                    const blipsPerGroup = {}
                     segment.blips.forEach((blip) => {
-                        if (!blipsPerObject.hasOwnProperty(blip.rating.object.id)) { blipsPerObject[blip.rating.object.id] = [] }
-                        blipsPerObject[blip.rating.object.id].push(blip)
+                        const valueGroupByProperty = getNestedPropertyValueFromObject(blip.rating, propertyToGroupBy)
+                        if (!blipsPerGroup.hasOwnProperty(valueGroupByProperty)) { blipsPerGroup[valueGroupByProperty] = [] }
+                        blipsPerGroup[valueGroupByProperty].push(blip)
                     })
-                    // blipsPerObject has zero, one or more properties for each of the objects for which blips are in this segment
+                    // blipsPerGroup has zero, one or more properties for each of the objects for which blips are in this segment
                     // if the number of objects > 1 - aggregation time!
-                    for (let i = 0; i < Object.keys(blipsPerObject).length; i++) {
-                        const objectId = Object.keys(blipsPerObject)[i]
-                        if (blipsPerObject[objectId].length > 1) {
+
+
+                    // TODO AGGREGATION hardcoded property names
+
+                    // const aggregatedValues = [{ name: "label", propertyPath: "scope" }
+                    //     , { name: "authors", propertyPath: "author" }
+                    //     , { name: "scopes", propertyPath: "scope" }
+                    // ]
+                    for (let i = 0; i < Object.keys(blipsPerGroup).length; i++) {
+                        const groupValue = Object.keys(blipsPerGroup)[i]
+                        if (blipsPerGroup[groupValue].length > 1) {
                             const blip = {
                                 id: `${uuidv4()}`
-                                , rating: blipsPerObject[objectId][0].rating
+                                , rating: blipsPerGroup[groupValue][0].rating
                                 , artificial: true
-                                // TODO AGGREGATION hardcoded property names
                                 , aggregation: {
-                                    count: blipsPerObject[objectId].length
-                                    , label: blipsPerObject[objectId].reduce((label, b, index) => { return label + ((index == 0) ? "" : ",") + b.rating.scope }, "")
-                                    , authors: blipsPerObject[objectId].reduce((authors, b, index) => { return authors + ((index == 0) ? "" : ",") + b.rating.author }, "")
+                                    count: blipsPerGroup[groupValue].length
+                                    , groupValue: groupValue
+                                    , hoverValue:
+                                        blipsPerGroup[groupValue].reduce((result, b, index) => {
+                                            return result + ((index == 0) ? "" : ",")
+                                                + getNestedPropertyValueFromObject(b.rating, viewpoint.propertyVisualMaps?.aggregation?.hoverProperty)
+                                        }, "")
                                 }
                             }
+                            for (let a = 0; a < viewpoint.propertyVisualMaps.aggregation?.collectProperties?.length; a++) {
+                                blip.aggregation[viewpoint.propertyVisualMaps.aggregation.collectProperties[a]] =
+                                    blipsPerGroup[groupValue].reduce((result, b, index) => {
+                                        return result + ((index == 0) ? "" : ",")
+                                            + getNestedPropertyValueFromObject(b.rating, viewpoint.propertyVisualMaps.aggregation.collectProperties[a])
+                                    }, "")
+
+                            }
+
                             visibleBlips.push(blip)
                         }
                         else {
 
-                            visibleBlips = visibleBlips.concat(blipsPerObject[objectId])
+                            visibleBlips = visibleBlips.concat(blipsPerGroup[groupValue])
                         }
                     }
                 } else {
@@ -463,7 +485,7 @@ const drawRadarBlip = (blip, d, viewpoint, blipDrawingContext) => {
         }
         //TODO AGGREGATION hard coded aggregated color
         if (d.artificial == true && viewpoint.blipDisplaySettings.aggregationMode) {
-            blipColor = "#800040"  // color to indicate aggregation
+            blipColor = undefinedToDefined(viewpoint.propertyVisualMaps.aggregation?.color, "#800040")  // color to indicate aggregation
 
         }
     } catch (e) {
@@ -537,8 +559,8 @@ const drawRadarBlip = (blip, d, viewpoint, blipDrawingContext) => {
             d.segmentWidthPercentage = xy.segmentWidthPercentage
         }
     }
-    let scaleFactor = blipSize * viewpoint.blipDisplaySettings.blipScaleFactor ?? 1
-    if (d.artificial == true) { scaleFactor = scaleFactor * (1 + (d.aggregation.count - 1) / 4) }
+    let aggregationScaleFactor = (d.artificial == true)?(1 + (d.aggregation.count - 1) / 4):1
+    let scaleFactor = aggregationScaleFactor * ( blipSize * viewpoint.blipDisplaySettings.blipScaleFactor ?? 1)
     blip.attr("transform", `translate(${xy.x},${xy.y}) scale(${scaleFactor})`)
         .attr("id", `blip-${d.id}`)
     if (!viewpoint.blipDisplaySettings.showLabels
@@ -558,7 +580,7 @@ const drawRadarBlip = (blip, d, viewpoint, blipDrawingContext) => {
                             content = `${content}<img src="${getNestedPropertyValueFromObject(d.rating, viewpoint.propertyVisualMaps.blip.image)}" width="100px"></img>`
                         }
                         if (d.artificial == true) {
-                            content += ` by ${d.aggregation.label}`
+                            content += ` by ${d.aggregation.hoverValue}`
                         }
 
                         return `${content}</div>`
@@ -586,9 +608,9 @@ const drawRadarBlip = (blip, d, viewpoint, blipDrawingContext) => {
     if (viewpoint.blipDisplaySettings.showLabels || (viewpoint.blipDisplaySettings.showImages && getNestedPropertyValueFromObject(d.rating, viewpoint.propertyVisualMaps.blip.image) == null)) {
         let label = getNestedPropertyValueFromObject(d.rating, viewpoint.propertyVisualMaps.blip.label).trim()
 
-        if (d.artificial == true) {
-            label += ` (# ${d.aggregation.count})`
-        }
+        // if (d.artificial == true) {
+        //     label += ` (# ${d.aggregation.count})`
+        // }
         // TODO find smarter ways than breaking on spaces to distribute label over multiple lines
         let line = label
         let line0
@@ -598,9 +620,10 @@ const drawRadarBlip = (blip, d, viewpoint, blipDrawingContext) => {
         }
 
         const fontFamily = viewpoint.propertyVisualMaps.blip?.labelSettings?.fontFamily ?? "Arial, Helvetica"
-        const fontSize = viewpoint.propertyVisualMaps.blip?.labelSettings?.fontSize ?? "14"
+        let fontSize = viewpoint.propertyVisualMaps.blip?.labelSettings?.fontSize
+        if (fontSize == null || fontSize.length == 0) fontSize = "14"
         const fontColor = viewpoint.propertyVisualMaps.blip?.labelSettings?.fontColor ?? "#000000"
-        const lineHeight = parseInt(fontSize)
+        const lineHeight = parseInt(fontSize ?? 14)
 
         if (label.length > 11 && line != line0) { // if long label, show first part above second part of label
             blip.append("text")
@@ -612,7 +635,7 @@ const drawRadarBlip = (blip, d, viewpoint, blipDrawingContext) => {
                 .style("fill", fontColor)
                 .style("font-family", fontFamily)
                 .style("font-stretch", "extra-condensed")
-                .style("font-size", fontSize)
+                .style("font-size", fontSize/aggregationScaleFactor)
         }
         blip.append("text")
             .text(line)
@@ -623,8 +646,8 @@ const drawRadarBlip = (blip, d, viewpoint, blipDrawingContext) => {
             .style("fill", fontColor)
             .style("font-family", fontFamily)
             .style("font-stretch", "extra-condensed")
-            .style("font-size", fontSize)
-            .style("font-stretch", "extra-condensed")
+            .style("font-size", fontSize/aggregationScaleFactor)
+            
     }
 
     if (viewpoint.blipDisplaySettings.showShapes) {
@@ -633,8 +656,7 @@ const drawRadarBlip = (blip, d, viewpoint, blipDrawingContext) => {
         if (supportedShape.externalShape == true) {
             shape = blip.append("use")
                 .attr('xlink:href', `${supportedShape.externalFile}#${supportedShape.symbolId}`)
-                .attr('transform', 'scale(0.05)');
-
+                .attr('transform', `translate(${-1.5 * supportedShape.viewBoxSize}, ${-0.5 * supportedShape.viewBoxSize})  scale(${supportedShape.scaleFactor * 1 / supportedShape.viewBoxSize}) `);
         } else {
             if (blipShape == "circle") {
                 shape = blip.append("circle")
@@ -699,6 +721,27 @@ const drawRadarBlip = (blip, d, viewpoint, blipDrawingContext) => {
             .style("stroke", "red") // TODO: use the blip color
             .style("stroke-width", "0px") // TODO: when a color is derived properly, set a border width
     }
+    if (d.artificial == true) {
+        const highlight = blip.append("g")
+        .attr("transform", "translate(10,10)")
+
+        // add a red circle with in white the number of aggregated blips
+        highlight.append("circle")
+            .attr("r", 7)
+            .attr("style", "fill:red")
+
+            highlight.append("text")
+            .text(d.aggregation.count)
+            .attr("x", 0)
+            .attr("y", -6)
+            .attr("text-anchor", "middle")
+            .attr("alignment-baseline", "before-edge")
+            .style("fill", "white")
+            .style("font-stretch", "extra-condensed")
+            .style("font-size", 10)
+            .style("font-weight", "bold")
+    }
+
 }
 
 const handleBlipScaleFactorChange = (event) => {
@@ -856,10 +899,6 @@ const menu = (x, y, d, blip, viewpoint) => {
             const shapeToDraw = config.shapesConfiguration.shapes[i].shape
             const label = config.shapesConfiguration.shapes[i].label
 
-            // for (let i = 0; i < Object.keys(viewpoint.propertyVisualMaps.shape.valueMap).length; i++) {
-            //     const key = Object.keys(viewpoint.propertyVisualMaps.shape.valueMap)[i]
-            //     const shapeToDraw = config.shapesConfiguration.shapes[viewpoint.propertyVisualMaps.shape.valueMap[key]].shape
-            //     const label = config.shapesConfiguration.shapes[viewpoint.propertyVisualMaps.shape.valueMap[key]].label
             const shapeEntry = shapesBox.append('g')
                 .attr("transform", `translate(0, ${30 + i * entryHeight})`)
             let shape
@@ -867,7 +906,9 @@ const menu = (x, y, d, blip, viewpoint) => {
             if (supportedShape.externalShape == true) {
                 shape = shapeEntry.append("use")
                     .attr('xlink:href', `${supportedShape.externalFile}#${supportedShape.symbolId}`)
-                    .attr('transform', ' translate(-17,-15) scale(0.02)');
+                    //                    .attr('transform', ' translate(-17,-15) scale(0.02)');
+                    .attr('transform', `translate(${-1.5 * supportedShape.viewBoxSize}, ${-0.5 * supportedShape.viewBoxSize})  scale(${supportedShape.scaleFactor * 1 / supportedShape.viewBoxSize}) `);
+
 
             } else {
 
@@ -909,7 +950,7 @@ const menu = (x, y, d, blip, viewpoint) => {
                         .attr('x', -5)
                         .attr('y', -15)
                 }
-            } 
+            }
             if (shape != null) {
                 shape
                     .attr("id", `templateSizes${i}`)
@@ -1159,6 +1200,8 @@ function blipWindow(blip, viewpoint) {
 
         .attr("width", 800)
         .attr("height", 600)
+        .attr("style", "background-color:#fff4b8; padding:6px; opacity:0.9")
+
 
     const body = foreignObject
         .append("xhtml:body")
@@ -1201,28 +1244,33 @@ function blipWindow(blip, viewpoint) {
 
 
 
-        for (let propertyName in ratingType.properties) {
-            const property = ratingType.properties[propertyName]
-            let value = blip.rating[propertyName]
-            if (property.type == "time") {
-                // rewrite value to nice date time format
-                const date = new Date(value)
-                value = date.toDateString()
-            }
-            if (property.allowableValues != null && property.allowableValues.length > 0) {
-                value = getLabelForAllowableValue(value, property.allowableValues)
-            }
 
-            // TODO AGGREGATION hard coded property name
-            if (blip.artificial == true && propertyName == "scope") {
-                addProperty(property.label, blip.aggregation.label, ratingDiv)
-            } else if (blip.artificial == true && propertyName == "author") {
-                addProperty(property.label, blip.aggregation.authors, ratingDiv)
-            } else {
+        if (blip.artificial) {
+
+            for (let i = 0; i < viewpoint.propertyVisualMaps.aggregation?.collectProperties.length; i++) {
+                const property = viewpoint.propertyVisualMaps.aggregation?.collectProperties[i]
+                if (property != "-1") {
+                    const value = blip.aggregation[property]
+
+                    addProperty(property, value, ratingDiv)
+                }
+            }
+        } else {
+            for (let propertyName in ratingType.properties) {
+                const property = ratingType.properties[propertyName]
+                let value = blip.rating[propertyName]
+                if (property.type == "time") {
+                    // rewrite value to nice date time format
+                    const date = new Date(value)
+                    value = date.toDateString()
+                }
+                if (property.allowableValues != null && property.allowableValues.length > 0) {
+                    value = getLabelForAllowableValue(value, property.allowableValues)
+                }
                 addProperty(property.label, value, ratingDiv)
             }
-
         }
+
 
 
 

@@ -1,6 +1,6 @@
 import { cartesianFromPolar, polarFromCartesian } from './drawingUtilities.js'
 import { getState, getConfiguration, getViewpoint } from './data.js'
-import { supportedShapes } from './utils.js'
+import { supportedShapes,undefinedToDefined } from './utils.js'
 export { drawRadar, subscribeToRadarEvents, publishRadarEvent }
 
 const color_white = "#FFF"
@@ -546,12 +546,6 @@ const initializeShapesLegend = (viewpoint) => {
         const shapeToDraw = config.shapesConfiguration.shapes[i].shape
         const label = config.shapesConfiguration.shapes[i].label
 
-        // for (let i = 0; i < Object.keys(viewpoint.propertyVisualMaps.shape.valueMap).length; i++) {
-        //     const key = Object.keys(viewpoint.propertyVisualMaps.shape.valueMap)[i]
-        //     const vm = viewpoint.propertyVisualMaps.shape.valueMap[key]
-        //     const shapeToDraw = config.shapesConfiguration.shapes[viewpoint.propertyVisualMaps.shape.valueMap[key]].shape
-        //     const label = config.shapesConfiguration.shapes[viewpoint.propertyVisualMaps.shape.valueMap[key]].label
-
         shapesBox.append("text")
             .attr("id", `shapeLabel${i}`)
             .text(label)
@@ -584,7 +578,9 @@ const initializeShapesLegend = (viewpoint) => {
         if (supportedShape.externalShape == true) {
             shape = shapeEntry.append("use")
                 .attr('xlink:href', `${supportedShape.externalFile}#${supportedShape.symbolId}`)
-                .attr('transform', ' translate(-37,-15) scale(0.18)');
+                .attr('transform',`translate(${-supportedShape.viewBoxSize}, ${-supportedShape.viewBoxSize})  scale(${0.18})`)
+                     //supportedShape.scaleFactor * 1/supportedShape.viewBoxSize}) `);
+
 
         } else {
 
@@ -728,7 +724,7 @@ const initializeColorsLegend = (viewpoint) => {
         displayedColorsCounter++
     }
     if (viewpoint.blipDisplaySettings.aggregationMode == true) {
-        const colorToShow = "#800040"
+        const colorToShow = undefinedToDefined(viewpoint.propertyVisualMaps?.aggregation?.color,"#800040")
         const label = "Aggregated"
         const colorEntry = colorsBox.append('g')
             .attr("transform", `translate(${circleIndent + 20}, ${30 + (numberOfVisibleColors) * 45})`)

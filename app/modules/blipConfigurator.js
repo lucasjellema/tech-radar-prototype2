@@ -74,7 +74,7 @@ Blip Edge (decoration)?
 }
 
 const saveBlipSettings = (viewpoint) => {
-    if (viewpoint.template.blip == null) viewpoint.template.blip = {}
+    if (viewpoint.propertyVisualMaps.blip == null) viewpoint.propertyVisualMaps.blip = {}
     viewpoint.propertyVisualMaps.blip.label = getElementValue("blipLabelPropertySelector")
     viewpoint.propertyVisualMaps.blip.image = getElementValue("blipImagePropertySelector")
     viewpoint.propertyVisualMaps.blip.defaultShape = getElementValue("blipDefaultShape")

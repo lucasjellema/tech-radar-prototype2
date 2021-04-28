@@ -1,7 +1,7 @@
 export { launchMainEditor }
 import { drawRadar, subscribeToRadarEvents, publishRadarEvent } from './radar.js';
 import { getViewpoint, getData, publishRefreshRadar } from './data.js';
-import { capitalize, getPropertyFromPropertyPath, populateFontsList, createAndPopulateDataListFromBlipProperties, undefinedToDefined, getAllKeysMappedToValue, getNestedPropertyValueFromObject, setNestedPropertyValueOnObject, initializeImagePaster, populateSelect, getElementValue, setTextOnElement, getRatingTypeProperties, showOrHideElement } from './utils.js'
+import { capitalize, getPropertyFromPropertyPath, populateFontsList, createAndPopulateDataListFromBlipProperties, undefinedToDefined, getAllKeysMappedToValue, getNestedPropertyValueFromObject, setNestedPropertyValueOnObject, initializeImagePaster, populateSelect, getElementValue, setTextOnElement, getRatingTypeProperties, showOrHideElement, toggleShowHideElement } from './utils.js'
 import { launchSectorConfigurator } from './sectorConfigurator.js'
 import { launchRingConfigurator } from './ringConfigurator.js'
 import { launchDatamodelConfigurator } from './datamodelConfigurator.js'
@@ -86,8 +86,7 @@ const launchMainEditor = (viewpoint, drawRadarBlips, tab) => {
 
         const toggle = document.getElementById("advancedToggleRadar")
         toggle.addEventListener("click", () => {
-            console.log(`sjow advanced`)
-            showOrHideElement('advancedradarPropertiesRadar', true)
+            toggleShowHideElement('advancedradarPropertiesRadar')
         })
         populateFontsList('fontsList')
 

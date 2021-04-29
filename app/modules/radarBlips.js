@@ -962,6 +962,7 @@ const menu = (x, y, d, blip, viewpoint) => {
         .on("click", () => {
             const newBlip = JSON.parse(JSON.stringify(d))
             viewpoint.blips.push(newBlip)
+            newBlip.rating = d.rating
             newBlip.x = newBlip.x != null ? newBlip.x + 15 : null
             newBlip.y = newBlip.y != null ? newBlip.y + 15 : null
             newBlip.id = uuidv4()
@@ -995,6 +996,7 @@ const menu = (x, y, d, blip, viewpoint) => {
         .on("click", () => {
             const blipIndex = viewpoint.blips.indexOf(d)
             // create tag filters from tags on d
+            // TODO perhaps include discrete properties? (except current sector and ring)
             const tags = d.rating.object.tags
             if (tags != null && tags.length != null) {
                 tags.forEach((tag) => viewpoint.blipDisplaySettings.tagFilter.push({ type: "plus", tag: tag }))

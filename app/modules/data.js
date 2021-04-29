@@ -573,7 +573,7 @@ const getRatingTypeForRatingTypeName = (ratingTypeOrName) => {
 const getObjectListOfOptions = (objectType = null) => {
     // create [{}] for object labels and id values data is array objects with two properties : label and value
     // note: only objects of the type that is used by the rating type 
-    const objectsListofOptions = []
+    let objectsListofOptions = []
     let objectDisplayLabelProperty = "label" // TODO get display property for object type
     objectDisplayLabelProperty = findDisplayProperty(objectType.properties).name
     for (let i = 0; i < Object.keys(getData().objects).length; i++) {
@@ -584,6 +584,8 @@ const getObjectListOfOptions = (objectType = null) => {
             objectsListofOptions.push({ label: object[objectDisplayLabelProperty], value: object.id })
         }
     }
+
+    objectsListofOptions = [...new Set(objectsListofOptions)] // to remove duplicates
     objectsListofOptions.sort((a, b) => a.label.toLowerCase() < b.label.toLowerCase() ? -1 : 1)
 
     return objectsListofOptions

@@ -167,7 +167,10 @@ const viewpointViewer = (viewpointId, displayContainer) => {
     const data = getData()
     const viewpoint = data.viewpoints[viewpointId]
     html += `<b>Name</b> ${viewpoint.template.title.text}<br/>`
-    html += `<b>Description</b> ${viewpoint.template.description}<br/>`
+    html += `<b>Rating Type</b> ${undefinedToDefined(viewpoint.ratingType.name)}<br/>`
+
+    html += `<b>Timestamp</b> ${undefinedToDefined( new Date(viewpoint.timestamp).toDateString(),"")}<br/>`
+    html += `<b>Description</b> ${undefinedToDefined( viewpoint.template.description,"")}<br/>`
 
     html += `<br /> <br /> 
         <input type="button" id="deleteViewpoint"  value="Delete Viewpoint" style="padding:6px;margin:10px" />`

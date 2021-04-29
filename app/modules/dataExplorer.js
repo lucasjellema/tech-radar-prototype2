@@ -283,13 +283,16 @@ function addRatings(data, radarData) {
         for (let i = 0; i < Object.keys(radarData.model.ratingTypes).length; i++) {
             const ratingType = radarData.model.ratingTypes[Object.keys(radarData.model.ratingTypes)[i]];
             const displayPropertyPath = findDisplayProperty(ratingType.properties).name;
+            const contextPropertyKeys = Object.keys(ratingType.properties).filter((key) => ratingType.properties[key].context==true);
             const objectDisplayPropertyPath = findDisplayProperty(ratingType.objectType.properties).name;
             if (ratingSets[ratingType.name].size > -1) {
                 data.ratings.children[ratingType.name] = { label: ratingType.label, selectable: true, id: `ratings${ratingType.name}`, children: {} };
                 // TODO: HOW TO COMPOSE DISPLAY LABEL FOR RATING?
                 ratingSets[ratingType.name].forEach((rating) => {
-                    const ratingLabel = getNestedPropertyValueFromObject(rating, displayPropertyPath)
-                        + " for " + getNestedPropertyValueFromObject(rating.object, objectDisplayPropertyPath);
+                    // use context properties to derive 
+
+                    const ratingLabel = contextPropertyKeys.reduce((label, propertyKey, i) => {return label + (i>0?" ":"")+  rating[ propertyKey]}, "")
+                    + " for " + getNestedPropertyValueFromObject(rating.object, objectDisplayPropertyPath);
                     data.ratings.children[ratingType.name].children[ratingLabel] = { label: ratingLabel, id: rating.id, type: "rating" };
                 });
             }

@@ -255,6 +255,9 @@ const populateFontsList = (fontsListElementId) => {
 
 const populateDerivationFunctionList = (derivationFunctionListElementId) => {
     const functionsList = []
+    functionsList.push(`Years Ago from Time`)
+    functionsList.push(`Months Ago from Time`)
+    functionsList.push(`Days Ago from Time`)
     functionsList.push(`Year from Time`)
     functionsList.push(`Quarter + Year from Time`)
     functionsList.push(`Month + Year from Time`)
@@ -265,6 +268,7 @@ const populateDerivationFunctionList = (derivationFunctionListElementId) => {
     functionsList.push(`Part of Day from Time`)
     functionsList.push(`Hour from Time`)
     functionsList.push(`Value Map (convert base property value)`)
+    functionsList.push(`Range Map (map property value to predefined range)`)
     functionsList.push(`JavaScript Expression`)
     
     

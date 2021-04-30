@@ -2,6 +2,8 @@ export { launchPropertyEditor }
 import { getViewpoint, getData, publishRefreshRadar } from './data.js';
 import { capitalize, getPropertyFromPropertyPath, populateDerivationFunctionList, populateDataTypesList, createAndPopulateDataListFromBlipProperties, undefinedToDefined, getAllKeysMappedToValue, getNestedPropertyValueFromObject, setNestedPropertyValueOnObject, initializeImagePaster, populateSelect, getElementValue, setTextOnElement, getRatingTypeProperties, showOrHideElement, toggleShowHideElement } from './utils.js'
 import { publishRadarEvent } from './radar.js';
+import { resetCache } from './derivedProperties.js';
+
 
 
 const launchPropertyEditor = (propertyToEdit, propertyScope, viewpoint, drawRadarBlips = null, parentForNewProperty = null) => {
@@ -133,7 +135,7 @@ const saveProperty = (propertyToEdit, viewpoint, parentForNewProperty = null) =>
     propertyToEdit.derivationFunctionConfiguration = getElementValue('derivationFunctionConfiguration')
     propertyToEdit.context = document.getElementById(`propertyContext`).checked
     propertyToEdit.displayLabel = document.getElementById(`propertyDisplayLabel`).checked
-
+    resetCache()
 
 
     if (propertyToEdit.allowableValues?.length > 0) {

@@ -5,6 +5,7 @@ export {
     , subscribeToRadarRefresh, getState, publishRefreshRadar, getDistinctTagValues
 }
 
+import { calculateDerivedProperties } from './derivedProperties.js'
 import { uuidv4, getNestedPropertyValueFromObject, setNestedPropertyValueOnObject, getRatingTypeProperties, findDisplayProperty, getDateTimeString } from './utils.js'
 
 const datasetMap = {
@@ -439,6 +440,7 @@ const initializeDatasetFromURL = async () => {
     data = await loaddataset(source)
     // add uuid to objects and ratings - just to be sure
     data.viewpoints.forEach((viewpoint) => addUUIDtoBlips(viewpoint.blips))
+    calculateDerivedProperties()
     publishRefreshRadar()
 }
 
@@ -672,6 +674,7 @@ async function handleUploadedFiles() {
         // TODO serialize data
         const deserializedData = deserialize(uploadedData)
         data = deserializedData
+        calculateDerivedProperties()
 
         publishRefreshRadar()
 

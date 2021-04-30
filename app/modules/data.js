@@ -551,7 +551,7 @@ const loadDataFromLocalStore = () => {
     // for every viewpoint in the index, load document
     //    data = JSON.parse(localStorage[radarIndex.templates[0].title])
     data = JSON.parse(localStorage[RADAR_INDEX_KEY])
-
+calculateDerivedProperties()
     publishRefreshRadar()
 }
 

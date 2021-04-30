@@ -31,7 +31,7 @@ const launchPropertyEditor = (propertyToEdit, propertyScope, viewpoint, drawRada
     ${propertyToEdit?.context == true ? "checked" : ""}><br/>`
 
     html += `<label for="propertyDescription">Description</label>
-       <textarea id="propertyDescription" value="${undefinedToDefined(propertyToEdit.description, "")}" rows="3" cols="80"></textarea><br/>`
+       <textarea id="propertyDescription" value="" rows="3" cols="80">${undefinedToDefined(propertyToEdit.description, "")}</textarea><br/>`
 
     html += `<label for="propertyDefaultValue">Default Value</label>
        <input id="propertyDefaultValue" value="${undefinedToDefined(propertyToEdit.defaultValue, "")}"></input><br/>`
@@ -48,7 +48,7 @@ const launchPropertyEditor = (propertyToEdit, propertyScope, viewpoint, drawRada
         <input id="derivationFunction" list="derivationFunctionList" value="${undefinedToDefined(propertyToEdit.derivationFunction)}"></input>
         &nbsp;&nbsp;&nbsp;
         <label for="derivationFunctionConfiguration">Configuration of Derivation Function</label>
-        <input id="derivationFunctionConfiguration" type="text" value="${undefinedToDefined(propertyToEdit?.derivationFunctionConfiguration)}">
+        <textarea id="derivationFunctionConfiguration" cols="60" rows="3" value="${undefinedToDefined(propertyToEdit?.derivationFunctionConfiguration)}">${undefinedToDefined(propertyToEdit?.derivationFunctionConfiguration)}</textarea>
         <br />
     </div>`
 

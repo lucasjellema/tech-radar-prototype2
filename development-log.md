@@ -17,7 +17,7 @@
 
 - use d3 force when auto deriving x,y coordinates 
 
-- allow removal of viewpoint, template, object type, rating type, objects of a specific type
+- allow removal of object type, rating type, objects of a specific type
 - generate ratings and blips in Viewpoint for selected objects
 
 - define gradient color for blips (see https://developer.mozilla.org/en-US/docs/Web/SVG/Element/radialGradient)
@@ -41,11 +41,6 @@
 
 - property Description for each sector to describe the meaning ; show as hovertext for sector label
 
-- support default font-style, font-weight as property to define for labels in ring (instead of only at individual ring level)
-- define default label font/edge/color settings for radar (for sectors, rings, ..)
- 
-- support dash array property for sector edge
-
 - allow multiple properties to be mapped to a sector (e.g. sector for open source container management and for Oracle integration tools)
  
 - generate blips (for all ratings that qualify for the viewpoint's current filters and visible sectors and rings) 
@@ -61,16 +56,22 @@
   - merge:  update existing objects with uploaded ones
           - take the most recently changed object
 
-- before drawing blips: create a segment matrix [sector, ring] with for each segment
-  visible?, start and end phi, start and end R
-  when checking the current position of a blip - only compare with boundaries of its segement
-
 - aggregation mode
-  - write aggregation count inside blip (red circle, white number)
-  - allow definition of aggregation group by (object, object or rating property) (or even multiple properties?) note: aggregation always per segment (sector/ring combination)
   - allow definition of what is aggregated: simple count or aggregation of one or more properties   
 
 TODO - define scale and translate factor for externally defined paths/shapes
+
+## April 29th
+- Start with derived properties
+- remove objects , ratings, viewpoints
+- viewpoint description & timestamp
+- rating label in data explorer tree derived from context? properties
+- support for derived properties - Month & Year, Days Ago, Value Map
+- recalculate derived properties upon (up)loading file
+- support range value map in derived property definition - for properties of type number (integer or float); not yet for time (or string)
+
+### Resources
+- Generate Hash for JS String - https://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript
 
 ## April 27th
 

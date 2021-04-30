@@ -4,10 +4,10 @@ import { capitalize, getPropertyFromPropertyPath, populateDerivationFunctionList
 import { publishRadarEvent } from './radar.js';
 
 
-const launchPropertyEditor = (propertyToEdit, viewpoint, drawRadarBlips = null, parentForNewProperty = null) => {
+const launchPropertyEditor = (propertyToEdit, propertyScope, viewpoint, drawRadarBlips = null, parentForNewProperty = null) => {
 
     showOrHideElement("modalEditor", true)
-    setTextOnElement('modalEditorTitle', `Edit Property ${propertyToEdit.label}`)
+    setTextOnElement('modalEditorTitle', `Edit ${propertyScope} Property ${propertyToEdit.label}`)
     const contentContainer = document.getElementById("modalContentContainer")
     contentContainer.innerHTML = ''
     let html = ``
@@ -76,9 +76,8 @@ const launchPropertyEditor = (propertyToEdit, viewpoint, drawRadarBlips = null, 
         ratingType = getData().model?.ratingTypes[ratingType]
     }
     let ratingTypeProperties = getRatingTypeProperties(ratingType, getData().model)
-
-
     const candidateBaseProperties = ratingTypeProperties
+        .filter((property) => propertyScope=="rating" || property.propertyScope =="object" )
         .map((property) => { return { label: property.propertyPath, value: property.propertyPath } })
     populateSelect("baseProperty", candidateBaseProperties, propertyToEdit.baseProperty)   // data is array objects with two properties : label and value
 
@@ -86,14 +85,14 @@ const launchPropertyEditor = (propertyToEdit, viewpoint, drawRadarBlips = null, 
         const allowableValue = { value: "", label: "New" }
         if (propertyToEdit.allowableValues == null) propertyToEdit.allowableValues = []
         propertyToEdit.allowableValues.push(allowableValue)
-        launchPropertyEditor(propertyToEdit, viewpoint, drawRadarBlips, parentForNewProperty)
+        launchPropertyEditor(propertyToEdit,propertyScope, viewpoint, drawRadarBlips, parentForNewProperty)
 
     })
     if (propertyToEdit.allowableValues?.length > 0) {
         for (let i = 0; i < propertyToEdit.allowableValues.length; i++) {
             document.getElementById(`deleteAllowableValue${i}`).addEventListener('click', (e) => {
                 propertyToEdit.allowableValues.splice(i, 1)
-                launchPropertyEditor(propertyToEdit, viewpoint, drawRadarBlips, parentForNewProperty)
+                launchPropertyEditor(propertyToEdit, propertyScope, viewpoint, drawRadarBlips, parentForNewProperty)
             })
         }
     }

@@ -96,10 +96,10 @@ const launchDatamodelConfigurator = (viewpoint, drawRadarBlips) => {
     for (let i = 0; i < blipProperties.length; i++) {
         const blipProperty = blipProperties[i]
         document.getElementById(`editProperty${i}`).addEventListener('click', (e) => {
-            launchPropertyEditor(blipProperty.property, viewpoint)
+            launchPropertyEditor(blipProperty.property,blipProperty.propertyScope, viewpoint)
         })
         document.getElementById(`editProperty${i}b`).addEventListener('click', (e) => {
-            launchPropertyEditor(blipProperty.property, viewpoint)
+            launchPropertyEditor(blipProperty.property, blipProperty.propertyScope, viewpoint)
         })
         document.getElementById(`deleteProperty${i}`).addEventListener('click', (e) => {          
             if (blipProperty.propertyScope == "object") {
@@ -116,12 +116,12 @@ const launchDatamodelConfigurator = (viewpoint, drawRadarBlips) => {
 
     document.getElementById(`addObjectPropertyButton`).addEventListener('click', (e) => {
         const newProperty = { name: "NEW_PROPERTY", label: "New Property" }
-        launchPropertyEditor(newProperty, viewpoint, drawRadarBlips, objectType)
+        launchPropertyEditor(newProperty, "object",viewpoint, drawRadarBlips, objectType)
 
     })
     document.getElementById(`addRatingPropertyButton`).addEventListener('click', (e) => {
         const newProperty = { name: "NEW_PROPERTY", label: "New Property" }
-        launchPropertyEditor(newProperty, viewpoint, drawRadarBlips, ratingType)
+        launchPropertyEditor(newProperty, "rating", viewpoint, drawRadarBlips, ratingType)
 
     })
 

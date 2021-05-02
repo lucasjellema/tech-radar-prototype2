@@ -61,6 +61,9 @@
 
 TODO - define scale and translate factor for externally defined paths/shapes
 
+## May 2nd
+- convert values imported from CSV (derive time from ISO date string)
+
 ## April 29th
 - Start with derived properties
 - remove objects , ratings, viewpoints

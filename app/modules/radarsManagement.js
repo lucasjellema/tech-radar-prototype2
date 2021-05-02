@@ -120,7 +120,7 @@ const createNewRadar = () => {
                     "description": {
                         "label": "Description",
                         "type": "text",
-                        "name": description
+                        "name": "-"
                     }
                 }
                 , timestamp: Date.now()

@@ -647,6 +647,7 @@ function updateObjectWithPropertyValues(ratingTypeProperties, propertyValueMap, 
             }
         }
     }
+    object["dateUpdated"] = Date.now()
 }
 
 function identifyAndAddNewProperties(radarFromCSVMap) {

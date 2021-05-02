@@ -1,12 +1,12 @@
 export { launchDatamodelConfigurator }
 import { drawRadar, subscribeToRadarEvents, publishRadarEvent } from './radar.js';
-import { getViewpoint, getData, publishRefreshRadar } from './data.js';
+import { getViewpoint, getData, publishRefreshRadar, getState } from './data.js';
 import { initializeTree } from './tree.js'
 import { launchPropertyEditor } from './propertyEditor.js'
 import { capitalize, getPropertyFromPropertyPath, populateFontsList, createAndPopulateDataListFromBlipProperties, undefinedToDefined, getAllKeysMappedToValue, getNestedPropertyValueFromObject, setNestedPropertyValueOnObject, initializeImagePaster, populateSelect, getElementValue, setTextOnElement, getRatingTypeProperties, showOrHideElement } from './utils.js'
 import {calculateDerivedProperties} from './derivedProperties.js'
 
-const launchDatamodelConfigurator = (viewpoint, drawRadarBlips) => {
+const launchDatamodelConfigurator = (viewpoint=getState().currentViewpoint, drawRadarBlips=null) => {
 
     
     let ratingType = viewpoint.ratingType

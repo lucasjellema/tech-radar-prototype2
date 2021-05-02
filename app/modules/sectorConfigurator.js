@@ -1,13 +1,13 @@
 export { launchSectorConfigurator, reconfigureSectorsFromPropertyPath }
 import { drawRadar, subscribeToRadarEvents, publishRadarEvent } from './radar.js';
-import { getViewpoint, getData, publishRefreshRadar } from './data.js';
+import { getViewpoint, getData, publishRefreshRadar,getState } from './data.js';
 import { launchSectorEditor } from './sectorEditing.js'
 import { capitalize, getPropertyValuesAndCounts, getPropertyFromPropertyPath, populateFontsList, createAndPopulateDataListFromBlipProperties, undefinedToDefined, getAllKeysMappedToValue, getNestedPropertyValueFromObject, setNestedPropertyValueOnObject, initializeImagePaster, populateSelect, getElementValue, setTextOnElement, getRatingTypeProperties, showOrHideElement, toggleShowHideElement } from './utils.js'
 
 
 
 
-const launchSectorConfigurator = (viewpoint, drawRadarBlips) => {
+const launchSectorConfigurator = (viewpoint=getState().currentViewpoint, drawRadarBlips=null) => {
     const sectorVisualMap = viewpoint.propertyVisualMaps["sector"]
     //const valueOccurrenceMap = getPropertyValuesAndCounts(sectorVisualMap["property"], getData().ratings) // TODO only ratings of proper rating type!!
     const valueOccurrenceMap = (sectorVisualMap == null || sectorVisualMap["property"] == null) ? null : getValueOccurrenceMap(sectorVisualMap["property"], viewpoint, true);

@@ -1,6 +1,6 @@
 export { createRadarFromCSV }
 import { getViewpoint, getData, getState, download, publishRefreshRadar, populateTemplateSelector, createObject, createRating } from './data.js';
-import {  populateDataTypesList,populateConversionFunctionSelect,getUniqueFieldValues, getListOfSupportedShapes, capitalize, getPropertyFromPropertyPath, getPropertyValuesAndCounts, populateFontsList, toggleShowHideElement, createAndPopulateDataListFromBlipProperties, undefinedToDefined, getAllKeysMappedToValue, getNestedPropertyValueFromObject, setNestedPropertyValueOnObject, initializeImagePaster, populateSelect, getElementValue, setTextOnElement, getRatingTypeProperties, showOrHideElement, uuidv4, populateDatalistFromValueSet } from './utils.js'
+import {  unselectAllTabs,populateDataTypesList,populateConversionFunctionSelect,getUniqueFieldValues, getListOfSupportedShapes, capitalize, getPropertyFromPropertyPath, getPropertyValuesAndCounts, populateFontsList, toggleShowHideElement, createAndPopulateDataListFromBlipProperties, undefinedToDefined, getAllKeysMappedToValue, getNestedPropertyValueFromObject, setNestedPropertyValueOnObject, initializeImagePaster, populateSelect, getElementValue, setTextOnElement, getRatingTypeProperties, showOrHideElement, uuidv4, populateDatalistFromValueSet } from './utils.js'
 import { starterTemplate } from './radarsManagement.js'
 import { reconfigureSectorsFromPropertyPath } from './sectorConfigurator.js'
 import { reconfigureRingsFromPropertyPath } from './ringConfigurator.js'
@@ -13,7 +13,8 @@ const createRadarFromCSV = (contents) => {
     const objects = d3.csvParse(contents)
     showOrHideElement("modalMain", true)
     setTextOnElement("modalMainTitle", "CSV to Radar Wizard")
-    document.getElementById("fileConfigurationTab").classList.add("warning") // define a class SELECTEDTAB 
+    unselectAllTabs()
+    document.getElementById("fileConfigurationTab").classList.add("selectedTab") // define a class SELECTEDTAB 
     const contentContainer = document.getElementById("modalMainContentContainer")
     let html = ``
     html += `<h3>Create New Radar</h3>`

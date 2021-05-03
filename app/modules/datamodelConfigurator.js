@@ -3,7 +3,7 @@ import { drawRadar, subscribeToRadarEvents, publishRadarEvent } from './radar.js
 import { getViewpoint, getData, publishRefreshRadar, getState } from './data.js';
 import { initializeTree } from './tree.js'
 import { launchPropertyEditor } from './propertyEditor.js'
-import { capitalize, getPropertyFromPropertyPath, populateFontsList, createAndPopulateDataListFromBlipProperties, undefinedToDefined, getAllKeysMappedToValue, getNestedPropertyValueFromObject, setNestedPropertyValueOnObject, initializeImagePaster, populateSelect, getElementValue, setTextOnElement, getRatingTypeProperties, showOrHideElement } from './utils.js'
+import { unselectAllTabs,capitalize, getPropertyFromPropertyPath, populateFontsList, createAndPopulateDataListFromBlipProperties, undefinedToDefined, getAllKeysMappedToValue, getNestedPropertyValueFromObject, setNestedPropertyValueOnObject, initializeImagePaster, populateSelect, getElementValue, setTextOnElement, getRatingTypeProperties, showOrHideElement } from './utils.js'
 import {calculateDerivedProperties} from './derivedProperties.js'
 
 const launchDatamodelConfigurator = (viewpoint=getState().currentViewpoint, drawRadarBlips=null) => {
@@ -20,7 +20,8 @@ const launchDatamodelConfigurator = (viewpoint=getState().currentViewpoint, draw
 
     showOrHideElement("modalMain", true)
     setTextOnElement("modalMainTitle", "Radar Configurator - Data Model")
-    document.getElementById("datamodelConfigurationTab").classList.add("warning") // define a class SELECTEDTAB 
+    unselectAllTabs()
+    document.getElementById("datamodelConfigurationTab").classList.add("selectedTab") 
     const contentContainer = document.getElementById("modalMainContentContainer")
     contentContainer.innerHTML = ''
 

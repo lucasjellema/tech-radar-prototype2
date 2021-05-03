@@ -5,7 +5,7 @@ export {
     , populateFontsList, populateDataTypesList, populateShapesList,populateColorsList,populateSizesList, setTextOnElement, initializeImagePaster, undefinedToDefined, capitalize
     , getPropertyValuesAndCounts, populateDatalistFromValueSet, getPropertyFromPropertyPath
     , findDisplayProperty, getListOfSupportedShapes, getListOfSupportedColors, getListOfSupportedSizes, getLabelForAllowableValue, getUniqueFieldValues
-    ,filterBlip, assignBlipsToSegments,findSectorForRating, supportedShapes, populateDerivationFunctionList
+    ,filterBlip, assignBlipsToSegments,findSectorForRating, supportedShapes, populateConversionFunctionSelect, populateDerivationFunctionList
 }
 
 
@@ -226,6 +226,14 @@ const populateDataTypesList = (datatypesListElementId, value = "string") => {
     datatypesList.push({ label: `Tags`, value: `tags` })
 
     populateSelect(datatypesListElementId, datatypesList, value)
+}
+
+
+const populateConversionFunctionSelect = (conversionFunctionSelectElementId, value = "") => {
+    const datatypesList = []
+    datatypesList.push({ label: `Date or Time from ISO date format (YYYY-MM-DD[THH:MI:SS])`, value: `timeFromISO` })
+
+    populateSelect(conversionFunctionSelectElementId, datatypesList, value)
 }
 
 const populateFontsList = (fontsListElementId) => {

@@ -7,7 +7,7 @@ import { reconfigureRingsFromPropertyPath } from './ringConfigurator.js'
 import { reconfigureShapesFromPropertyPath } from './shapeConfigurator.js'
 import { reconfigureColorsFromPropertyPath } from './colorConfigurator.js'
 import { reconfigureSizesFromPropertyPath } from './sizeConfigurator.js'
-
+import { publishRadarEvent } from './radar.js';
 
 const createRadarFromCSV = (contents) => {
     const objects = d3.csvParse(contents)
@@ -221,6 +221,7 @@ const generateRadarFromCSV = (objects, newRadar) => {
 
     // NOT NECESSARY?  publishRadarEvent({ type: "shuffleBlips" })
     publishRefreshRadar()
+    publishRadarEvent({ type: "mainRadarConfigurator", tab: "datamodel" })
 
 }
 

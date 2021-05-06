@@ -285,7 +285,7 @@ const exportRadarDataToRadarFile = (exportAllRatings, exportAllBlippedRatings, e
 
     // clone ratingType and objectType
     radarDataToExport.model.objectTypes[getViewpoint().ratingType.objectType.name] = jsonClone(getViewpoint().ratingType.objectType)
-    radarDataToExport.model.ratingTypes[getViewpoint().ratingType.name] = jsonClone(getViewpoint().ratingType.objectType)
+    radarDataToExport.model.ratingTypes[getViewpoint().ratingType.name] = jsonClone(getViewpoint().ratingType)
     radarDataToExport.model.ratingTypes[getViewpoint().ratingType.name].objectType = radarDataToExport.model.objectTypes[getViewpoint().ratingType.objectType.name]
     // clone viewpoint
     radarDataToExport.viewpoints.push(getViewpoint())

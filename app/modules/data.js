@@ -879,7 +879,7 @@ const populateTemplateSelector = () => {
 
 document.getElementById('save').addEventListener("click", saveDataToLocalStorage);
 document.getElementById('load').addEventListener("click", loadDataFromLocalStore);
-document.getElementById('download').addEventListener("click", downloadRadarData);
+document.getElementById('download').addEventListener("click", (e) => { downloadRadarData()});
 document.getElementById('uploadRadarDatafile').addEventListener("click", uploadRadarData);
 document.getElementById('newTemplate').addEventListener("click", createNewTemplate);
 document.getElementById('cloneTemplate').addEventListener("click", cloneTemplate);

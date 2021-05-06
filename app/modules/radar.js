@@ -238,6 +238,20 @@ const drawSectors = function (radar, config, elementDecorator = null) {
                         .call(elementDecorator ? elementDecorator : () => { }, [`svg#${config.svg_id}`, sector.label, `sectorLabel${i}`])
 
                     styleText(sectorLabel, sector.labelSettings, config, config.sectorsConfiguration.labelSettings)
+                    
+                    if (sector.description != null && sector.description.length > 0) {
+                        sectorLabel.on("mouseover", (e, d) => {
+                            addTooltip(
+                                (d) => {
+                                    return `<div>     
+                            <i>${sector.description}</i>
+                          </div>`}
+                                , d, e.pageX, e.pageY);
+                        })
+                            .on("mouseout", () => {
+                                removeTooltip();
+                            })
+                    }
                 }
 
 

@@ -181,8 +181,10 @@ const launchSectorEditor = (sectorToEdit, viewpoint, drawRadarBlips) => {
 const saveSector = (sectorToEdit, sector, viewpoint) => {
     console.log(`save changes to sector`)
     const sectorVisualMap = viewpoint.propertyVisualMaps["sector"]
-    sector.backgroundColor = getElementValue("sectorColorInside")
-    sector.outerringBackgroundColor = getElementValue("sectorColorOutside")
+    ifElementHasValueThenSetProperty("sectorColorInside", sector, "backgroundColor")
+    ifElementHasValueThenSetProperty("sectorColorOutside", sector, "outerringBackgroundColor")
+
+    
     sector.label = getElementValue("sectorLabel")
     sector.description = getElementValue("sectorDescription")
     sector.angle = getElementValue("sectorAnglePercentage") / 100
@@ -193,9 +195,8 @@ const saveSector = (sectorToEdit, sector, viewpoint) => {
     }
 
 
-    sector.opacity = getElementValue("sectorOpacityInside")
-    sector.opacityOutsideRings = getElementValue("sectorOpacityOutside")
-
+    ifElementHasValueThenSetProperty("sectorOpacityInside", sector, "opacity")
+    ifElementHasValueThenSetProperty("sectorOpacityOutside", sector, "opacityOutsideRings")
 
 
     sector.edge = sector.edge ?? {}
@@ -204,7 +205,6 @@ const saveSector = (sectorToEdit, sector, viewpoint) => {
     ifElementHasValueThenSetProperty("sectorEdgeStrokeArray", sector.edge, "strokeArray")
 
     sector.labelSettings = sector.labelSettings ?? {}
-   
     ifElementHasValueThenSetProperty("sectorLabelFont", sector.labelSettings, "fontFamily")
     ifElementHasValueThenSetProperty("sectorLabelColor",sector.labelSettings, "color")
     ifElementHasValueThenSetProperty("sectorLabelSize", sector.labelSettings, "fontSize")

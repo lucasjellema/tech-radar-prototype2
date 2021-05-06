@@ -176,7 +176,8 @@ const launchRingEditor = (ringToEdit, viewpoint, drawRadarBlips) => {
 const saveRing = (ringToEdit, ring, viewpoint) => {
     console.log(`save changes to ring`)
     const ringVisualMap = viewpoint.propertyVisualMaps["ring"]
-    ring.backgroundColor = getElementValue("ringColorInside")
+    ifElementHasValueThenSetProperty("ringColorInside", ring, "backgroundColor")
+    
     ring.label = getElementValue("ringLabel")
     ring.description = getElementValue("ringDescription")
 
@@ -189,7 +190,8 @@ const saveRing = (ringToEdit, ring, viewpoint) => {
     }
 
 
-    ring.opacity = getElementValue("ringOpacityInside")
+    
+    ifElementHasValueThenSetProperty("ringOpacityInside", ring, "opacity")
     ring.edge = ring.edge ?? {}
     ifElementHasValueThenSetProperty("ringEdgeColor", ring.edge, "color")
     ifElementHasValueThenSetProperty("ringEdgeWidth", ring.edge, "width")

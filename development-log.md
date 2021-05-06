@@ -61,6 +61,9 @@
 
 TODO - define scale and translate factor for externally defined paths/shapes
 
+## May 6th
+- Support hovertext / tooltip for sector (sector label) and ring (ring label)
+
 ## May 2nd
 - convert values imported from CSV (derive time from ISO date string)
 

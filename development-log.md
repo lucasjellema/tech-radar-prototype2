@@ -63,6 +63,10 @@ TODO - define scale and translate factor for externally defined paths/shapes
 
 ## May 6th
 - Support hovertext / tooltip for sector (sector label) and ring (ring label)
+- File manager : Export Radar File (for only current radar with only selected ratings, blips and objects )
+
+### Resources
+- turn array into object - https://stackoverflow.com/questions/42974735/create-object-from-array/42974762
 
 ## May 2nd
 - convert values imported from CSV (derive time from ISO date string)

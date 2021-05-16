@@ -3,7 +3,7 @@ import { cartesianFromPolar, polarFromCartesian, segmentFromCartesian, addToolti
 
 export { segmentShuffle }
 
-const nodePadding = 2
+const nodePadding = 4
 const segmentShuffle = (segment) => {
   // segment sector, ring
 
@@ -39,7 +39,7 @@ const segmentShuffle = (segment) => {
       delete blip.fx
       delete blip.fy
     }
-    //  blip.x = blip.x ; blip.y = 150 
+    
   })
   console.log(`Segment Start R : ${segmentContext.startR} and End R : ${segmentContext.endR}`)
   console.log(`Segment Start Phi : ${segmentContext.startPhi} and End Phi : ${segmentContext.endPhi}`)
@@ -47,8 +47,9 @@ const segmentShuffle = (segment) => {
 
   const numberOfSimulations = 70
   const sim = d3.forceSimulation(segmentContext.blips)
+    .force("radial", d3.forceRadial(d => (segmentContext.startR +segmentContext.endR)/2))
     .force("collide", d3.forceCollide().radius(d => d.scaleFactor * 15 + nodePadding))
-    .force("charge", d3.forceManyBody().strength(-10))
+    .force("charge", d3.forceManyBody().strength(-40))
     .force("bounded-segment", () => segmentContext.blips.forEach(blip => { restrainBlipToSegment(blip, segmentContext) }))
   // .stop()
   // .tick(50)
@@ -110,7 +111,7 @@ const restrainBlipToSegment = (blip, segmentContext) => {
     corrected = true
   }
   // check angular position
-  const anglePadding = 0.005
+  const anglePadding = 0.018
   // let blipAngle = (polar.phi < 0) ? (2 * Math.PI + polar.phi) : polar.phi  // convert from 0 .. -PI, PI,0 to 2PI..0
   let blipAnglePercentage = polarAngleToAnglePercentage(polar.phi)
   if (blipAnglePercentage < segmentContext.startAngle + anglePadding) {

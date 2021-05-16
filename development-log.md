@@ -62,7 +62,6 @@
 TODO - define scale and translate factor for externally defined paths/shapes
 
 - shuffle (force): attraction between blips with similar characteristics such as scope, author, vendor
-- shuffle: include artificial (aggregation) blips
 - 
 ## May 16th
 - Shuffle blips using D3 force - collision
@@ -71,6 +70,7 @@ TODO - define scale and translate factor for externally defined paths/shapes
   - custom boundary force to keep blips within segment - segment limited by phi and radius extremes
 - Context Menu on Segment for Shuffle (and lock and unlock)
 - context menu on radar title: reshuffle all visible segments
+- shuffle: include artificial (aggregation) blips
 
 
 ## May 6th

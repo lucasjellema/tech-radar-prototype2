@@ -61,6 +61,18 @@
 
 TODO - define scale and translate factor for externally defined paths/shapes
 
+- shuffle (force): attraction between blips with similar characteristics such as scope, author, vendor
+- shuffle: include artificial (aggregation) blips
+- 
+## May 16th
+- Shuffle blips using D3 force - collision
+  - blip's position can be locked (user drag & drop results in lock; user can lock/unlock blip from context menu ; user can also lock and unlock [all blips in a] segment)
+  - radius is determined - size applied, blip size, blip scale factor, 
+  - custom boundary force to keep blips within segment - segment limited by phi and radius extremes
+- Context Menu on Segment for Shuffle (and lock and unlock)
+- context menu on radar title: reshuffle all visible segments
+
+
 ## May 6th
 - Support hovertext / tooltip for sector (sector label) and ring (ring label)
 - File manager : Export Radar File (for only current radar with only selected ratings, blips and objects )
